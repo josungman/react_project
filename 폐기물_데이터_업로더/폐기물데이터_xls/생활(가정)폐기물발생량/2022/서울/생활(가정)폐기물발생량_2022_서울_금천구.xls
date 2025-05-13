@@ -1,0 +1,116 @@
+<div id="expTable">
+	<div id="title" style="font-size: 20px;font-weight: bold;">전국폐기물 발생 및 처리현황</div>
+	<div id="sub_title" style="font-size: 14px;font-weight: bold;">2-나-1). (시군구) 생활(가정)폐기물 발생량</div>
+	<div></div>
+	<table class="tbl chart low_h" id="mainExcelTable">
+		<thead id="conHead">
+
+<tr class="rrm">
+	<th rowspan="2">시도</th>
+
+	<th rowspan="2">시군구</th>
+
+
+
+
+	<th rowspan="2" colspan="3">폐기물 종류</th>
+
+	
+	<th rowspan="2">2022발생량</th>
+	<th colspan="4">총계</th>
+	<th colspan="4">공공처리</th>
+	<th colspan="4">자가처리</th>
+	<th colspan="4">위탁처리</th>
+</tr>
+<tr class="rrm">
+
+
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+</tr>
+
+
+</thead>
+		<tbody id="conBody"><tr><td>서울</td><td>금천구</td><td>합계</td><td></td><td></td><td>71563.9</td><td>37745.7</td><td>11160.1</td><td>22658.1</td><td>0</td><td>0</td><td>0</td><td>22658.1</td><td>0</td><td>426.9</td><td>0</td><td>0</td><td>0</td><td>37318.8</td><td>11160.1</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>소계</td><td></td><td>34783</td><td>964.8</td><td>11160.1</td><td>22658.1</td><td>0</td><td>0</td><td>0</td><td>22658.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>964.8</td><td>11160.1</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>소계</td><td>31142.5</td><td>470.5</td><td>10370.4</td><td>20301.6</td><td>0</td><td>0</td><td>0</td><td>20301.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>470.5</td><td>10370.4</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐지류</td><td>8798.8</td><td>0</td><td>2305.3</td><td>6493.5</td><td>0</td><td>0</td><td>0</td><td>6493.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2305.3</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐합성수지류</td><td>10903.2</td><td>0</td><td>5190.9</td><td>5712.3</td><td>0</td><td>0</td><td>0</td><td>5712.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5190.9</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐고무류</td><td>260.6</td><td>0</td><td>68.3</td><td>192.3</td><td>0</td><td>0</td><td>0</td><td>192.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>68.3</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐섬유류</td><td>990.7</td><td>470.5</td><td>136.3</td><td>383.9</td><td>0</td><td>0</td><td>0</td><td>383.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>470.5</td><td>136.3</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>음식물류 폐기물</td><td>1181</td><td>0</td><td>309.4</td><td>871.6</td><td>0</td><td>0</td><td>0</td><td>871.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>309.4</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐목재류</td><td>259.5</td><td>0</td><td>68</td><td>191.5</td><td>0</td><td>0</td><td>0</td><td>191.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>68</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>기타</td><td>8748.7</td><td>0</td><td>2292.2</td><td>6456.5</td><td>0</td><td>0</td><td>0</td><td>6456.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2292.2</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>소계</td><td>2989.2</td><td>0</td><td>783.2</td><td>2206</td><td>0</td><td>0</td><td>0</td><td>2206</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>783.2</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐금속류</td><td>1037</td><td>0</td><td>271.7</td><td>765.3</td><td>0</td><td>0</td><td>0</td><td>765.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>271.7</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐유리류</td><td>958.6</td><td>0</td><td>251.2</td><td>707.4</td><td>0</td><td>0</td><td>0</td><td>707.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>251.2</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐토사류</td><td>87.9</td><td>0</td><td>23</td><td>64.9</td><td>0</td><td>0</td><td>0</td><td>64.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>23</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐타일 및 도자기류</td><td>63.4</td><td>0</td><td>16.6</td><td>46.8</td><td>0</td><td>0</td><td>0</td><td>46.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>16.6</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>연탄재</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>기타</td><td>842.3</td><td>0</td><td>220.7</td><td>621.6</td><td>0</td><td>0</td><td>0</td><td>621.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>220.7</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>건설폐재류</td><td>건설폐재류(공사장생활폐기물)</td><td>519.2</td><td>494.3</td><td>6.5</td><td>18.4</td><td>0</td><td>0</td><td>0</td><td>18.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>494.3</td><td>6.5</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>종량제방식 등 혼합배출</td><td>기타(배출불명등)</td><td></td><td>132.1</td><td>0</td><td>0</td><td>132.1</td><td>0</td><td>0</td><td>0</td><td>132.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>소계</td><td></td><td>17421.3</td><td>17421.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>17421.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>종이팩</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>기타</td><td>2836</td><td>2836</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2836</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>고철류</td><td></td><td>238.1</td><td>238.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>238.1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>금속캔</td><td></td><td>297.4</td><td>297.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>297.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>비닐류</td><td>4157.4</td><td>4157.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4157.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>발포수지류</td><td>320.3</td><td>320.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>320.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>PET병</td><td>785.6</td><td>785.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>785.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>기타</td><td>1134.4</td><td>1134.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1134.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐고무류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐유리병류</td><td></td><td>854.8</td><td>854.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>854.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐의류</td><td></td><td>643.2</td><td>643.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>643.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐섬유류</td><td></td><td>470.5</td><td>470.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>470.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>조명폐기물</td><td></td><td>29.6</td><td>29.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>29.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전지류</td><td></td><td>16</td><td>16</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>16</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>농약용기류</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>폐비닐</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐식용유</td><td></td><td>28.2</td><td>28.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>28.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전기전자제품</td><td></td><td>925.9</td><td>925.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>925.9</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐가구류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>기타</td><td></td><td>108.6</td><td>108.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>108.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>재활용 잔재물</td><td></td><td>4574.3</td><td>4574.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4574.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>서울</td><td>금천구</td><td>음식물류 폐기물 분리배출</td><td></td><td></td><td>19359.6</td><td>19359.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>426.9</td><td>0</td><td>0</td><td>0</td><td>18932.7</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+	</table>
+	</div>
