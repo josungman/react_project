@@ -13,7 +13,9 @@ function Home() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
     >
-      <h1 className="text-2xl font-bold mb-6">폐기물 통계 포털</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">
+        📊 폐기물 통계 포털 <br></br> <small>Made By ELB</small>
+      </h1>
 
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button onClick={() => navigate("/waste")} className="bg-blue-600 hover:bg-blue-700 text-white">

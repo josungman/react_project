@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import WasteStatus from "./pages/WasteStatus";
 import RecyclingStatus from "./pages/RecyclingStatus";
+import DistrictMapPage from "./pages/DistrictMapPage";
 
 function App() {
   const location = useLocation();
@@ -19,6 +20,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/waste" element={<WasteStatus />} />
             <Route path="/recycle" element={<RecyclingStatus />} />
+            <Route path="/map/:province" element={<DistrictMapPage />} />
           </Routes>
         </AnimatePresence>
       </main>
