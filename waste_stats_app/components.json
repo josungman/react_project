@@ -1,0 +1,6 @@
+{
+  "componentPath": "src/components",
+  "aliases": {
+    "@/components": "./src/components"
+  }
+}
