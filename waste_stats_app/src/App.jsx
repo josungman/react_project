@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import WasteStatus from "./pages/WasteStatus";
 import RecyclingStatus from "./pages/RecyclingStatus";
 import DistrictMapPage from "./pages/DistrictMapPage";
+import ScrollToTop from "@/components/ScrollToTop";
 
 function App() {
   const location = useLocation();
@@ -13,6 +14,9 @@ function App() {
   return (
     <>
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
+
+      {/* ✅ 여기에 위치 */}
+      <ScrollToTop />
 
       <main className={!hideNavbarRoutes.includes(location.pathname) ? "pt-10" : ""}>
         <AnimatePresence mode="wait">

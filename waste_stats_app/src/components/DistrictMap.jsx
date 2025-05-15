@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-function DistrictMap({ data, province }) {
+function DistrictMap({ data, province, onLoaded }) {
   const svgRef = useRef();
   const tooltipRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
@@ -24,6 +24,7 @@ function DistrictMap({ data, province }) {
     세종특별자치시: "sejong",
     세종: "sejong",
     경기도: "gyeonggi",
+    경기: "gyeonggi",
     강원도: "gangwon",
     강원: "gangwon",
     충청북도: "chungbuk",
@@ -43,7 +44,10 @@ function DistrictMap({ data, province }) {
   };
 
   const getDistrictName = (fullName) => {
-    return fullName.replace(/^(서울특별시|부산광역시|전라남도)\s*/, "");
+    return fullName.replace(
+      /^(서울특별시|부산광역시|전라남도|강원특별자치도|경기도|충청남도|인천광역시|충청북도|대전광역시|경상북도|대구광역시|울산광역시|경상남도|전북특별차지도|광주광역시|제주도)\s*/,
+      ""
+    );
   };
 
   useEffect(() => {
@@ -69,113 +73,130 @@ function DistrictMap({ data, province }) {
 
     svg.selectAll("*").remove();
 
-    d3.json(geoUrl).then((geoData) => {
-      const projection = d3.geoMercator().fitSize([width, height], geoData);
-      const path = d3.geoPath().projection(projection);
+    d3.json(geoUrl)
+      .then((geoData) => {
+        const projection = d3.geoMercator().fitSize([width, height], geoData);
+        const path = d3.geoPath().projection(projection);
 
-      const values = Object.values(data);
-      const minValue = Math.min(...values);
-      const maxValue = Math.max(...values);
-      const colorScale = d3.scaleQuantize().domain([minValue, maxValue]).range(["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"]);
+        const values = Object.values(data);
+        const minValue = Math.min(...values);
+        const maxValue = Math.max(...values);
+        const colorScale = d3.scaleQuantize().domain([minValue, maxValue]).range(["#fef0d9", "#fdcc8a", "#fc8d59", "#e34a33", "#b30000"]);
 
-      // 지도 영역
-      svg
-        .append("g")
-        .selectAll("path")
-        .data(geoData.features)
-        .join("path")
-        .attr("d", path)
-        .attr("fill", (d) => {
-          const trimmedName = getDistrictName(d.properties.SGG_NM);
-          const value = data[trimmedName];
-          return value ? colorScale(value) : "#eee";
-        })
-        .attr("stroke", "#555")
-        .attr("stroke-width", 1)
-        .on("mouseover", function (e, d) {
-          const name = d.properties.SGG_NM;
-          const trimmedName = getDistrictName(name);
-          const value = data[trimmedName];
+        svg
+          .append("g")
+          .selectAll("path")
+          .data(geoData.features)
+          .join("path")
+          .attr("d", path)
+          .attr("fill", (d) => {
+            const trimmedName = getDistrictName(d.properties.SGG_NM);
+            const value = data[trimmedName];
+            return value ? colorScale(value) : "#eee";
+          })
+          .attr("stroke", "#555")
+          .attr("stroke-width", 1)
+          .attr("stroke", "#888")
+          .attr("stroke-width", 1)
+          .attr("fill-opacity", 0.95)
+          .on("mouseover", function (e, d) {
+            const name = d.properties.SGG_NM;
+            const trimmedName = getDistrictName(name);
+            const value = data[trimmedName];
 
-          d3.select(this).attr("stroke", "#000").attr("stroke-width", 2);
+            d3.select(this).attr("stroke", "#000").attr("stroke-width", 2);
 
-          d3.select(tooltipRef.current)
-            .style("opacity", 1)
-            .html(`<strong>${name}</strong><br/>${value ? `${Math.floor(value).toLocaleString()}톤` : "데이터 없음"}`);
-        })
-        .on("mousemove", function (e) {
-          d3.select(tooltipRef.current)
-            .style("left", e.pageX + 10 + "px")
-            .style("top", e.pageY - 40 + "px");
-        })
-        .on("mouseout", function (e, d) {
-          const trimmedName = getDistrictName(d.properties.SGG_NM);
-          const value = data[trimmedName];
+            d3.select(tooltipRef.current)
+              .style("opacity", 1)
+              .html(`<strong>${name}</strong><br/>${value ? `${Math.floor(value).toLocaleString()}톤` : "데이터 없음"}`);
+          })
+          .on("mousemove", function (e) {
+            const svgBounds = svgRef.current.getBoundingClientRect();
+            d3.select(tooltipRef.current)
+              .style("left", e.clientX - svgBounds.left + 10 + "px")
+              .style("top", e.clientY - svgBounds.top - 40 + "px");
+          })
+          .on("mouseout", function (e, d) {
+            const trimmedName = getDistrictName(d.properties.SGG_NM);
+            const value = data[trimmedName];
 
-          d3.select(this)
-            .attr("stroke", "#555")
-            .attr("stroke-width", 1)
-            .attr("fill", value ? colorScale(value) : "#eee");
+            d3.select(this)
+              .attr("stroke", "#555")
+              .attr("stroke-width", 1)
+              .attr("fill", value ? colorScale(value) : "#eee");
 
-          d3.select(tooltipRef.current).style("opacity", 0);
+            d3.select(tooltipRef.current).style("opacity", 0);
+          });
+
+        const labelGroup = svg.append("g");
+        const shownLabels = new Set();
+
+        labelGroup
+          .selectAll("text")
+          .data(geoData.features)
+          .join("text")
+          .filter((d) => {
+            const name = getDistrictName(d.properties.SGG_NM);
+            if (shownLabels.has(name)) return false;
+            shownLabels.add(name);
+            return true;
+          })
+          .text((d) => getDistrictName(d.properties.SGG_NM))
+          .attr("x", (d) => path.centroid(d)[0])
+          .attr("y", (d) => path.centroid(d)[1])
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.35em")
+          .attr("font-size", isMobile ? "9px" : "11px")
+          .attr("fill", "#111")
+          .attr("pointer-events", "none");
+
+        const legendWidth = 200;
+        const legendHeight = 10;
+        const legendX = width / 2 - legendWidth / 2;
+        const legendY = height + 40;
+
+        const legend = svg.append("g").attr("class", "legend");
+
+        const legendScale = d3.scaleLinear().domain([minValue, maxValue]).range([0, legendWidth]);
+        const legendAxis = d3
+          .axisBottom(legendScale)
+          .ticks(4)
+          .tickFormat((d) => {
+            if (d >= 1_000_000) return `${d / 1_000_000}백만`;
+            if (d >= 10_000) return `${(d / 10_000).toFixed(1)}만`;
+            if (d >= 1_000) return `${(d / 1_000).toFixed(1)}천`;
+            return `${d}톤`;
+          });
+
+        const gradient = legend.append("defs").append("linearGradient").attr("id", "district-legend-gradient");
+        const step = 100 / (colorScale.range().length - 1);
+        colorScale.range().forEach((color, i) => {
+          gradient
+            .append("stop")
+            .attr("offset", `${i * step}%`)
+            .attr("stop-color", color);
         });
 
-      // ✅ 라벨 중복 제거
-      const labelGroup = svg.append("g");
-      const shownLabels = new Set();
+        legend.append("rect").attr("x", legendX).attr("y", legendY).attr("width", legendWidth).attr("height", legendHeight).style("fill", "url(#district-legend-gradient)");
 
-      labelGroup
-        .selectAll("text")
-        .data(geoData.features)
-        .join("text")
-        .filter((d) => {
-          const name = getDistrictName(d.properties.SGG_NM);
-          if (shownLabels.has(name)) return false;
-          shownLabels.add(name);
-          return true;
-        })
-        .text((d) => getDistrictName(d.properties.SGG_NM))
-        .attr("x", (d) => path.centroid(d)[0])
-        .attr("y", (d) => path.centroid(d)[1])
-        .attr("text-anchor", "middle")
-        .attr("dy", "0.35em")
-        .attr("font-size", isMobile ? "9px" : "11px")
-        .attr("fill", "#111")
-        .attr("pointer-events", "none");
+        legend
+          .append("g")
+          .attr("transform", `translate(${legendX}, ${legendY + legendHeight})`)
+          .call(legendAxis)
+          .selectAll("text")
+          .style("font-size", "10px");
 
-      // 색상 범례
-      const legendWidth = 200;
-      const legendHeight = 10;
-      const legendX = width / 2 - legendWidth / 2;
-      const legendY = height + 40;
-
-      const legend = svg.append("g").attr("class", "legend");
-
-      const legendScale = d3.scaleLinear().domain([minValue, maxValue]).range([0, legendWidth]);
-      const legendAxis = d3
-        .axisBottom(legendScale)
-        .ticks(5)
-        .tickFormat((d) => (d >= 1000000 ? `${d / 1000000}백만` : `${Math.round(d / 10000)}만`));
-
-      const gradient = legend.append("defs").append("linearGradient").attr("id", "district-legend-gradient");
-      const step = 100 / (colorScale.range().length - 1);
-      colorScale.range().forEach((color, i) => {
-        gradient
-          .append("stop")
-          .attr("offset", `${i * step}%`)
-          .attr("stop-color", color);
+        if (onLoaded) {
+          requestAnimationFrame(() => {
+            onLoaded();
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("❌ GeoJSON 로딩 실패:", err);
+        if (onLoaded) onLoaded();
       });
-
-      legend.append("rect").attr("x", legendX).attr("y", legendY).attr("width", legendWidth).attr("height", legendHeight).style("fill", "url(#district-legend-gradient)");
-
-      legend
-        .append("g")
-        .attr("transform", `translate(${legendX}, ${legendY + legendHeight})`)
-        .call(legendAxis)
-        .selectAll("text")
-        .style("font-size", "10px");
-    });
-  }, [data, province, isMobile]);
+  }, [data, province, isMobile, onLoaded]);
 
   return (
     <>
