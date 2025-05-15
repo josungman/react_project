@@ -1,0 +1,116 @@
+<div id="expTable">
+	<div id="title" style="font-size: 20px;font-weight: bold;">전국폐기물 발생 및 처리현황</div>
+	<div id="sub_title" style="font-size: 14px;font-weight: bold;">2-나-1). (시군구) 생활(가정)폐기물 발생량</div>
+	<div></div>
+	<table class="tbl chart low_h" id="mainExcelTable">
+		<thead id="conHead">
+
+<tr class="rrm">
+	<th rowspan="2">시도</th>
+
+	<th rowspan="2">시군구</th>
+
+
+
+
+	<th rowspan="2" colspan="3">폐기물 종류</th>
+
+	
+	<th rowspan="2">2022발생량</th>
+	<th colspan="4">총계</th>
+	<th colspan="4">공공처리</th>
+	<th colspan="4">자가처리</th>
+	<th colspan="4">위탁처리</th>
+</tr>
+<tr class="rrm">
+
+
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+</tr>
+
+
+</thead>
+		<tbody id="conBody"><tr><td>제주</td><td>제주시</td><td>합계</td><td></td><td></td><td>323450.3</td><td>221164.2</td><td>89534.4</td><td>12751.7</td><td>0</td><td>51953.6</td><td>89534.4</td><td>12751.7</td><td>0</td><td>3417</td><td>0</td><td>0</td><td>0</td><td>165793.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>소계</td><td></td><td>94308.5</td><td>0</td><td>82304.1</td><td>12004.4</td><td>0</td><td>0</td><td>82304.1</td><td>12004.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>소계</td><td>79864.4</td><td>0</td><td>79864.4</td><td>0</td><td>0</td><td>0</td><td>79864.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐지류</td><td>23570.3</td><td>0</td><td>23570.3</td><td>0</td><td>0</td><td>0</td><td>23570.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐합성수지류</td><td>23813.5</td><td>0</td><td>23813.5</td><td>0</td><td>0</td><td>0</td><td>23813.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐고무류</td><td>725.2</td><td>0</td><td>725.2</td><td>0</td><td>0</td><td>0</td><td>725.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐섬유류</td><td>8117.3</td><td>0</td><td>8117.3</td><td>0</td><td>0</td><td>0</td><td>8117.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>음식물류 폐기물</td><td>4908.7</td><td>0</td><td>4908.7</td><td>0</td><td>0</td><td>0</td><td>4908.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐목재류</td><td>9566.5</td><td>0</td><td>9566.5</td><td>0</td><td>0</td><td>0</td><td>9566.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>기타</td><td>9162.9</td><td>0</td><td>9162.9</td><td>0</td><td>0</td><td>0</td><td>9162.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>소계</td><td>11961.7</td><td>0</td><td>2439.7</td><td>9522</td><td>0</td><td>0</td><td>2439.7</td><td>9522</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐금속류</td><td>1444.3</td><td>0</td><td>1444.3</td><td>0</td><td>0</td><td>0</td><td>1444.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐유리류</td><td>1947.6</td><td>0</td><td>995.4</td><td>952.2</td><td>0</td><td>0</td><td>995.4</td><td>952.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐토사류</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐타일 및 도자기류</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>연탄재</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>기타</td><td>8569.8</td><td>0</td><td>0</td><td>8569.8</td><td>0</td><td>0</td><td>0</td><td>8569.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>건설폐재류</td><td>건설폐재류(공사장생활폐기물)</td><td>2482.4</td><td>0</td><td>0</td><td>2482.4</td><td>0</td><td>0</td><td>0</td><td>2482.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>종량제방식 등 혼합배출</td><td>기타(배출불명등)</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>소계</td><td></td><td>173964.8</td><td>166640.6</td><td>7016.3</td><td>307.9</td><td>0</td><td>2219</td><td>7016.3</td><td>307.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>164421.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>종이팩</td><td>74.4</td><td>74.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>74.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>기타</td><td>76200.7</td><td>76200.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>76200.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>고철류</td><td></td><td>51810.3</td><td>51810.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>51810.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>금속캔</td><td></td><td>1934.2</td><td>1934.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1934.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>비닐류</td><td>3967.7</td><td>3967.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3967.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>발포수지류</td><td>318.3</td><td>318.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>318.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>PET병</td><td>5524.2</td><td>5524.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5524.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>기타</td><td>13420.1</td><td>13420.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>13420.1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐고무류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐유리병류</td><td></td><td>4465.5</td><td>4465.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4465.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐의류</td><td></td><td>2031</td><td>2031</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2031</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐섬유류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>조명폐기물</td><td></td><td>79.4</td><td>79.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>79.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전지류</td><td></td><td>55.7</td><td>55.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>55.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>농약용기류</td><td>201</td><td>201</td><td>0</td><td>0</td><td>0</td><td>201</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>폐비닐</td><td>2018</td><td>2018</td><td>0</td><td>0</td><td>0</td><td>2018</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐식용유</td><td></td><td>119</td><td>119</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>119</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전기전자제품</td><td></td><td>4421.1</td><td>4421.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4421.1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐가구류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>기타</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>재활용 잔재물</td><td></td><td>7324.2</td><td>0</td><td>7016.3</td><td>307.9</td><td>0</td><td>0</td><td>7016.3</td><td>307.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>제주</td><td>제주시</td><td>음식물류 폐기물 분리배출</td><td></td><td></td><td>55177</td><td>54523.6</td><td>214</td><td>439.4</td><td>0</td><td>49734.6</td><td>214</td><td>439.4</td><td>0</td><td>3417</td><td>0</td><td>0</td><td>0</td><td>1372</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+	</table>
+	</div>

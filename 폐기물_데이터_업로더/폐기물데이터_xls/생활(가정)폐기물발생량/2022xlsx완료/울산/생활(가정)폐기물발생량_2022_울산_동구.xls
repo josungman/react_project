@@ -1,0 +1,116 @@
+<div id="expTable">
+	<div id="title" style="font-size: 20px;font-weight: bold;">전국폐기물 발생 및 처리현황</div>
+	<div id="sub_title" style="font-size: 14px;font-weight: bold;">2-나-1). (시군구) 생활(가정)폐기물 발생량</div>
+	<div></div>
+	<table class="tbl chart low_h" id="mainExcelTable">
+		<thead id="conHead">
+
+<tr class="rrm">
+	<th rowspan="2">시도</th>
+
+	<th rowspan="2">시군구</th>
+
+
+
+
+	<th rowspan="2" colspan="3">폐기물 종류</th>
+
+	
+	<th rowspan="2">2022발생량</th>
+	<th colspan="4">총계</th>
+	<th colspan="4">공공처리</th>
+	<th colspan="4">자가처리</th>
+	<th colspan="4">위탁처리</th>
+</tr>
+<tr class="rrm">
+
+
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+</tr>
+
+
+</thead>
+		<tbody id="conBody"><tr><td>울산</td><td>동구</td><td>합계</td><td></td><td></td><td>52090.3</td><td>20247</td><td>22314.9</td><td>9528.4</td><td>0</td><td>11509.4</td><td>22314.9</td><td>9528.4</td><td>0</td><td>85</td><td>0</td><td>0</td><td>0</td><td>8652.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>소계</td><td></td><td>31015.5</td><td>0</td><td>21487.1</td><td>9528.4</td><td>0</td><td>0</td><td>21487.1</td><td>9528.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>소계</td><td>17532.9</td><td>0</td><td>17532.9</td><td>0</td><td>0</td><td>0</td><td>17532.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐지류</td><td>3400.9</td><td>0</td><td>3400.9</td><td>0</td><td>0</td><td>0</td><td>3400.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐합성수지류</td><td>5586.4</td><td>0</td><td>5586.4</td><td>0</td><td>0</td><td>0</td><td>5586.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐고무류</td><td>261.2</td><td>0</td><td>261.2</td><td>0</td><td>0</td><td>0</td><td>261.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐섬유류</td><td>667.6</td><td>0</td><td>667.6</td><td>0</td><td>0</td><td>0</td><td>667.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>음식물류 폐기물</td><td>1388.3</td><td>0</td><td>1388.3</td><td>0</td><td>0</td><td>0</td><td>1388.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐목재류</td><td>320.1</td><td>0</td><td>320.1</td><td>0</td><td>0</td><td>0</td><td>320.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>기타</td><td>5908.4</td><td>0</td><td>5908.4</td><td>0</td><td>0</td><td>0</td><td>5908.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>소계</td><td>2083.3</td><td>0</td><td>2083.3</td><td>0</td><td>0</td><td>0</td><td>2083.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐금속류</td><td>255.3</td><td>0</td><td>255.3</td><td>0</td><td>0</td><td>0</td><td>255.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐유리류</td><td>506.6</td><td>0</td><td>506.6</td><td>0</td><td>0</td><td>0</td><td>506.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐토사류</td><td>56.9</td><td>0</td><td>56.9</td><td>0</td><td>0</td><td>0</td><td>56.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐타일 및 도자기류</td><td>37.3</td><td>0</td><td>37.3</td><td>0</td><td>0</td><td>0</td><td>37.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>연탄재</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>기타</td><td>1227.2</td><td>0</td><td>1227.2</td><td>0</td><td>0</td><td>0</td><td>1227.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>건설폐재류</td><td>건설폐재류(공사장생활폐기물)</td><td>10626.3</td><td>0</td><td>1844.1</td><td>8782.2</td><td>0</td><td>0</td><td>1844.1</td><td>8782.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>종량제방식 등 혼합배출</td><td>기타(배출불명등)</td><td></td><td>773</td><td>0</td><td>26.8</td><td>746.2</td><td>0</td><td>0</td><td>26.8</td><td>746.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>소계</td><td></td><td>8761.1</td><td>7981</td><td>780.1</td><td>0</td><td>0</td><td>0</td><td>780.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7981</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>종이팩</td><td>13.2</td><td>13.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>13.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>기타</td><td>3631.1</td><td>3631.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3631.1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>고철류</td><td></td><td>188.5</td><td>188.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>188.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>금속캔</td><td></td><td>250.9</td><td>250.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>250.9</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>비닐류</td><td>900.5</td><td>900.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>900.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>발포수지류</td><td>123.4</td><td>123.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>123.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>PET병</td><td>495.9</td><td>495.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>495.9</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>기타</td><td>930.7</td><td>930.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>930.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐고무류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐유리병류</td><td></td><td>713.2</td><td>713.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>713.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐의류</td><td></td><td>262.8</td><td>262.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>262.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐섬유류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>조명폐기물</td><td></td><td>14.8</td><td>14.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>14.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전지류</td><td></td><td>10</td><td>10</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>10</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>농약용기류</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>폐비닐</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐식용유</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전기전자제품</td><td></td><td>339.3</td><td>339.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>339.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐가구류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>기타</td><td></td><td>106.7</td><td>106.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>106.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>재활용 잔재물</td><td></td><td>780.1</td><td>0</td><td>780.1</td><td>0</td><td>0</td><td>0</td><td>780.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>울산</td><td>동구</td><td>음식물류 폐기물 분리배출</td><td></td><td></td><td>12313.7</td><td>12266</td><td>47.7</td><td>0</td><td>0</td><td>11509.4</td><td>47.7</td><td>0</td><td>0</td><td>85</td><td>0</td><td>0</td><td>0</td><td>671.6</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+	</table>
+	</div>

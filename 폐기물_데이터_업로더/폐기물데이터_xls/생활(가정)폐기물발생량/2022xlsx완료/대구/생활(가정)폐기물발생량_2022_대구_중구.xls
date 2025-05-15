@@ -1,0 +1,116 @@
+<div id="expTable">
+	<div id="title" style="font-size: 20px;font-weight: bold;">전국폐기물 발생 및 처리현황</div>
+	<div id="sub_title" style="font-size: 14px;font-weight: bold;">2-나-1). (시군구) 생활(가정)폐기물 발생량</div>
+	<div></div>
+	<table class="tbl chart low_h" id="mainExcelTable">
+		<thead id="conHead">
+
+<tr class="rrm">
+	<th rowspan="2">시도</th>
+
+	<th rowspan="2">시군구</th>
+
+
+
+
+	<th rowspan="2" colspan="3">폐기물 종류</th>
+
+	
+	<th rowspan="2">2022발생량</th>
+	<th colspan="4">총계</th>
+	<th colspan="4">공공처리</th>
+	<th colspan="4">자가처리</th>
+	<th colspan="4">위탁처리</th>
+</tr>
+<tr class="rrm">
+
+
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+</tr>
+
+
+</thead>
+		<tbody id="conBody"><tr><td>대구</td><td>중구</td><td>합계</td><td></td><td></td><td>38439.8</td><td>22264</td><td>4154.2</td><td>12021.6</td><td>0</td><td>13776.1</td><td>3886.6</td><td>12021.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>8487.9</td><td>267.6</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>소계</td><td></td><td>22396.8</td><td>6656.3</td><td>3886.6</td><td>11853.9</td><td>0</td><td>6656.3</td><td>3886.6</td><td>11853.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>소계</td><td>16216.2</td><td>5943.5</td><td>3470</td><td>6802.7</td><td>0</td><td>5943.5</td><td>3470</td><td>6802.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐지류</td><td>3145.6</td><td>1152.9</td><td>673.1</td><td>1319.6</td><td>0</td><td>1152.9</td><td>673.1</td><td>1319.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐합성수지류</td><td>5166.9</td><td>1893.8</td><td>1105.6</td><td>2167.5</td><td>0</td><td>1893.8</td><td>1105.6</td><td>2167.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐고무류</td><td>241.5</td><td>88.5</td><td>51.7</td><td>101.3</td><td>0</td><td>88.5</td><td>51.7</td><td>101.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐섬유류</td><td>617.4</td><td>226.3</td><td>132.1</td><td>259</td><td>0</td><td>226.3</td><td>132.1</td><td>259</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>음식물류 폐기물</td><td>1284</td><td>470.6</td><td>274.8</td><td>538.6</td><td>0</td><td>470.6</td><td>274.8</td><td>538.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐목재류</td><td>296</td><td>108.5</td><td>63.3</td><td>124.2</td><td>0</td><td>108.5</td><td>63.3</td><td>124.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>기타</td><td>5464.8</td><td>2002.9</td><td>1169.4</td><td>2292.5</td><td>0</td><td>2002.9</td><td>1169.4</td><td>2292.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>소계</td><td>1926.9</td><td>706.1</td><td>412.4</td><td>808.4</td><td>0</td><td>706.1</td><td>412.4</td><td>808.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐금속류</td><td>236</td><td>86.5</td><td>50.5</td><td>99</td><td>0</td><td>86.5</td><td>50.5</td><td>99</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐유리류</td><td>468.6</td><td>171.7</td><td>100.3</td><td>196.6</td><td>0</td><td>171.7</td><td>100.3</td><td>196.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐토사류</td><td>52.7</td><td>19.3</td><td>11.3</td><td>22.1</td><td>0</td><td>19.3</td><td>11.3</td><td>22.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐타일 및 도자기류</td><td>34.5</td><td>12.6</td><td>7.4</td><td>14.5</td><td>0</td><td>12.6</td><td>7.4</td><td>14.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>연탄재</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>기타</td><td>1135.1</td><td>416</td><td>242.9</td><td>476.2</td><td>0</td><td>416</td><td>242.9</td><td>476.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>건설폐재류</td><td>건설폐재류(공사장생활폐기물)</td><td>4253.7</td><td>6.7</td><td>4.2</td><td>4242.8</td><td>0</td><td>6.7</td><td>4.2</td><td>4242.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>종량제방식 등 혼합배출</td><td>기타(배출불명등)</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>소계</td><td></td><td>6380.6</td><td>5945.3</td><td>267.6</td><td>167.7</td><td>0</td><td>1086.9</td><td>0</td><td>167.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4858.4</td><td>267.6</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>종이팩</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>기타</td><td>856.5</td><td>856.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>856.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>고철류</td><td></td><td>58.8</td><td>58.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>58.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>금속캔</td><td></td><td>95.2</td><td>95.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>95.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>비닐류</td><td>1023</td><td>1023</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1023</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>발포수지류</td><td>121.9</td><td>121.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>121.9</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>PET병</td><td>815</td><td>815</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>815</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>기타</td><td>488.4</td><td>488.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>488.4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐고무류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐유리병류</td><td></td><td>1041.6</td><td>1041.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1041.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐의류</td><td></td><td>82.3</td><td>82.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>82.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐섬유류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>조명폐기물</td><td></td><td>9.7</td><td>9.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>9.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전지류</td><td></td><td>6.8</td><td>6.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>6.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>농약용기류</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>폐비닐</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐식용유</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전기전자제품</td><td></td><td>259.2</td><td>259.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>259.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐가구류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>기타</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>재활용 잔재물</td><td></td><td>1522.2</td><td>1086.9</td><td>267.6</td><td>167.7</td><td>0</td><td>1086.9</td><td>0</td><td>167.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>267.6</td><td>0</td><td>0</td></tr><tr><td>대구</td><td>중구</td><td>음식물류 폐기물 분리배출</td><td></td><td></td><td>9662.4</td><td>9662.4</td><td>0</td><td>0</td><td>0</td><td>6032.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3629.5</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+	</table>
+	</div>

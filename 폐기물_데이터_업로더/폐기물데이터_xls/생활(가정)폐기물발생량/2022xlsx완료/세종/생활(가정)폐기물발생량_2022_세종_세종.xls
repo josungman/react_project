@@ -1,0 +1,116 @@
+<div id="expTable">
+	<div id="title" style="font-size: 20px;font-weight: bold;">전국폐기물 발생 및 처리현황</div>
+	<div id="sub_title" style="font-size: 14px;font-weight: bold;">2-나-1). (시군구) 생활(가정)폐기물 발생량</div>
+	<div></div>
+	<table class="tbl chart low_h" id="mainExcelTable">
+		<thead id="conHead">
+
+<tr class="rrm">
+	<th rowspan="2">시도</th>
+
+	<th rowspan="2">시군구</th>
+
+
+
+
+	<th rowspan="2" colspan="3">폐기물 종류</th>
+
+	
+	<th rowspan="2">2022발생량</th>
+	<th colspan="4">총계</th>
+	<th colspan="4">공공처리</th>
+	<th colspan="4">자가처리</th>
+	<th colspan="4">위탁처리</th>
+</tr>
+<tr class="rrm">
+
+
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+</tr>
+
+
+</thead>
+		<tbody id="conBody"><tr><td>세종</td><td>세종시</td><td>합계</td><td></td><td></td><td>101623.3</td><td>70818.7</td><td>30804.6</td><td>0</td><td>0</td><td>34599.2</td><td>12183.9</td><td>0</td><td>0</td><td>49.3</td><td>0</td><td>0</td><td>0</td><td>36170.2</td><td>18620.7</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>소계</td><td></td><td>59317.9</td><td>29426.1</td><td>29891.8</td><td>0</td><td>0</td><td>29426.1</td><td>12183.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>17707.9</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>소계</td><td>53896.6</td><td>26956.3</td><td>26940.3</td><td>0</td><td>0</td><td>26956.3</td><td>10980.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>15959.4</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐지류</td><td>13848.4</td><td>5231.6</td><td>8616.8</td><td>0</td><td>0</td><td>5231.6</td><td>3512.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5104.6</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐합성수지류</td><td>16448</td><td>8867.8</td><td>7580.2</td><td>0</td><td>0</td><td>8867.8</td><td>3089.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4490.5</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐고무류</td><td>716.3</td><td>461.1</td><td>255.2</td><td>0</td><td>0</td><td>461.1</td><td>104</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>151.2</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐섬유류</td><td>1474.9</td><td>965.4</td><td>509.5</td><td>0</td><td>0</td><td>965.4</td><td>207.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>301.8</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>음식물류 폐기물</td><td>3152.8</td><td>1996.2</td><td>1156.6</td><td>0</td><td>0</td><td>1996.2</td><td>471.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>685.2</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐목재류</td><td>850</td><td>595.9</td><td>254.1</td><td>0</td><td>0</td><td>595.9</td><td>103.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>150.5</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>기타</td><td>17406.2</td><td>8838.3</td><td>8567.9</td><td>0</td><td>0</td><td>8838.3</td><td>3492.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5075.6</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>소계</td><td>5374</td><td>2446.8</td><td>2927.2</td><td>0</td><td>0</td><td>2446.8</td><td>1193.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1734.1</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐금속류</td><td>1470.8</td><td>455.3</td><td>1015.5</td><td>0</td><td>0</td><td>455.3</td><td>413.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>601.6</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐유리류</td><td>1419.8</td><td>481.1</td><td>938.7</td><td>0</td><td>0</td><td>481.1</td><td>382.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>556.1</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐토사류</td><td>154.7</td><td>68.6</td><td>86.1</td><td>0</td><td>0</td><td>68.6</td><td>35.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>51</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐타일 및 도자기류</td><td>125.4</td><td>63.3</td><td>62.1</td><td>0</td><td>0</td><td>63.3</td><td>25.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>36.8</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>연탄재</td><td>305.7</td><td>305.7</td><td>0</td><td>0</td><td>0</td><td>305.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>기타</td><td>1897.6</td><td>1072.8</td><td>824.8</td><td>0</td><td>0</td><td>1072.8</td><td>336.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>488.6</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>건설폐재류</td><td>건설폐재류(공사장생활폐기물)</td><td>47.3</td><td>23</td><td>24.3</td><td>0</td><td>0</td><td>23</td><td>9.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>14.4</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>종량제방식 등 혼합배출</td><td>기타(배출불명등)</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>소계</td><td></td><td>26418.3</td><td>25505.5</td><td>912.8</td><td>0</td><td>0</td><td>3249.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>22256.1</td><td>912.8</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>종이팩</td><td>6.3</td><td>6.3</td><td>0</td><td>0</td><td>0</td><td>6.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>기타</td><td>11039.9</td><td>11039.9</td><td>0</td><td>0</td><td>0</td><td>293.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>10746.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>고철류</td><td></td><td>409.9</td><td>409.9</td><td>0</td><td>0</td><td>0</td><td>65.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>344.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>금속캔</td><td></td><td>730</td><td>730</td><td>0</td><td>0</td><td>0</td><td>73.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>656.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>비닐류</td><td>3221.5</td><td>3221.5</td><td>0</td><td>0</td><td>0</td><td>908.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2313.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>발포수지류</td><td>445.1</td><td>445.1</td><td>0</td><td>0</td><td>0</td><td>59.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>385.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>PET병</td><td>1194.7</td><td>1194.7</td><td>0</td><td>0</td><td>0</td><td>439.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>755.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>기타</td><td>4398.3</td><td>4398.3</td><td>0</td><td>0</td><td>0</td><td>242.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4155.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐고무류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐유리병류</td><td></td><td>1243.3</td><td>1243.3</td><td>0</td><td>0</td><td>0</td><td>541.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>702.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐의류</td><td></td><td>1160.2</td><td>1160.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1160.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐섬유류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>조명폐기물</td><td></td><td>52.3</td><td>52.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>52.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전지류</td><td></td><td>38.6</td><td>38.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>38.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>농약용기류</td><td>14</td><td>14</td><td>0</td><td>0</td><td>0</td><td>14</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>폐비닐</td><td>605.5</td><td>605.5</td><td>0</td><td>0</td><td>0</td><td>605.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐식용유</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전기전자제품</td><td></td><td>859.6</td><td>859.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>859.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐가구류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>기타</td><td></td><td>86.3</td><td>86.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>86.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>재활용 잔재물</td><td></td><td>912.8</td><td>0</td><td>912.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>912.8</td><td>0</td><td>0</td></tr><tr><td>세종</td><td>세종시</td><td>음식물류 폐기물 분리배출</td><td></td><td></td><td>15887.1</td><td>15887.1</td><td>0</td><td>0</td><td>0</td><td>1923.7</td><td>0</td><td>0</td><td>0</td><td>49.3</td><td>0</td><td>0</td><td>0</td><td>13914.1</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+	</table>
+	</div>
