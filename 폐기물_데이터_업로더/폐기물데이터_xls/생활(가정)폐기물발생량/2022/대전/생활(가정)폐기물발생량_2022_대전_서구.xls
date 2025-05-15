@@ -1,0 +1,116 @@
+<div id="expTable">
+	<div id="title" style="font-size: 20px;font-weight: bold;">전국폐기물 발생 및 처리현황</div>
+	<div id="sub_title" style="font-size: 14px;font-weight: bold;">2-나-1). (시군구) 생활(가정)폐기물 발생량</div>
+	<div></div>
+	<table class="tbl chart low_h" id="mainExcelTable">
+		<thead id="conHead">
+
+<tr class="rrm">
+	<th rowspan="2">시도</th>
+
+	<th rowspan="2">시군구</th>
+
+
+
+
+	<th rowspan="2" colspan="3">폐기물 종류</th>
+
+	
+	<th rowspan="2">2022발생량</th>
+	<th colspan="4">총계</th>
+	<th colspan="4">공공처리</th>
+	<th colspan="4">자가처리</th>
+	<th colspan="4">위탁처리</th>
+</tr>
+<tr class="rrm">
+
+
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+	<th>재활용</th>
+	<th>소각</th>
+	<th>매립</th>
+	<th>기타</th>
+</tr>
+
+
+</thead>
+		<tbody id="conBody"><tr><td>대전</td><td>서구</td><td>합계</td><td></td><td></td><td>155221.8</td><td>105851.9</td><td>25425.9</td><td>23944</td><td>0</td><td>53216.2</td><td>25425.9</td><td>23944</td><td>0</td><td>140</td><td>0</td><td>0</td><td>0</td><td>52495.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>소계</td><td></td><td>77064.6</td><td>28019.8</td><td>25425.9</td><td>23618.9</td><td>0</td><td>28019.8</td><td>25425.9</td><td>23618.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>소계</td><td>63637.4</td><td>25018.9</td><td>22702.7</td><td>15915.8</td><td>0</td><td>25018.9</td><td>22702.7</td><td>15915.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐지류</td><td>11257.7</td><td>4853.8</td><td>4404.5</td><td>1999.4</td><td>0</td><td>4853.8</td><td>4404.5</td><td>1999.4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐합성수지류</td><td>18487.6</td><td>7970.6</td><td>7232.7</td><td>3284.3</td><td>0</td><td>7970.6</td><td>7232.7</td><td>3284.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐고무류</td><td>863.4</td><td>372.2</td><td>337.7</td><td>153.5</td><td>0</td><td>372.2</td><td>337.7</td><td>153.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐섬유류</td><td>2208.9</td><td>952.3</td><td>864.1</td><td>392.5</td><td>0</td><td>952.3</td><td>864.1</td><td>392.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>음식물류 폐기물</td><td>4596.5</td><td>1981.9</td><td>1798.4</td><td>816.2</td><td>0</td><td>1981.9</td><td>1798.4</td><td>816.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>폐목재류</td><td>6479.8</td><td>457</td><td>414.7</td><td>5608.1</td><td>0</td><td>457</td><td>414.7</td><td>5608.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>가연성</td><td>기타</td><td>19743.5</td><td>8431.1</td><td>7650.6</td><td>3661.8</td><td>0</td><td>8431.1</td><td>7650.6</td><td>3661.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>소계</td><td>7108.1</td><td>3000.9</td><td>2723.2</td><td>1384</td><td>0</td><td>3000.9</td><td>2723.2</td><td>1384</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐금속류</td><td>842.5</td><td>363</td><td>329.4</td><td>150.1</td><td>0</td><td>363</td><td>329.4</td><td>150.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐유리류</td><td>1678.8</td><td>724</td><td>657</td><td>297.8</td><td>0</td><td>724</td><td>657</td><td>297.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐토사류</td><td>187.1</td><td>80.5</td><td>73.1</td><td>33.5</td><td>0</td><td>80.5</td><td>73.1</td><td>33.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>폐타일 및 도자기류</td><td>124.9</td><td>54</td><td>49</td><td>21.9</td><td>0</td><td>54</td><td>49</td><td>21.9</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>연탄재</td><td>150</td><td>1.2</td><td>1.1</td><td>147.7</td><td>0</td><td>1.2</td><td>1.1</td><td>147.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>불연성</td><td>기타</td><td>4124.8</td><td>1778.2</td><td>1613.6</td><td>733</td><td>0</td><td>1778.2</td><td>1613.6</td><td>733</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>건설폐재류</td><td>건설폐재류(공사장생활폐기물)</td><td>6319.1</td><td>0</td><td>0</td><td>6319.1</td><td>0</td><td>0</td><td>0</td><td>6319.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>종량제방식 등 혼합배출</td><td>기타(배출불명등)</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>소계</td><td></td><td>32159.2</td><td>31834.1</td><td>0</td><td>325.1</td><td>0</td><td>5843.4</td><td>0</td><td>325.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>25990.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>종이팩</td><td>22.5</td><td>22.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>22.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐지류</td><td>기타</td><td>8466.5</td><td>8466.5</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>8466.5</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>고철류</td><td></td><td>712.6</td><td>712.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>712.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>금속캔</td><td></td><td>960.2</td><td>960.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>960.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>비닐류</td><td>5723.1</td><td>5723.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>5723.1</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>발포수지류</td><td>1479.7</td><td>1479.7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1479.7</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>PET병</td><td>1215</td><td>1215</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1215</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐합성수지류</td><td>기타</td><td>4121.6</td><td>4121.6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4121.6</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐고무류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐유리병류</td><td></td><td>1481.3</td><td>1481.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1481.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐의류</td><td></td><td>817.3</td><td>817.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>817.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐섬유류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>조명폐기물</td><td></td><td>45.8</td><td>45.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>45.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전지류</td><td></td><td>38</td><td>38</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>38</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>농약용기류</td><td>1.8</td><td>1.8</td><td>0</td><td>0</td><td>0</td><td>1.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>영농폐기물</td><td>폐비닐</td><td>66.2</td><td>66.2</td><td>0</td><td>0</td><td>0</td><td>66.2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐식용유</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐전기전자제품</td><td></td><td>855.3</td><td>855.3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>855.3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>폐가구류</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>기타</td><td></td><td>51.8</td><td>51.8</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>51.8</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>
+재활용 
+가능자원
+ 분리배출</td><td>재활용 잔재물</td><td></td><td>6100.5</td><td>5775.4</td><td>0</td><td>325.1</td><td>0</td><td>5775.4</td><td>0</td><td>325.1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>대전</td><td>서구</td><td>음식물류 폐기물 분리배출</td><td></td><td></td><td>45998</td><td>45998</td><td>0</td><td>0</td><td>0</td><td>19353</td><td>0</td><td>0</td><td>0</td><td>140</td><td>0</td><td>0</td><td>0</td><td>26505</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+	</table>
+	</div>
