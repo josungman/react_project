@@ -7,7 +7,13 @@ function DistrictMap({ data, province, onLoaded }) {
   const [isMobile, setIsMobile] = useState(false);
 
   const customLabelPositions = {
+    성남시: [null, 14],
     수원시: [null, 14],
+    용인시: [-16, -14],
+    이천시: [-10, -10],
+    안산시: [-16, 6],
+    군포시: [null, 6],
+    과천시: [null, -6],
     천안시: [2, -30],
     서산시: [15, -70],
     당진시: [-50, 25],
@@ -105,6 +111,8 @@ function DistrictMap({ data, province, onLoaded }) {
       .attr("viewBox", `0 0 ${width} ${height + 60}`)
       .attr("preserveAspectRatio", "xMidYMid meet");
 
+    svg.select(".legend").remove();
+    svg.select("defs").remove();
     svg.selectAll("*").remove();
 
     d3.json(geoUrl)
