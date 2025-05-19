@@ -25,7 +25,7 @@ function Home() {
 
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button onClick={() => navigate("/recycle")} className="bg-green-600 hover:bg-green-700 text-white">
-          재활용 실적 및 업체 이력
+          폐기물 실적 업체
         </Button>
       </motion.div>
     </motion.div>

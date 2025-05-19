@@ -30,7 +30,7 @@ function Navbar() {
         >
           <Link to="/recycle" className="flex items-center gap-1">
             <Repeat2 className="w-4 h-4" />
-            <span className="hidden sm:inline">재활용 실적</span>
+            <span className="hidden sm:inline">폐기물 실적업체</span>
           </Link>
         </Button>
       </nav>
