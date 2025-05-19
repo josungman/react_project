@@ -19,7 +19,7 @@ function Navbar() {
         >
           <Link to="/waste" className="flex items-center gap-1">
             <Trash2 className="w-4 h-4" />
-            <span className="hidden sm:inline">폐기물 발생현황</span>
+            <span className="hidden sm:inline">폐기물 발생이력</span>
           </Link>
         </Button>
 

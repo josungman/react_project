@@ -9,11 +9,6 @@ function KoreaMap({ data, onClickProvince }) {
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const customLabelPositions = {
-    경기: [16, 26],
-    // 필요시 더 추가
-  };
-
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
@@ -96,7 +91,13 @@ function KoreaMap({ data, onClickProvince }) {
             const key = labelMap[name] || name;
             const value = data[key];
 
-            d3.select(this).raise().transition().duration(200).attr("transform", "scale(1.05)").attr("stroke", "#000").attr("stroke-width", 2);
+            d3.select(this)
+              .raise() // 다른 요소보다 위로
+              .transition()
+              .duration(200)
+              .attr("transform", "scale(1.05)")
+              .attr("stroke", "#000")
+              .attr("stroke-width", 2);
 
             d3.select(tooltipRef.current)
               .style("opacity", 1)
@@ -130,22 +131,9 @@ function KoreaMap({ data, onClickProvince }) {
           .selectAll("text")
           .data(geoData.features)
           .join("text")
-          .text((d) => {
-            const name = d.properties.CTP_KOR_NM;
-            return labelMap[name] || name;
-          })
-          .attr("x", (d) => {
-            const name = labelMap[d.properties.CTP_KOR_NM] || d.properties.CTP_KOR_NM;
-            const [cx, cy] = path.centroid(d);
-            const [dx] = customLabelPositions[name] || [];
-            return isNaN(cx) ? 0 : cx + (dx ?? 0);
-          })
-          .attr("y", (d) => {
-            const name = labelMap[d.properties.CTP_KOR_NM] || d.properties.CTP_KOR_NM;
-            const [cx, cy] = path.centroid(d);
-            const [, dy] = customLabelPositions[name] || [];
-            return isNaN(cy) ? 0 : cy + (dy ?? 0);
-          })
+          .text((d) => labelMap[d.properties.CTP_KOR_NM] || d.properties.CTP_KOR_NM)
+          .attr("x", (d) => path.centroid(d)[0])
+          .attr("y", (d) => path.centroid(d)[1])
           .attr("text-anchor", "middle")
           .attr("dy", "0.35em")
           .attr("font-size", isMobile ? "10px" : "12px")
@@ -242,6 +230,7 @@ function KoreaMap({ data, onClickProvince }) {
         }
       `}</style>
 
+      {/* 툴팁 */}
       <div
         ref={tooltipRef}
         style={{

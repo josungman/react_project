@@ -56,7 +56,7 @@ function WasteStatus() {
     >
       <div>
         <h2 className="text-2xl font-bold mb-2">
-          폐기물 발생현황 <span className="text-[12px] text-gray-500">22년 제공자료</span>
+          폐기물 발생이력 <span className="text-[12px] text-gray-500">22년 제공자료</span>
         </h2>
         <p className="mb-4 text-center">
           <span className="animate-pulse text-blue-600 font-semibold">시도 클릭시</span> 시군구 데이터를 볼 수 있습니다.

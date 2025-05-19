@@ -89,7 +89,7 @@ function DistrictMapPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${province}_시군구_폐기물_전체현황.csv`);
+      link.setAttribute("download", `${province}_시군구_폐기물_전체이력.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -153,7 +153,7 @@ function DistrictMapPage() {
           >
             <ArrowLeft size={16} color="#1f2937" />
           </button>
-          <h2 className="text-xl font-bold">{province} 시군구 폐기물 현황</h2>
+          <h2 className="text-xl font-bold">{province} 시군구 폐기물 이력</h2>
         </div>
 
         {/* Type Selector */}
