@@ -31,8 +31,8 @@ function KoreaMap({ data, onClickProvince }) {
       .attr("viewBox", `0 0 ${width} ${height + 60}`)
       .attr("preserveAspectRatio", "xMidYMid meet");
 
-    svg.select(".legend").remove();
-    svg.select("defs").remove();
+    svg.selectAll(".legend").remove();
+    svg.selectAll("defs").remove();
     svg.selectAll("*").remove();
 
     const labelMap = {
