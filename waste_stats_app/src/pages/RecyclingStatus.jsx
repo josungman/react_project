@@ -81,7 +81,7 @@ function RecyclingStatus() {
         <h2 className="text-2xl font-bold mb-1">
           폐기물 실적 업체 정보 <span className="text-[12px] text-gray-500">22년 제공자료</span>
         </h2>
-        <p className="text-sm">마커를 클릭하거나 업체명을 검색해 위치를 확인할 수 있습니다.(작업중)</p>
+        <p className="text-sm">마커를 클릭하거나 업체명을 검색해 위치를 확인할 수 있습니다(작업중..)</p>
       </div>
 
       {/* View Toggle */}
