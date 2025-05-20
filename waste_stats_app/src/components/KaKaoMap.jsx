@@ -125,8 +125,8 @@ function KaKaoMap({ kakaoMapKey, positions }) {
   }, [searchTerm]);
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="p-4 bg-white z-10 shadow flex gap-2 items-center">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="h-[56px] px-4 bg-white shadow z-10 flex items-center gap-2">
         <input
           type="text"
           placeholder="업체명을 입력하세요 (예: 서울시청)"
