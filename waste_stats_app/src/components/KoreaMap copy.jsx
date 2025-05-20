@@ -31,6 +31,10 @@ function KoreaMap({ data, onClickProvince }) {
       .attr("viewBox", `0 0 ${width} ${height + 60}`)
       .attr("preserveAspectRatio", "xMidYMid meet");
 
+    svg.selectAll(".legend").remove();
+    svg.selectAll("defs").remove();
+    svg.selectAll("*").remove();
+
     const labelMap = {
       서울특별시: "서울",
       부산광역시: "부산",
@@ -53,12 +57,6 @@ function KoreaMap({ data, onClickProvince }) {
 
     d3.json("/geo/jeongug-sido-geo_opt.json")
       .then((geoData) => {
-        // ✅ 중복 제거 코드
-        svg.selectAll(".map-layer").remove();
-        svg.selectAll(".label-layer").remove();
-        svg.selectAll(".legend").remove();
-        svg.select("defs").remove();
-
         const projection = d3
           .geoMercator()
           .scale(isMobile ? 7400 : 5700)
