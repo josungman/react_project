@@ -13,6 +13,7 @@ module.exports = {
       },
       animation: {
         wavyGradient: "wavyGradient 8s ease-in-out infinite",
+        marquee: "marquee 10s linear infinite",
       },
       keyframes: {
         wavyGradient: {
@@ -22,8 +23,14 @@ module.exports = {
           "75%": { backgroundPosition: "50% 0%" },
           "100%": { backgroundPosition: "0% 50%" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" }, // ❗ 50%만 이동
+        },
       },
+
     },
   },
   plugins: [require("tailwindcss-animate")],
 };
+

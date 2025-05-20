@@ -12,6 +12,7 @@ function RecyclingStatus() {
   const [sortOrder, setSortOrder] = useState("desc");
   const [positions, setPositions] = useState([]);
   const [companyList, setCompanyList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // ✅ 로딩 상태 추가
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,7 +72,7 @@ function RecyclingStatus() {
         `"${item.adres}"`,
         `"${item.telno}"`,
         `"${item.wste}"`,
-        `"${item.product_name}"`, // ⚠ 이 필드가 쉼표 포함 가능성 높음
+        `"${item.product_name}"`,
         `"${item.process_mth}"`,
         `"${item.latitude}"`,
         `"${item.longitude}"`,
@@ -100,9 +101,22 @@ function RecyclingStatus() {
         <h2 className="text-2xl font-bold mb-1">
           폐기물 실적 업체 정보 <span className="text-[12px] text-gray-500">23년 제공자료</span>
         </h2>
-        <p className="text-sm">마커를 클릭하거나 업체명을 검색해 위치를 확인할 수 있습니다(작업중..)</p>
+        {viewMode === "map" && (
+          <div className="w-[300px] overflow-hidden whitespace-nowrap relative h-6 mx-auto">
+            <div className="flex animate-marquee absolute left-0 justify-center">
+              <span className="mr-8">지도 클릭 반경 5km 내 업체 확인, 마커 클릭 또는 검색 하여 업체정보 확인</span>
+              <span className="mr-8">지도 클릭 반경 5km 내 업체 확인, 마커 클릭 또는 검색 하여 업체정보 확인</span>
+            </div>
+          </div>
+        )}
         <div className="flex justify-center gap-2 mt-3">
-          <button onClick={() => setViewMode("map")} className={`px-4 py-1 rounded ${viewMode === "map" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-800"}`}>
+          <button
+            onClick={() => {
+              setIsLoading(true);
+              setViewMode("map");
+            }}
+            className={`px-4 py-1 rounded ${viewMode === "map" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-800"}`}
+          >
             <MapIcon size={18} />
           </button>
           <button onClick={() => setViewMode("table")} className={`px-4 py-1 rounded ${viewMode === "table" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-800"}`}>
@@ -111,11 +125,23 @@ function RecyclingStatus() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto relative">
+        {/* ✅ 로딩 스피너 표시 */}
+        {isLoading && viewMode === "map" && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-white/80">
+            <div className="animate-spin w-10 h-10 rounded-full border-4 border-blue-500 border-t-transparent" />
+            <p className="text-sm text-gray-700">카카오 지도 불러오는 중...</p>
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           {viewMode === "map" ? (
             <motion.div key="map" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="w-full h-full">
-              <KaKaoMap kakaoMapKey={kakaoMapKey} positions={positions} />
+              <KaKaoMap
+                kakaoMapKey={kakaoMapKey}
+                positions={positions}
+                onLoaded={() => setIsLoading(false)} // ✅ 맵 로딩 완료 시
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -173,7 +199,6 @@ function RecyclingStatus() {
                 </table>
               </div>
 
-              {/* Pagination */}
               <div className="flex justify-center items-center mt-4 gap-2">
                 <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="p-1 text-gray-600 disabled:text-gray-300">
                   <ChevronLeft size={20} />
