@@ -111,12 +111,14 @@ function DistrictMap({ data, province, onLoaded }) {
       .attr("viewBox", `0 0 ${width} ${height + 60}`)
       .attr("preserveAspectRatio", "xMidYMid meet");
 
-    svg.selectAll(".legend").remove();
-    svg.selectAll("defs").remove();
-    svg.selectAll("*").remove();
-
     d3.json(geoUrl)
       .then((geoData) => {
+        // ✅ 중복 제거 코드
+        svg.selectAll(".map-layer").remove();
+        svg.selectAll(".label-layer").remove();
+        svg.selectAll(".legend").remove();
+        svg.select("defs").remove();
+
         const projection = d3.geoMercator().fitSize([width, height], geoData);
         const path = d3.geoPath().projection(projection);
 
