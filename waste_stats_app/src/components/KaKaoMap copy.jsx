@@ -7,12 +7,23 @@ function KaKaoMap({ kakaoMapKey, positions }) {
   const markerMapRef = useRef({});
   const overlayMapRef = useRef({});
   const currentOverlayRef = useRef(null);
+  const userMarkerRef = useRef(null);
+  const userCircleRef = useRef(null);
 
   const [inputValue, setInputValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [nearbyList, setNearbyList] = useState([]);
+
+  const getDistance = (lat1, lng1, lat2, lng2) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  };
 
   useEffect(() => {
-    if (!kakaoMapKey || !positions) return;
+    if (!kakaoMapKey || !positions || positions.length === 0) return;
 
     const scriptId = "kakao-map-script";
     const existingScript = document.getElementById(scriptId);
@@ -29,23 +40,11 @@ function KaKaoMap({ kakaoMapKey, positions }) {
 
           mapInstance.current = map;
 
-          const bounds = new window.kakao.maps.LatLngBounds(new window.kakao.maps.LatLng(33.1, 124.6), new window.kakao.maps.LatLng(38.6, 131.9));
-
-          let lastCenter = map.getCenter();
-          window.kakao.maps.event.addListener(map, "idle", () => {
-            const center = map.getCenter();
-            if (!bounds.contain(center)) {
-              map.setCenter(lastCenter);
-            } else {
-              lastCenter = center;
-            }
-          });
-
           const zoomControl = new window.kakao.maps.ZoomControl();
           map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
 
           const clusterer = new window.kakao.maps.MarkerClusterer({
-            map: map,
+            map,
             averageCenter: true,
             minLevel: 6,
           });
@@ -103,6 +102,39 @@ function KaKaoMap({ kakaoMapKey, positions }) {
           });
 
           clusterer.addMarkers(markers);
+
+          window.kakao.maps.event.addListener(map, "click", (mouseEvent) => {
+            const lat = mouseEvent.latLng.getLat();
+            const lng = mouseEvent.latLng.getLng();
+
+            if (userMarkerRef.current) userMarkerRef.current.setMap(null);
+            if (userCircleRef.current) userCircleRef.current.setMap(null);
+
+            const marker = new window.kakao.maps.Marker({
+              position: new window.kakao.maps.LatLng(lat, lng),
+              map,
+              title: "선택 위치",
+            });
+            userMarkerRef.current = marker;
+
+            const circle = new window.kakao.maps.Circle({
+              center: new window.kakao.maps.LatLng(lat, lng),
+              radius: 5000,
+              strokeWeight: 2,
+              strokeColor: "#007bff",
+              strokeOpacity: 0.8,
+              fillColor: "#cce5ff",
+              fillOpacity: 0.4,
+              map,
+            });
+            userCircleRef.current = circle;
+
+            const nearby = positions.filter((item) => {
+              return getDistance(lat, lng, item.latlng.lat, item.latlng.lng) <= 5;
+            });
+
+            setNearbyList(nearby);
+          });
         });
       }
     };
@@ -138,8 +170,26 @@ function KaKaoMap({ kakaoMapKey, positions }) {
     }
   }, [searchTerm]);
 
+  const moveToCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("이 브라우저는 위치를 지원하지 않습니다.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      if (mapInstance.current) {
+        const latlng = new window.kakao.maps.LatLng(lat, lng);
+        mapInstance.current.setCenter(latlng);
+        mapInstance.current.setLevel(6);
+      }
+    });
+  };
+
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden relative">
       <div className="h-[56px] px-4 bg-white shadow z-10 flex items-center gap-2">
         <input
           type="text"
@@ -152,7 +202,24 @@ function KaKaoMap({ kakaoMapKey, positions }) {
         <button onClick={() => setSearchTerm(inputValue.trim())} className="px-4 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
           검색
         </button>
+        <button onClick={moveToCurrentLocation} className="px-3 py-1 text-sm bg-gray-100 border rounded hover:bg-gray-200">
+          현재 위치
+        </button>
       </div>
+
+      {nearbyList.length > 0 && (
+        <div className="absolute top-[60px] left-2 bg-white shadow p-2 rounded max-h-[200px] w-[240px] overflow-y-auto z-20 text-sm">
+          <strong>📍 반경 5km 업체</strong>
+          <ul className="mt-1 space-y-1">
+            {nearbyList.map((item, i) => (
+              <li key={i} className="border-b pb-1">
+                {item.title}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div ref={mapRef} className="flex-1 w-full" />
     </div>
   );
