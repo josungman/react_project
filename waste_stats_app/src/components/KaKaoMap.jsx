@@ -266,7 +266,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
                   const overlay = overlayMapRef.current[item.title];
                   const map = mapInstance.current;
                   if (marker && overlay && map) {
-                    map.setLevel(4);
+                    map.setLevel(6);
                     map.setCenter(marker.getPosition());
                     currentOverlayRef.current?.setMap(null);
                     overlay.setMap(map);

@@ -17294,7 +17294,7 @@
           ]
         ]
       },
-      "properties": { "SIG_CD": "29170", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구" }
+      "properties": { "SIG_CD": "29170", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구(부산)" }
     },
     {
       "type": "Feature",
@@ -17586,7 +17586,7 @@
           ]
         ]
       },
-      "properties": { "SIG_CD": "27230", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구" }
+      "properties": { "SIG_CD": "27230", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구(대구)" }
     },
     {
       "type": "Feature",
@@ -18581,7 +18581,7 @@
           ]
         ]
       },
-      "properties": { "SIG_CD": "26320", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구(울산)" }
+      "properties": { "SIG_CD": "26320", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구(부산)" }
     },
     {
       "type": "Feature",
@@ -22556,7 +22556,7 @@
           ]
         ]
       },
-      "properties": { "SIG_CD": "31200", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구" }
+      "properties": { "SIG_CD": "31200", "SIG_ENG_NM": "Buk-gu", "SIG_KOR_NM": "북구(울산)" }
     },
     {
       "type": "Feature",
