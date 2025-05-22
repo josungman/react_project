@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import * as turf from "@turf/turf";
-import RegionSelector from "./RegionSelector";
 
 function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
   const mapRef = useRef(null);
@@ -18,7 +17,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [regionList, setRegionList] = useState([]);
   const [nearbyList, setNearbyList] = useState([]);
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState(""); // "distance" or "region"
 
   const getDistance = (lat1, lng1, lat2, lng2) => {
     const R = 6371;
@@ -44,7 +43,12 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
     const map = mapInstance.current;
     if (!map) return;
 
-    currentOverlayRef.current?.setMap(null);
+    // ✅ 오버레이 닫기
+    if (currentOverlayRef.current) {
+      currentOverlayRef.current.setMap(null);
+      currentOverlayRef.current = null;
+    }
+
     removeUserMarker();
     removePolygons();
     setSearchTerm("");
@@ -55,14 +59,6 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       title: "선택 위치",
     });
     userMarkerRef.current = marker;
-
-    marker.addListener("click", () => {
-      marker.setMap(null);
-      if (userCircleRef.current) userCircleRef.current.setMap(null);
-      userMarkerRef.current = null;
-      userCircleRef.current = null;
-      setNearbyList([]);
-    });
 
     const circle = new window.kakao.maps.Circle({
       center: new window.kakao.maps.LatLng(lat, lng),
@@ -105,7 +101,12 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       const geojson = response.data;
       const map = mapInstance.current;
 
-      currentOverlayRef.current?.setMap(null);
+      // ✅ 오버레이 닫기
+      if (currentOverlayRef.current) {
+        currentOverlayRef.current.setMap(null);
+        currentOverlayRef.current = null;
+      }
+
       removePolygons();
       removeUserMarker();
 
@@ -116,6 +117,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       geojson.features
         .filter((f) => filterName && f.properties.SIG_KOR_NM === filterName)
         .forEach((feature) => {
+          const name = feature.properties.SIG_KOR_NM;
           const coords = feature.geometry.coordinates[0];
           const latlngs = coords.map((c) => new window.kakao.maps.LatLng(c[1], c[0]));
 
@@ -128,6 +130,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
             fillOpacity: 0.6,
             map,
           });
+
           polygonsRef.current.push(polygon);
 
           const bounds = new window.kakao.maps.LatLngBounds();
@@ -147,6 +150,12 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
     }
   };
 
+  const handleRegionChange = (e) => {
+    const selected = e.target.value;
+    setSearchTerm(selected);
+    initSidoPolygons(selected);
+  };
+
   useEffect(() => {
     if (!kakaoMapKey || !positions?.length) return;
 
@@ -162,10 +171,16 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
           maxLevel: 12,
         });
 
-        map.addControl(new window.kakao.maps.ZoomControl(), window.kakao.maps.ControlPosition.RIGHT);
         mapInstance.current = map;
 
-        const clusterer = new window.kakao.maps.MarkerClusterer({ map, averageCenter: true, minLevel: 6 });
+        // ✅ 줌 컨트롤 추가
+        map.addControl(new window.kakao.maps.ZoomControl(), window.kakao.maps.ControlPosition.RIGHT);
+
+        const clusterer = new window.kakao.maps.MarkerClusterer({
+          map,
+          averageCenter: true,
+          minLevel: 6,
+        });
         clustererRef.current = clusterer;
 
         const markerImage = new window.kakao.maps.MarkerImage("/marker-icon.png", new window.kakao.maps.Size(26, 34), {
@@ -187,7 +202,16 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
             <div>📞 <b>연락처:</b> ${pos.phone}</div>
             <div>♻️ <b>위탁폐기물:</b> ${pos.type}</div>
           `;
-          content.style.cssText = `position:relative;background:white;padding:12px 16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:13px;width:220px;line-height:1.6;`;
+          content.style.cssText = `
+            position:relative;
+            background:white;
+            padding:12px 16px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.15);
+            font-size:13px;
+            width:220px;
+            line-height:1.6;
+          `;
 
           const overlay = new window.kakao.maps.CustomOverlay({
             content,
@@ -243,12 +267,17 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
 
   return (
     <div className="flex flex-col h-full overflow-hidden relative">
-      <div className="h-[56px] px-4 bg-white shadow z-30 flex items-center gap-2">
-        <RegionSelector regionList={regionList} searchTerm={searchTerm} setSearchTerm={setSearchTerm} onSelect={initSidoPolygons} />
-
-        <button onClick={moveToCurrentLocation} className="flex items-center gap-1 px-3 py-1 bg-gray-100 border rounded text-sm hover:bg-gray-200">
-          <span className="block sm:hidden">📍</span>
-          <span className="hidden sm:block">📍 현위치 이동</span>
+      <div className="h-[56px] px-4 bg-white shadow z-10 flex items-center gap-2">
+        <select onChange={handleRegionChange} value={searchTerm} className="px-3 py-1 border rounded text-sm">
+          <option value="">시군구 선택</option>
+          {regionList.map((name, idx) => (
+            <option key={idx} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <button onClick={moveToCurrentLocation} className="px-3 py-1 bg-gray-100 border rounded text-sm hover:bg-gray-200">
+          현재 위치
         </button>
       </div>
 

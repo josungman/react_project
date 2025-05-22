@@ -105,10 +105,10 @@ function RecyclingStatus() {
           <div className="w-[300px] overflow-hidden whitespace-nowrap relative h-6 mx-auto">
             <div className="flex animate-marquee absolute left-0 justify-center">
               <span className="mr-8">
-                지도 클릭 반경 5km 내 업체 확인, 마커 클릭 또는 검색 하여 업체정보 확인 <strong>위탁 처리 업체만 표시됩니다.</strong>
+                지도 클릭 반경 5km 내 업체 확인, 마커 클릭 또는 검색 하여 업체 확인 <strong>위탁 처리 업체만 표시.</strong>
               </span>
               <span className="mr-8">
-                지도 클릭 반경 5km 내 업체 확인, 마커 클릭 또는 검색 하여 업체정보 확인 <strong>위탁 처리 업체만 표시됩니다.</strong>
+                지도 클릭 반경 5km 내 업체 확인, 마커 클릭 또는 검색 하여 업체 확인 <strong>위탁 처리 업체만 표시.</strong>
               </span>
             </div>
           </div>
