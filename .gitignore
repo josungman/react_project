@@ -2,4 +2,5 @@
 폐기물_데이터_업로더/db_config.txt
 지도원본데이터/*
 폐기물_데이터_업로더/*
+geojson데이터백업/*
 waste_stats_app/.env

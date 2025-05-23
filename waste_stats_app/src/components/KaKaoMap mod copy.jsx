@@ -116,25 +116,37 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       geojson.features
         .filter((f) => filterName && f.properties.SIG_KOR_NM === filterName)
         .forEach((feature) => {
-          const coords = feature.geometry.coordinates[0];
-          const latlngs = coords.map((c) => new window.kakao.maps.LatLng(c[1], c[0]));
+          const { type, coordinates } = feature.geometry;
+          let polygonGroups = [];
 
-          const polygon = new window.kakao.maps.Polygon({
-            path: latlngs,
-            strokeWeight: 2,
-            strokeColor: "#004c80",
-            strokeOpacity: 0.8,
-            fillColor: "#fff",
-            fillOpacity: 0.6,
-            map,
-          });
-          polygonsRef.current.push(polygon);
+          if (type === "Polygon") {
+            polygonGroups = [coordinates]; // [ [outer, hole1, hole2, ...] ]
+          } else if (type === "MultiPolygon") {
+            polygonGroups = coordinates; // [ [ [outer], [hole1], ... ], ... ]
+          }
 
           const bounds = new window.kakao.maps.LatLngBounds();
-          latlngs.forEach((latlng) => bounds.extend(latlng));
+
+          polygonGroups.forEach((rings) => {
+            const latlngRings = rings.map((ring) => ring.map((c) => new window.kakao.maps.LatLng(c[1], c[0])));
+
+            const polygon = new window.kakao.maps.Polygon({
+              path: latlngRings,
+              strokeWeight: 2,
+              strokeColor: "#004c80",
+              strokeOpacity: 0.8,
+              fillColor: "#fff",
+              fillOpacity: 0.6,
+              map,
+            });
+
+            polygonsRef.current.push(polygon);
+            latlngRings[0].forEach((latlng) => bounds.extend(latlng));
+          });
+
           map.setBounds(bounds);
 
-          const turfPolygon = turf.polygon([coords]);
+          const turfPolygon = turf.feature(feature.geometry);
           const filtered = positions.filter((item) => {
             const pt = turf.point([item.latlng.lng, item.latlng.lat]);
             return turf.booleanPointInPolygon(pt, turfPolygon);

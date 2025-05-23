@@ -101,7 +101,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
 
   const initSidoPolygons = async (filterName = null) => {
     try {
-      const response = await axios.get("/geo/sig/sig-geo.json");
+      const response = await axios.get("/geo/sido-sig/sido-sig-geo.json");
       const geojson = response.data;
       const map = mapInstance.current;
 
@@ -110,11 +110,11 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       removeUserMarker();
 
       const uniqueNames = new Set();
-      geojson.features.forEach((f) => uniqueNames.add(f.properties.SIG_KOR_NM));
+      geojson.features.forEach((f) => uniqueNames.add(f.properties.KOR_NM));
       setRegionList(Array.from(uniqueNames));
 
       geojson.features
-        .filter((f) => filterName && f.properties.SIG_KOR_NM === filterName)
+        .filter((f) => filterName && f.properties.KOR_NM === filterName)
         .forEach((feature) => {
           const { type, coordinates } = feature.geometry;
           let polygonGroups = [];
