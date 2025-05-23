@@ -101,7 +101,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
 
   const initSidoPolygons = async (filterName = null) => {
     try {
-      const response = await axios.get("/geo/sig/sig-geo.json");
+      const response = await axios.get("/geo/sido-sig/sido-sig-geo.json");
       const geojson = response.data;
       const map = mapInstance.current;
 
@@ -110,11 +110,11 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       removeUserMarker();
 
       const uniqueNames = new Set();
-      geojson.features.forEach((f) => uniqueNames.add(f.properties.SIG_KOR_NM));
+      geojson.features.forEach((f) => uniqueNames.add(f.properties.KOR_NM));
       setRegionList(Array.from(uniqueNames));
 
       geojson.features
-        .filter((f) => filterName && f.properties.SIG_KOR_NM === filterName)
+        .filter((f) => filterName && f.properties.KOR_NM === filterName)
         .forEach((feature) => {
           const { type, coordinates } = feature.geometry;
           let polygonGroups = [];
@@ -191,12 +191,44 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
             image: markerImage,
           });
 
+          const shouldAnimate = pos.address.length > 10; // 길이 기준은 필요 시 조정
+
+          const addressHTML = shouldAnimate
+            ? `
+                <div style="
+                  overflow: hidden;
+                  width: 140px;
+                  height: 1.7em;
+                  position: relative;
+                  display: inline-block;
+                  vertical-align: middle;
+                ">
+                  <div style="
+                    display: inline-block;
+                    white-space: nowrap;
+                    animation: scrollText 12s linear infinite;
+                  ">
+                    <span style="margin-right: 20px;">${pos.address}</span>
+                    <span>${pos.address}</span>
+                  </div>
+                </div>
+              `
+            : `<span>${pos.address}</span>`;
+
           const content = document.createElement("div");
           content.innerHTML = `
+            <style>
+              @keyframes scrollText {
+                0% { transform: translateX(0%); }
+                50% { transform: translateX(-50%); }
+                100% { transform: translateX(-100%);
+              }
+            </style>
             <div style="position:absolute;top:8px;right:10px;cursor:pointer;font-weight:bold;color:#888;" class="close-btn">❌</div>
             <div style="font-weight:bold;font-size:14px;margin-bottom:6px;">📍 ${pos.title}</div>
             <div>👤 <b>대표자:</b> ${pos.ceo}</div>
             <div>📞 <b>연락처:</b> ${pos.phone}</div>
+            <div>🏦 <b style="display:inline;">주소:</b> ${addressHTML}</div>
             <div>♻️ <b>위탁폐기물:</b> ${pos.type}</div>
           `;
           content.style.cssText = `position:relative;background:white;padding:12px 16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:13px;width:220px;line-height:1.6;`;
@@ -267,7 +299,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       {nearbyList.length > 0 && (
         <div className="absolute top-[60px] left-2 bg-white shadow pl-2 rounded max-h-[240px] w-[260px] overflow-y-auto z-20 text-sm">
           <div className="sticky top-0 bg-white z-10 py-2 border-b font-semibold">
-            {mode === "region" ? `📍 시군구 업체 목록 (${nearbyList.length}개)` : `📍 반경 5km 업체 목록 (${nearbyList.length}개)`}
+            {mode === "region" ? `📍 범위 내 업체 목록 (${nearbyList.length}개)` : `📍 반경 5km 업체 목록 (${nearbyList.length}개)`}
           </div>
           <ul className="mt-1 space-y-1">
             {nearbyList.map((item, i) => (

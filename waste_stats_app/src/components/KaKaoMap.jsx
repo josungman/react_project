@@ -191,12 +191,44 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
             image: markerImage,
           });
 
+          const shouldAnimate = pos.address.length > 10; // 길이 기준은 필요 시 조정
+
+          const addressHTML = shouldAnimate
+            ? `
+                <div style="
+                  overflow: hidden;
+                  width: 140px;
+                  height: 1.7em;
+                  position: relative;
+                  display: inline-block;
+                  vertical-align: middle;
+                ">
+                  <div style="
+                    display: inline-block;
+                    white-space: nowrap;
+                    animation: scrollText 12s linear infinite;
+                  ">
+                    <span style="margin-right: 20px;">${pos.address}</span>
+                    <span>${pos.address}</span>
+                  </div>
+                </div>
+              `
+            : `<span>${pos.address}</span>`;
+
           const content = document.createElement("div");
           content.innerHTML = `
+            <style>
+              @keyframes scrollText {
+                0% { transform: translateX(0%); }
+                50% { transform: translateX(-50%); }
+                100% { transform: translateX(-100%);
+              }
+            </style>
             <div style="position:absolute;top:8px;right:10px;cursor:pointer;font-weight:bold;color:#888;" class="close-btn">❌</div>
             <div style="font-weight:bold;font-size:14px;margin-bottom:6px;">📍 ${pos.title}</div>
             <div>👤 <b>대표자:</b> ${pos.ceo}</div>
             <div>📞 <b>연락처:</b> ${pos.phone}</div>
+            <div>🏦 <b style="display:inline;">주소:</b> ${addressHTML}</div>
             <div>♻️ <b>위탁폐기물:</b> ${pos.type}</div>
           `;
           content.style.cssText = `position:relative;background:white;padding:12px 16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:13px;width:220px;line-height:1.6;`;
