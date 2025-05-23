@@ -9,7 +9,7 @@ function RegionSelector({ regionList, searchTerm, setSearchTerm, onSelect }) {
   const isManualCloseRef = useRef(false); // ✅ 수동 닫힘 여부 추적
 
   useEffect(() => {
-    const newFiltered = regionList.filter((name) => name.includes(searchTerm));
+    const newFiltered = regionList.filter((name) => name.includes(searchTerm)).sort((a, b) => a.localeCompare(b, "ko"));
     setFiltered(newFiltered);
     setFocusedIdx(-1);
 
@@ -71,7 +71,7 @@ function RegionSelector({ regionList, searchTerm, setSearchTerm, onSelect }) {
         onChange={(e) => setSearchTerm(e.target.value)}
         //onKeyDown={handleKeyDown}
         onFocus={() => setIsOpen(true)}
-        placeholder="시군구 검색 후 클릭"
+        placeholder="시/군/구 검색 후 클릭"
         className="px-3 py-1 border rounded text-sm w-[220px]"
       />
       {isOpen && filtered.length > 0 && (

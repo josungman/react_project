@@ -267,7 +267,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       {nearbyList.length > 0 && (
         <div className="absolute top-[60px] left-2 bg-white shadow pl-2 rounded max-h-[240px] w-[260px] overflow-y-auto z-20 text-sm">
           <div className="sticky top-0 bg-white z-10 py-2 border-b font-semibold">
-            {mode === "region" ? `📍 시군구 업체 목록 (${nearbyList.length}개)` : `📍 반경 5km 업체 목록 (${nearbyList.length}개)`}
+            {mode === "region" ? `📍 범위 내 업체 목록 (${nearbyList.length}개)` : `📍 반경 5km 업체 목록 (${nearbyList.length}개)`}
           </div>
           <ul className="mt-1 space-y-1">
             {nearbyList.map((item, i) => (
