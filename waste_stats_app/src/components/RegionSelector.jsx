@@ -71,11 +71,11 @@ function RegionSelector({ regionList, searchTerm, setSearchTerm, onSelect }) {
         onChange={(e) => setSearchTerm(e.target.value)}
         //onKeyDown={handleKeyDown}
         onFocus={() => setIsOpen(true)}
-        placeholder="시/군/구 검색 후 클릭"
-        className="px-3 py-1 border rounded text-sm w-[220px]"
+        placeholder="시/군/구 검색"
+        className="px-3 py-1 border rounded text-xm w-[200px]"
       />
       {isOpen && filtered.length > 0 && (
-        <ul ref={listRef} className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto bg-white border rounded shadow text-sm">
+        <ul ref={listRef} className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto bg-white border rounded shadow text-xm">
           {filtered.map((name, idx) => (
             <li
               key={name}

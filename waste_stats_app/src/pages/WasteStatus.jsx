@@ -58,8 +58,8 @@ function WasteStatus() {
         <h2 className="text-2xl font-bold mb-2">
           폐기물 발생이력 <span className="text-[12px] text-gray-500">22년 제공자료</span>
         </h2>
-        <p className="mb-4 text-center">
-          <span className="animate-pulse text-blue-600 font-semibold">시도 클릭시</span> 시군구 데이터를 볼 수 있습니다.
+        <p className="mb-4 text-center text-sm">
+          <span className="animate-pulse text-blue-600 font-semibold text-sm">시도 클릭시</span> 시군구 데이터를 볼 수 있습니다.
         </p>
 
         {/* ✅ 라운드 + 그림자 적용된 라디오 버튼 그룹 */}
