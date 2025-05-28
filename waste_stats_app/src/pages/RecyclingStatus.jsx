@@ -14,6 +14,11 @@ function RecyclingStatus() {
   const [companyList, setCompanyList] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // ✅ 로딩 상태 추가
 
+  const handleMapLoaded = () => {
+    setTimeout(() => {
+      setIsLoading(false); // 1초 후 로딩 상태 변경
+    }, 1000);
+  };
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -115,7 +120,7 @@ function RecyclingStatus() {
               </span>
             </div> */}
             <div className="flex justify-center text-sm">
-              <span>5km 내 위탁업체 확인 (*범위 검색 가능)</span>
+              <span>클릭시 5km 내 위탁업체 확인 (*범위 검색 가능)</span>
             </div>
           </div>
         )}
@@ -150,7 +155,7 @@ function RecyclingStatus() {
               <KaKaoMap
                 kakaoMapKey={kakaoMapKey}
                 positions={positions}
-                onLoaded={() => setIsLoading(false)} // ✅ 맵 로딩 완료 시
+                onLoaded={handleMapLoaded} // ✅ 맵 로딩 완료 시
               />
             </motion.div>
           ) : (

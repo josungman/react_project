@@ -30,7 +30,7 @@ function Home() {
       </motion.div>
 
       {/* ✅ 업데이트 일자 하단 고정 */}
-      <div className="absolute bottom-4 text-sm text-gray-500">업데이트: 25.05.20</div>
+      <div className="absolute bottom-4 text-sm text-gray-500">업데이트: 25.05.28</div>
     </motion.div>
   );
 }

@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 
-function ProductNameAutocomplete({ keywords, setKeywords, searchLogic, setSearchLogic, positions }) {
-  const DEFAULT_PLACEHOLDER = "품목 검색";
+function ProductNameAutocomplete({ keywords, setKeywords, searchLogic, setSearchLogic, positions, filteredPositionsCount }) {
+  const DEFAULT_PLACEHOLDER = "품목 필터";
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [inputPlaceholder, setInputPlaceholder] = useState(DEFAULT_PLACEHOLDER);
+
+  // 필터된 위치 개수를 받아서 플레이스홀더 업데이트
+  useEffect(() => {
+    if (filteredPositionsCount > 0) {
+      setInputPlaceholder(`품목 필터 (${filteredPositionsCount}개)`);
+    } else {
+      setInputPlaceholder(DEFAULT_PLACEHOLDER);
+    }
+  }, [filteredPositionsCount]);
 
   // product_name에서 쉼표로 분리해 자동완성 후보 생성
   useEffect(() => {
@@ -40,7 +49,7 @@ function ProductNameAutocomplete({ keywords, setKeywords, searchLogic, setSearch
         // 👉 placeholder에 안내 메시지 표시
         setInputPlaceholder("❗❗최대 5개");
         setTimeout(() => {
-          setInputPlaceholder(DEFAULT_PLACEHOLDER);
+          setInputPlaceholder(`품목 필터 (${filteredPositionsCount}개)`);
         }, 2000);
         return;
       }
@@ -106,7 +115,7 @@ function ProductNameAutocomplete({ keywords, setKeywords, searchLogic, setSearch
       )}
 
       {keywords.length > 0 && (
-        <div className="mt-1 rounded p-2 max-h-40 overflow-y-auto text-xm space-y-1 absolute top-full left-0 w-full z-10">
+        <div className="mt-1 rounded p-2 max-h-40 overflow-y-auto text-xm space-y-1 absolute top-full left-0 w-[80%] z-10">
           {keywords.map((keyword) => (
             <div key={keyword} className="bg-blue-100  text-blue-700 px-2 py-1 rounded-full flex items-center justify-between gap-1 shadow">
               <span className="truncate">{keyword}</span>

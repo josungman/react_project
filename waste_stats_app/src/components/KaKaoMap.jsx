@@ -24,11 +24,23 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
 
   const [searchKeywords, setSearchKeywords] = useState([]); // ✅ 키워드 리스트 상태
   const [searchLogic, setSearchLogic] = useState("and"); // ✅ AND / OR 선택 상태
+  const [filteredPositions, setFilteredPositions] = useState([]); // 필터링된 위치 상태 추가
   const [regionSearchTerm, setRegionSearchTerm] = useState("");
   const [regionList, setRegionList] = useState([]);
   const [nearbyList, setNearbyList] = useState([]);
   const [mode, setMode] = useState("");
   const [initialMarkersSet, setInitialMarkersSet] = useState(false);
+
+  // 줌 레벨을 설정하는 함수
+  const setZoomLevelIfNeeded = (targetLevel) => {
+    const map = mapInstance.current;
+    if (!map) return; // map이 아직 초기화되지 않았다면 함수 종료
+
+    const currentLevel = map.getLevel();
+    if (currentLevel && currentLevel > targetLevel) {
+      map.setLevel(targetLevel); // 줌 레벨 설정
+    }
+  };
 
   const removePolygons = () => {
     polygonsRef.current.forEach((polygon) => polygon.setMap(null));
@@ -70,13 +82,19 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       center: new window.kakao.maps.LatLng(lat, lng),
       radius: 5000,
       strokeWeight: 2,
-      strokeColor: "#007bff",
+      strokeColor: "#0056b3",
       strokeOpacity: 0.8,
       fillColor: "#cce5ff",
       fillOpacity: 0.4,
       map,
     });
     userCircleRef.current = circle;
+
+    const latlng = new window.kakao.maps.LatLng(lat, lng);
+    mapInstance.current?.panTo(latlng);
+    setTimeout(() => {
+      setZoomLevelIfNeeded(6);
+    }, 800);
 
     const filteredPositions = searchKeywordsRef.current.length
       ? positions.filter((item) => {
@@ -102,8 +120,11 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       const lng = pos.coords.longitude;
 
       const latlng = new window.kakao.maps.LatLng(lat, lng);
-      mapInstance.current?.setCenter(latlng);
-      mapInstance.current?.setLevel(6);
+      mapInstance.current?.panTo(latlng);
+
+      setTimeout(() => {
+        setZoomLevelIfNeeded(6);
+      }, 800);
 
       placeUserMarker(lat, lng);
     });
@@ -133,10 +154,10 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
             const latlngs = rings.map((ring) => ring.map(([x, y]) => new window.kakao.maps.LatLng(y, x)));
             const polygon = new window.kakao.maps.Polygon({
               path: latlngs,
-              strokeWeight: 2,
+              strokeWeight: 3,
               strokeColor: "#004c80",
               strokeOpacity: 0.8,
-              fillColor: "#fff",
+              fillColor: "#cce5ff",
               fillOpacity: 0.6,
               map,
             });
@@ -259,6 +280,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
           minLevel: 5,
           maxLevel: 12,
         });
+        map.addControl(new window.kakao.maps.MapTypeControl(), window.kakao.maps.ControlPosition.TOPRIGHT);
         map.addControl(new window.kakao.maps.ZoomControl(), window.kakao.maps.ControlPosition.RIGHT);
         mapInstance.current = map;
         clustererRef.current = new window.kakao.maps.MarkerClusterer({ map, averageCenter: true, minLevel: 6 });
@@ -296,7 +318,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
     markerMapRef.current = {};
     overlayMapRef.current = {};
 
-    const markerImage = new window.kakao.maps.MarkerImage("/marker-icon.png", new window.kakao.maps.Size(26, 34), {
+    const markerImage = new window.kakao.maps.MarkerImage("/marker-icon.png", new window.kakao.maps.Size(38, 40), {
       offset: new window.kakao.maps.Point(18, 36),
     });
 
@@ -397,6 +419,8 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
       return marker;
     });
 
+    setFilteredPositions(filtered); // 필터된 위치를 상태로 업데이트
+
     clusterer.addMarkers(markers);
   }, [positions, initialMarkersSet, searchKeywords, searchLogic]);
 
@@ -418,15 +442,22 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
         )}
 
         {showAutocomplete && (
-          <ProductNameAutocomplete keywords={searchKeywords} setKeywords={setSearchKeywords} searchLogic={searchLogic} setSearchLogic={setSearchLogic} positions={positions} />
+          <ProductNameAutocomplete
+            keywords={searchKeywords}
+            setKeywords={setSearchKeywords}
+            searchLogic={searchLogic}
+            setSearchLogic={setSearchLogic}
+            positions={positions}
+            filteredPositionsCount={filteredPositions.length}
+          />
         )}
       </div>
       {nearbyList.length > 0 && (
-        <div className="absolute sm:top-16 bottom-12  left-2 bg-white shadow pl-4 rounded max-h-[240px] w-[260px] overflow-y-auto z-20 text-sm  mt-8 sm:mt-0">
-          <div className="sticky top-0 bg-white z-10 py-2 border-b font-semibold">
+        <div className="absolute sm:top-16 bottom-12 left-2 bg-white bg-opacity-70 shadow rounded max-h-[200px] w-[260px] overflow-y-auto z-20 text-sm mt-8 sm:mt-0">
+          <div className="sticky top-0 rounded bg-white z-10 py-2 pl-1 border-b font-semibold">
             {mode === "region" ? `📍 범위 내 업체 목록 (${nearbyList.length}개)` : `📍 반경 5km 업체 목록 (${nearbyList.length}개)`}
           </div>
-          <ul className="mt-1 space-y-1">
+          <ul className="mt-1 space-y-1 pl-2">
             {nearbyList.map((item, i) => (
               <li
                 key={i}
@@ -435,8 +466,11 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
                   const overlay = overlayMapRef.current[item.title];
                   const map = mapInstance.current;
                   if (marker && overlay && map) {
-                    map.setLevel(6);
-                    map.setCenter(marker.getPosition());
+                    setTimeout(() => {
+                      setZoomLevelIfNeeded(6);
+                    }, 800);
+
+                    map.panTo(marker.getPosition());
                     currentOverlayRef.current?.setMap(null);
                     overlay.setMap(map);
                     currentOverlayRef.current = overlay;
