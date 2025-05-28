@@ -387,7 +387,7 @@ function KaKaoMap({ kakaoMapKey, positions, onLoaded }) {
               <div>👤 <b>대표자:</b> ${pos.ceo}</div>
               <div>📞 <b>연락처:</b> ${pos.phone}</div>
               <div>🏦 <b style="display:inline;">주소:</b> ${addressHTML}</div>
-              <div>♻️ <b>품목:</b> ${productNameHTML}</div>
+              <div>♻️ <b>항목:</b> ${productNameHTML}</div>
             `;
       content.style.cssText = `position:relative;background:white;padding:12px 16px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:13px;width:220px;line-height:1.6;`;
 

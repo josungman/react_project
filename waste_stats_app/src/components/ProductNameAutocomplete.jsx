@@ -49,7 +49,7 @@ function ProductNameAutocomplete({ keywords, setKeywords, searchLogic, setSearch
         // 👉 placeholder에 안내 메시지 표시
         setInputPlaceholder("❗❗최대 5개");
         setTimeout(() => {
-          setInputPlaceholder(`품목 필터 (${filteredPositionsCount}개)`);
+          setInputPlaceholder(`항목 필터 (${filteredPositionsCount}개)`);
         }, 2000);
         return;
       }
