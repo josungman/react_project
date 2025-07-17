@@ -21,6 +21,9 @@ const BarChart: React.FC<BarChartProps> = ({ data, title = "태그별 통계 차
     );
   }
 
+  // 바 색상 동적 설정
+  const barColors = data.map((_, idx) => (idx === 0 ? "#10b981" : "#3b82f6"));
+
   // ApexCharts 설정
   const chartOptions = {
     chart: {
@@ -51,14 +54,14 @@ const BarChart: React.FC<BarChartProps> = ({ data, title = "태그별 통계 차
         dataLabels: {
           position: "top",
         },
-        distributed: false,
+        distributed: true,
         shadow: {
           enabled: true,
           color: "#000",
-          top: 2,
-          left: 2,
-          blur: 4,
-          opacity: 0.15,
+          top: 4,
+          left: 4,
+          blur: 8,
+          opacity: 0.25,
         },
       },
     },
@@ -92,12 +95,12 @@ const BarChart: React.FC<BarChartProps> = ({ data, title = "태그별 통계 차
 
     fill: {
       opacity: 1,
-      colors: ["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444"],
+      colors: barColors,
     },
     tooltip: {
       y: {
         formatter: function (val: number) {
-          return val + "회 사용";
+          return val + "건";
         },
       },
     },
@@ -115,17 +118,20 @@ const BarChart: React.FC<BarChartProps> = ({ data, title = "태그별 통계 차
         },
       },
     },
+    legend: {
+      show: false,
+    },
   };
 
   const chartSeries = [
     {
-      name: "사용 횟수",
+      name: "등록 건수",
       data: data.map((item) => item.count),
     },
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
       <div className="h-80">
         <ReactApexChart options={chartOptions} series={chartSeries} type="bar" height={350} />

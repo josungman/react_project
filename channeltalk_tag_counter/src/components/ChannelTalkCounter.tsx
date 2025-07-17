@@ -18,7 +18,6 @@ const TIME_CONFIG = {
 
 const ChannelTalkCounter: React.FC = () => {
   const [tagCounts, setTagCounts] = useState<TagCount[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
@@ -26,7 +25,6 @@ const ChannelTalkCounter: React.FC = () => {
 
   // 데이터 가져오기 함수
   const fetchData = useCallback(async () => {
-    setIsLoading(true);
     setError(null);
 
     try {
@@ -41,8 +39,6 @@ const ChannelTalkCounter: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");
       console.error("데이터 가져오기 실패:", err);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
@@ -78,7 +74,7 @@ const ChannelTalkCounter: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())} 전체 통계</h2>
+              <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())} 모니터링</h2>
             </div>
             <div>
               <p className="text-lg text-gray-600 font-medium">최종 업데이트 일시: {formatTime.timeOnly(lastUpdated)}</p>
@@ -107,44 +103,48 @@ const ChannelTalkCounter: React.FC = () => {
               <p className="text-red-800 text-sm">오류: {error}</p>
             </div>
           )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm w-full">
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <div className="font-medium text-blue-800">총 태그 수</div>
-              <div className="text-2xl font-bold text-blue-600">{tagCounts.length}</div>
-            </div>
-            <div className="bg-green-50 p-3 rounded-lg">
-              <div className="font-medium text-green-800">총 카운트</div>
-              <div className="text-2xl font-bold text-green-600">{tagCounts.reduce((sum, tag) => sum + tag.count, 0)}</div>
-            </div>
-          </div>
         </div>
 
         {/* 태그 통계 카드 */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">태그 통계</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">태그 통계</h2>
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div>
+                등록된 태그 <span className="font-bold text-blue-600">{tagCounts.length}</span>개
+              </div>
+              <div>
+                전체 카운트 <span className="font-bold text-green-600">{tagCounts.reduce((sum, tag) => sum + tag.count, 0)}</span>건
+              </div>
+            </div>
+          </div>
 
           {tagCounts.length === 0 ? (
             <div className="text-center py-8 text-gray-500">아직 태그가 없습니다. 테스트 메시지를 추가해보세요!</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
               {tagCounts.map((tagCount, index) => {
-                const isFirst = index === 0;
+                // 순위 계산 - 단순하게 인덱스 기반
+                const rank = index + 1;
+                const isFirst = rank === 1;
+                const rankText = `${rank}위`;
                 return (
                   <div
                     key={tagCount.tag}
-                    className={`p-4 rounded-lg border transition-all duration-300 ${
-                      isFirst ? "bg-gradient-to-r from-red-50 to-pink-50 border-red-200" : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
-                    }`}
+                    className={
+                      isFirst
+                        ? "p-1 rounded border transition-all duration-300 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200"
+                        : "p-1 rounded border transition-all duration-300 bg-blue-50 border-blue-200"
+                    }
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-gray-800">{tagCount.tag}</span>
-                      <span className={`text-sm ${isFirst ? "text-red-500" : "text-gray-500"}`}>#{index + 1}</span>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className={isFirst ? "font-medium text-green-800 text-xs" : "font-medium text-gray-800 text-xs"}>{tagCount.tag}</span>
+                      <span className={isFirst ? "text-[10px] text-green-500" : "text-[10px] text-gray-400"}>{rankText}</span>
                     </div>
-                    <div className={`text-3xl font-bold mb-2 ${isFirst ? "text-red-600" : "text-blue-600"}`}>{tagCount.count}</div>
-                    <div className={`w-full rounded-full h-2 ${isFirst ? "bg-red-200" : "bg-blue-200"}`}>
+                    <div className={isFirst ? "text-base font-bold mb-0.5 text-green-600" : "text-base font-bold mb-0.5 text-blue-600"}>{tagCount.count}건</div>
+                    <div className={isFirst ? "w-full rounded h-1 bg-green-200" : "w-full rounded h-1 bg-blue-200"}>
                       <div
-                        className={`h-2 rounded-full transition-all duration-300 ${isFirst ? "bg-red-600" : "bg-blue-600"}`}
+                        className={isFirst ? "h-1 rounded transition-all duration-300 bg-green-600" : "h-1 rounded transition-all duration-300 bg-blue-400"}
                         style={{
                           width: `${(tagCount.count / Math.max(...tagCounts.map((t) => t.count))) * 100}%`,
                         }}
