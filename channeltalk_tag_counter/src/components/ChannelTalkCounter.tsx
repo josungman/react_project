@@ -67,7 +67,7 @@ const ChannelTalkCounter: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <NavigationHeader title="대시보드(채널톡 태그 카운터)" />
+      <NavigationHeader title="채널톡 태그 통계" />
 
       <div className="max-w-6xl mx-auto mt-8">
         {/* 컨트롤 패널 */}
@@ -111,7 +111,7 @@ const ChannelTalkCounter: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-800">태그 통계</h2>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <div>
-                셋팅된 태그 <span className="font-bold text-blue-600">{tagCounts.length}</span>개
+                <b>셋팅된 태그</b> <span className="font-bold text-blue-600">{tagCounts.length}</span>개
               </div>
               <div>
                 전체 카운트 <span className="font-bold text-green-600">{tagCounts.reduce((sum, tag) => sum + tag.count, 0)}</span>건
