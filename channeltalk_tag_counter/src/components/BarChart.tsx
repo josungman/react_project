@@ -11,7 +11,7 @@ interface BarChartProps {
   title?: string;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data, title = "태그별 통계 차트" }) => {
+const BarChart: React.FC<BarChartProps> = ({ data, title = "태그 통계 차트" }) => {
   if (data.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">

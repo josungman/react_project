@@ -11,7 +11,7 @@ interface TagCount {
 
 // 시간 설정 상수
 const TIME_CONFIG = {
-  COUNTDOWN_INITIAL: 10, //초
+  COUNTDOWN_INITIAL: 60, //초
   PROGRESS_UPDATE_INTERVAL: 1000, // 1초
   ANIMATION_DURATION: 1000,
 };
@@ -67,14 +67,14 @@ const ChannelTalkCounter: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <NavigationHeader title="채널톡 태그 카운터 / 대시보드" />
+      <NavigationHeader title="대시보드(채널톡 태그 카운터)" />
 
       <div className="max-w-6xl mx-auto mt-8">
         {/* 컨트롤 패널 */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())} 모니터링</h2>
+              <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())} 모니터링중...</h2>
             </div>
             <div>
               <p className="text-lg text-gray-600 font-medium">최종 업데이트 일시: {formatTime.timeOnly(lastUpdated)}</p>
@@ -111,7 +111,7 @@ const ChannelTalkCounter: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-800">태그 통계</h2>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <div>
-                등록된 태그 <span className="font-bold text-blue-600">{tagCounts.length}</span>개
+                셋팅된 태그 <span className="font-bold text-blue-600">{tagCounts.length}</span>개
               </div>
               <div>
                 전체 카운트 <span className="font-bold text-green-600">{tagCounts.reduce((sum, tag) => sum + tag.count, 0)}</span>건
