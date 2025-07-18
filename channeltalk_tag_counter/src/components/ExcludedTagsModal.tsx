@@ -27,16 +27,21 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
 
   // 제외된 태그의 값 정보 가져오기
   const fetchExcludedTagsData = useCallback(async () => {
+    console.log("🔄 제외 태그 데이터 가져오기 시작 - ExcludedTagsModal.tsx의 fetchExcludedTagsData 함수");
     setIsLoadingValues(true);
     try {
+      console.log("📡 API 호출 시작 - fetchExcludedTagsWithValues()");
       const response = await fetchExcludedTagsWithValues();
+      console.log("📡 제외 태그 API 응답 받음:", response);
+
       if (response.success && response.data) {
+        console.log("✅ 제외 태그 데이터 설정 완료:", response.data);
         setExcludedTagsWithValues(response.data);
       } else {
-        console.error("제외 태그 값 정보 가져오기 실패:", response.error);
+        console.error("❌ 제외 태그 값 정보 가져오기 실패:", response.error);
       }
     } catch (err) {
-      console.error("제외 태그 값 정보 가져오기 실패:", err);
+      console.error("❌ 제외 태그 값 정보 가져오기 실패:", err);
     } finally {
       setIsLoadingValues(false);
     }

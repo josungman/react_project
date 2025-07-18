@@ -28,20 +28,25 @@ const ChannelTalkCounter: React.FC = () => {
 
   // 데이터 가져오기 함수
   const fetchData = useCallback(async () => {
+    console.log("🔄 데이터 가져오기 시작 - ChannelTalkCounter.tsx의 fetchData 함수");
     setError(null);
 
     try {
       // 실제 API에서 데이터 가져오기
+      console.log("📡 API 호출 시작 - fetchTagCounts()");
       const response = await fetchTagCounts();
+      console.log("📡 API 응답 받음:", response);
+
       if (!response.success || !response.data) {
         throw new Error(response.error || "API에서 데이터를 가져오는데 실패했습니다.");
       }
 
+      console.log("✅ 데이터 설정 완료:", response.data);
       setTagCounts(response.data);
       setLastUpdated(new Date());
     } catch (err) {
+      console.error("❌ 데이터 가져오기 실패:", err);
       setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");
-      console.error("데이터 가져오기 실패:", err);
     }
   }, []);
 
