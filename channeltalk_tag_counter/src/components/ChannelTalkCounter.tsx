@@ -207,7 +207,7 @@ const ChannelTalkCounter: React.FC = () => {
       </div>
 
       {/* 제외 태그 관리 모달 */}
-      <ExcludedTagsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} excludedTags={excludedTags} onTagsUpdate={handleExcludedTagsUpdate} />
+      <ExcludedTagsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onTagsUpdate={handleExcludedTagsUpdate} />
     </div>
   );
 };

@@ -6,11 +6,10 @@ import toast from "react-hot-toast";
 interface ExcludedTagsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  excludedTags: string[];
   onTagsUpdate: (tags: string[]) => void;
 }
 
-const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, excludedTags, onTagsUpdate }) => {
+const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, onTagsUpdate }) => {
   const [newTag, setNewTag] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
