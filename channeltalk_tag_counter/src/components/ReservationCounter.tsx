@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import LineChart from "./LineChart";
 import NavigationHeader from "./common/NavigationHeader";
 import { formatTime } from "../utils/timeUtils";
+import TimeSettingsModal from "./TimeSettingsModal";
 
 interface DailyReservationData {
   date: string;
@@ -28,7 +29,13 @@ export default function ReservationCounter() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [countdown, setCountdown] = useState<number>(TIME_CONFIG.COUNTDOWN_INITIAL);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [updateInterval, setUpdateInterval] = useState<number>(() => {
+    // localStorage에서 저장된 업데이트 간격 불러오기
+    const saved = localStorage.getItem("reservationUpdateInterval");
+    return saved ? parseInt(saved) : TIME_CONFIG.COUNTDOWN_INITIAL;
+  });
+  const [countdown, setCountdown] = useState<number>(updateInterval);
 
   // 페이징 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,12 +122,13 @@ export default function ReservationCounter() {
       setReservationDetails(detailData);
       setDailyData(mockData);
       setLastUpdated(new Date());
+      setCountdown(updateInterval); // 카운트다운을 현재 간격으로 리셋
     } catch (err) {
       setError("예약금 데이터를 불러오는데 실패했습니다.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [updateInterval]);
 
   // 카운트다운 타이머와 API 호출 동기화
   useEffect(() => {
@@ -133,17 +141,17 @@ export default function ReservationCounter() {
         if (prev <= 1) {
           // 카운트다운이 끝나면 데이터 새로고침
           fetchData();
-          return TIME_CONFIG.COUNTDOWN_INITIAL;
+          return updateInterval;
         }
         return prev - 1;
       });
     }, TIME_CONFIG.PROGRESS_UPDATE_INTERVAL);
 
     return () => clearInterval(countdownInterval);
-  }, [fetchData]);
+  }, [fetchData, updateInterval]);
 
   // 프로그레스바 계산
-  const progressPercentage = ((TIME_CONFIG.COUNTDOWN_INITIAL - countdown) / TIME_CONFIG.COUNTDOWN_INITIAL) * 100;
+  const progressPercentage = ((updateInterval - countdown) / updateInterval) * 100;
 
   // 오늘 날짜 계산
   const today = new Date();
@@ -191,6 +199,20 @@ export default function ReservationCounter() {
   // 정렬된 데이터
   const sortedData = sortData(reservationDetails);
 
+  // 업데이트 간격 변경 핸들러
+  const handleUpdateIntervalChange = useCallback(
+    (interval: number) => {
+      setUpdateInterval(interval);
+      setCountdown(interval); // 카운트다운을 새로운 간격으로 리셋
+      // localStorage에 업데이트 간격 저장
+      localStorage.setItem("reservationUpdateInterval", interval.toString());
+
+      // 즉시 데이터 새로고침하여 프로그레스바를 정상적으로 시작
+      fetchData();
+    },
+    [fetchData]
+  );
+
   // 페이징 계산
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -229,8 +251,19 @@ export default function ReservationCounter() {
             <div>
               <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())} 화면구성완료(데이터 연동 필요. 목업데이터 사용중)</h2>
             </div>
-            <div>
+            <div className="flex items-center gap-4">
               <p className="text-lg text-gray-600 font-medium">최종 업데이트 일시: {formatTime.timeOnly(lastUpdated)}</p>
+              <button onClick={() => setIsSettingsOpen(true)} className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors" title="설정">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -387,6 +420,9 @@ export default function ReservationCounter() {
           </div>
         </div>
       </div>
+
+      {/* 시간 설정 모달 */}
+      <TimeSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} updateInterval={updateInterval} onUpdateIntervalChange={handleUpdateIntervalChange} />
     </div>
   );
 }

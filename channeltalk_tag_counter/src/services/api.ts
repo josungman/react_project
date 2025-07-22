@@ -13,12 +13,15 @@ export interface TagData {
 
 export interface TagCount {
   tag: string;
-  count: number;
+  leftCount: number;
+  rightCount: number;
+  displayCount: number; // 화면에 표시할 값
 }
 
 export interface ExcludedTagInfo {
   tag: string;
-  count: number;
+  leftCount: number;
+  rightCount: number;
 }
 
 export interface ApiResponse {
@@ -103,11 +106,16 @@ export const fetchTagCounts = async (): Promise<TagCountResponse> => {
     // TagData를 TagCount[] 형식으로 변환
     console.log("🔄 TagData를 TagCount[] 형식으로 변환 중...");
     const tagCounts: TagCount[] = Object.entries(response.data)
-      .map(([tag, count]) => ({
-        tag,
-        count: count === "error" ? 0 : parseInt(count) || 0,
-      }))
-      .sort((a, b) => b.count - a.count);
+      .map(([tag, countStr]) => {
+        const [leftCount, rightCount] = countStr.split("/").map((val) => (val === "error" ? 0 : parseInt(val) || 0));
+        return {
+          tag,
+          leftCount,
+          rightCount,
+          displayCount: rightCount, // 기본값은 오른쪽 기준 (전체 기준)
+        };
+      })
+      .sort((a, b) => b.displayCount - a.displayCount);
 
     console.log("✅ 변환 완료된 tagCounts:", tagCounts);
     return {
@@ -256,10 +264,15 @@ export const fetchExcludedTagsWithValues = async (): Promise<ExcludedTagsWithVal
 
     // 제외된 태그들의 값을 포함한 정보 생성
     console.log("🔄 제외 태그 값 정보 생성 중...");
-    const excludedTagsWithValues: ExcludedTagInfo[] = excludedTagsResponse.data.map((tag) => ({
-      tag,
-      count: todayTagDataResponse.data![tag] === "error" ? 0 : parseInt(todayTagDataResponse.data![tag]) || 0,
-    }));
+    const excludedTagsWithValues: ExcludedTagInfo[] = excludedTagsResponse.data.map((tag) => {
+      const countStr = todayTagDataResponse.data![tag];
+      const [leftCount, rightCount] = countStr ? countStr.split("/").map((val) => (val === "error" ? 0 : parseInt(val) || 0)) : [0, 0];
+      return {
+        tag,
+        leftCount,
+        rightCount,
+      };
+    });
 
     console.log("✅ 생성 완료된 excludedTagsWithValues:", excludedTagsWithValues);
     return {

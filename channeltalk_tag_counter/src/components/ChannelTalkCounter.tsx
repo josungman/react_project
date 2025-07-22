@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import NavigationHeader from "@/components/common/NavigationHeader";
 import { fetchTagCounts, fetchExcludedTags } from "../services/api";
+import type { TagCount } from "../services/api";
 import { formatTime } from "../utils/timeUtils";
 import ExcludedTagsModal from "./ExcludedTagsModal";
+import TimeSettingsModal from "./TimeSettingsModal";
 //import BarChart from "./BarChart";
-
-interface TagCount {
-  tag: string;
-  count: number;
-}
 
 // 시간 설정 상수
 const TIME_CONFIG = {
@@ -23,8 +20,20 @@ const ChannelTalkCounter: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [hideZeroReservations, setHideZeroReservations] = useState<boolean>(() => {
+    // localStorage에서 저장된 설정 불러오기
+    const saved = localStorage.getItem("hideZeroReservations");
+    return saved ? JSON.parse(saved) : false;
+  });
 
-  const [countdown, setCountdown] = useState<number>(TIME_CONFIG.COUNTDOWN_INITIAL);
+  const [updateInterval, setUpdateInterval] = useState<number>(() => {
+    // localStorage에서 저장된 업데이트 간격 불러오기
+    const saved = localStorage.getItem("updateInterval");
+    return saved ? parseInt(saved) : TIME_CONFIG.COUNTDOWN_INITIAL;
+  });
+
+  const [countdown, setCountdown] = useState<number>(updateInterval);
 
   // 데이터 가져오기 함수
   const fetchData = useCallback(async () => {
@@ -44,11 +53,12 @@ const ChannelTalkCounter: React.FC = () => {
       console.log("✅ 데이터 설정 완료:", response.data);
       setTagCounts(response.data);
       setLastUpdated(new Date());
+      setCountdown(updateInterval); // 카운트다운을 현재 간격으로 리셋
     } catch (err) {
       console.error("❌ 데이터 가져오기 실패:", err);
       setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");
     }
-  }, []);
+  }, [updateInterval]);
 
   // 제외 태그 가져오기 함수
   const fetchExcludedTagsData = useCallback(async () => {
@@ -67,6 +77,27 @@ const ChannelTalkCounter: React.FC = () => {
     setExcludedTags(updatedTags);
   }, []);
 
+  // 업데이트 간격 변경 핸들러
+  const handleUpdateIntervalChange = useCallback(
+    (interval: number) => {
+      setUpdateInterval(interval);
+      setCountdown(interval); // 카운트다운을 새로운 간격으로 리셋
+      // localStorage에 업데이트 간격 저장
+      localStorage.setItem("updateInterval", interval.toString());
+
+      // 즉시 데이터 새로고침하여 프로그레스바를 정상적으로 시작
+      fetchData();
+    },
+    [fetchData]
+  );
+
+  // 0건 숨기기 설정 변경 핸들러
+  const handleHideZeroReservationsChange = useCallback((checked: boolean) => {
+    setHideZeroReservations(checked);
+    // localStorage에 설정 저장
+    localStorage.setItem("hideZeroReservations", JSON.stringify(checked));
+  }, []);
+
   // 카운트다운 타이머와 API 호출 동기화
   useEffect(() => {
     // 초기 데이터 로드
@@ -79,17 +110,17 @@ const ChannelTalkCounter: React.FC = () => {
         if (prev <= 1) {
           // 카운트다운이 끝나면 데이터 새로고침
           fetchData();
-          return TIME_CONFIG.COUNTDOWN_INITIAL;
+          return updateInterval;
         }
         return prev - 1;
       });
     }, TIME_CONFIG.PROGRESS_UPDATE_INTERVAL);
 
     return () => clearInterval(countdownInterval);
-  }, [fetchData, fetchExcludedTagsData]);
+  }, [fetchData, fetchExcludedTagsData, updateInterval]);
 
   // 프로그레스바 계산
-  const progressPercentage = ((TIME_CONFIG.COUNTDOWN_INITIAL - countdown) / TIME_CONFIG.COUNTDOWN_INITIAL) * 100;
+  const progressPercentage = ((updateInterval - countdown) / updateInterval) * 100;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -102,8 +133,19 @@ const ChannelTalkCounter: React.FC = () => {
             <div>
               <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())}</h2>
             </div>
-            <div>
+            <div className="flex items-center gap-4">
               <p className="text-lg text-gray-600 font-medium">최종 업데이트 일시: {formatTime.timeOnly(lastUpdated)}</p>
+              <button onClick={() => setIsSettingsOpen(true)} className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors" title="설정">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -136,10 +178,21 @@ const ChannelTalkCounter: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-800">태그 통계</h2>
+
+              {/* 요약 정보 - 우측에 배치 */}
               <div className="flex items-center gap-4 text-sm text-gray-600">
                 <div>
                   <b>표출 태그 </b>{" "}
-                  <span className="font-bold text-blue-600">{tagCounts.filter((tag) => tag.count > 0).filter((tag) => !excludedTags.includes(tag.tag)).length}</span>개
+                  <span className="font-bold text-blue-600">
+                    {(() => {
+                      let filteredTags = tagCounts.filter((tag) => !excludedTags.includes(tag.tag));
+                      if (hideZeroReservations) {
+                        filteredTags = filteredTags.filter((tag) => tag.leftCount > 0);
+                      }
+                      return filteredTags.length;
+                    })()}
+                  </span>
+                  개
                 </div>
                 <div>
                   <button onClick={() => setIsModalOpen(true)} className="cursor-pointer hover:text-red-700 transition-colors">
@@ -149,28 +202,55 @@ const ChannelTalkCounter: React.FC = () => {
                 <div>
                   전체 건수{" "}
                   <span className="font-bold text-green-600">
-                    {tagCounts
-                      .filter((tag) => tag.count > 0)
-                      .filter((tag) => !excludedTags.includes(tag.tag))
-                      .reduce((sum, tag) => sum + tag.count, 0)}
+                    {(() => {
+                      let filteredTags = tagCounts.filter((tag) => !excludedTags.includes(tag.tag));
+                      if (hideZeroReservations) {
+                        filteredTags = filteredTags.filter((tag) => tag.leftCount > 0);
+                      }
+                      return `${filteredTags.reduce((sum, tag) => sum + tag.leftCount, 0)}/${filteredTags.reduce((sum, tag) => sum + tag.rightCount, 0)}`;
+                    })()}
                   </span>
                   건
                 </div>
               </div>
             </div>
 
+            {/* 설명 텍스트와 필터 옵션 */}
+            <div className="mb-6 flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">n/n건 (예약완료 / 전체)</span> - 각 태그의 예약완료 건수와 전체 건수를 표시합니다.
+              </p>
+
+              {/* 필터 옵션 */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="hideZeroReservations"
+                  checked={hideZeroReservations}
+                  onChange={(e) => handleHideZeroReservationsChange(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <label htmlFor="hideZeroReservations" className="text-sm text-gray-700 cursor-pointer whitespace-nowrap">
+                  예약완료 건수가 0건인 태그 숨기기
+                </label>
+              </div>
+            </div>
+
             {(() => {
-              // 0건인 태그와 제외 태그 필터링
-              const filteredTagCounts = tagCounts
-                .filter((tag) => tag.count > 0) // 0건인 태그 제외
-                .filter((tag) => !excludedTags.includes(tag.tag)); // 제외 태그 목록에 있는 태그 제외
+              // 제외 태그 필터링
+              let filteredTagCounts = tagCounts.filter((tag) => !excludedTags.includes(tag.tag));
+
+              // 0건 숨기기 설정이 활성화된 경우 예약완료 건수가 0인 태그 제외
+              if (hideZeroReservations) {
+                filteredTagCounts = filteredTagCounts.filter((tag) => tag.leftCount > 0);
+              }
 
               if (filteredTagCounts.length === 0) {
                 return <div className="text-center py-8 text-gray-500">표시할 태그가 없습니다.</div>;
               }
 
               return (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {filteredTagCounts.map((tagCount, index) => {
                     // 순위 계산 - 단순하게 인덱스 기반
                     const rank = index + 1;
@@ -189,12 +269,14 @@ const ChannelTalkCounter: React.FC = () => {
                           <span className={isFirst ? "font-medium text-green-800 text-xs" : "font-medium text-gray-800 text-xs"}>{tagCount.tag}</span>
                           <span className={isFirst ? "text-[10px] text-green-500" : "text-[10px] text-gray-400"}>{rankText}</span>
                         </div>
-                        <div className={isFirst ? "text-base font-bold mb-0.5 text-green-600" : "text-base font-bold mb-0.5 text-blue-600"}>{tagCount.count}건</div>
+                        <div className={isFirst ? "text-base font-bold mb-0.5 text-green-600" : "text-base font-bold mb-0.5 text-blue-600"}>
+                          {tagCount.leftCount}/{tagCount.rightCount}건
+                        </div>
                         <div className={isFirst ? "w-full rounded h-1 bg-green-200" : "w-full rounded h-1 bg-blue-200"}>
                           <div
                             className={isFirst ? "h-1 rounded transition-all duration-300 bg-green-600" : "h-1 rounded transition-all duration-300 bg-blue-400"}
                             style={{
-                              width: `${(tagCount.count / Math.max(...filteredTagCounts.map((t) => t.count))) * 100}%`,
+                              width: `${(tagCount.displayCount / Math.max(...filteredTagCounts.map((t) => t.displayCount))) * 100}%`,
                             }}
                           ></div>
                         </div>
@@ -213,6 +295,9 @@ const ChannelTalkCounter: React.FC = () => {
 
       {/* 제외 태그 관리 모달 */}
       <ExcludedTagsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onTagsUpdate={handleExcludedTagsUpdate} />
+
+      {/* 시간 설정 모달 */}
+      <TimeSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} updateInterval={updateInterval} onUpdateIntervalChange={handleUpdateIntervalChange} />
     </div>
   );
 };

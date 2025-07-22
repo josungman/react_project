@@ -132,7 +132,7 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-800">제외 태그 관리</h2>
@@ -144,7 +144,7 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
         </div>
 
         {/* 고정된 상단 영역 - 태그 추가 */}
-        <div className="p-6 border-b bg-gray-50">
+        <div className="p-6 border-b bg-gray-50 flex-shrink-0">
           <div className="flex gap-2">
             <input
               key={inputKey}
@@ -167,7 +167,7 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
         </div>
 
         {/* 고정된 검색 영역 */}
-        <div className="p-6 border-b bg-gray-50">
+        <div className="p-6 border-b bg-gray-50 flex-shrink-0">
           <h3 className="text-lg font-medium text-gray-800 mb-3">
             현재 제외 태그 ({excludedTagsWithValues.length}개)
             {searchQuery && <span className="text-sm text-gray-500 ml-2">(검색 결과: {filteredTags.length}개)</span>}
@@ -198,7 +198,7 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
         </div>
 
         {/* 스크롤 가능한 내용 영역 - 고정 높이 */}
-        <div className="p-6 overflow-y-auto" style={{ height: "400px" }}>
+        <div className="p-6 overflow-y-auto flex-1" style={{ minHeight: "200px" }}>
           {isLoadingValues ? (
             <div className="text-center py-8 text-gray-500">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
@@ -217,7 +217,9 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
                 <div key={tagInfo.tag} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <span className="text-gray-800 font-medium">{tagInfo.tag}</span>
-                    <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded">{tagInfo.count}건</span>
+                    <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                      {tagInfo.leftCount}/{tagInfo.rightCount}건
+                    </span>
                   </div>
                   <button onClick={() => handleRemoveTag(tagInfo.tag)} disabled={isLoading} className="text-red-600 hover:text-red-800 disabled:text-gray-400 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +238,7 @@ const ExcludedTagsModal: React.FC<ExcludedTagsModalProps> = ({ isOpen, onClose, 
         </div>
 
         {/* 푸터 */}
-        <div className="flex justify-end p-6 border-t bg-gray-50">
+        <div className="flex justify-end p-6 border-t bg-gray-50 flex-shrink-0">
           <button onClick={onClose} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
             닫기
           </button>
