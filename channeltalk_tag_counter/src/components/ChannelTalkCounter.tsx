@@ -27,6 +27,12 @@ const ChannelTalkCounter: React.FC = () => {
     return saved ? JSON.parse(saved) : false;
   });
 
+  const [rankByCompleted, setRankByCompleted] = useState<boolean>(() => {
+    // localStorage에서 저장된 순위 기준 설정 불러오기
+    const saved = localStorage.getItem("rankByCompleted");
+    return saved ? JSON.parse(saved) : true; // 기본값은 예약완료 기준
+  });
+
   const [updateInterval, setUpdateInterval] = useState<number>(() => {
     // localStorage에서 저장된 업데이트 간격 불러오기
     const saved = localStorage.getItem("updateInterval");
@@ -96,6 +102,13 @@ const ChannelTalkCounter: React.FC = () => {
     setHideZeroReservations(checked);
     // localStorage에 설정 저장
     localStorage.setItem("hideZeroReservations", JSON.stringify(checked));
+  }, []);
+
+  // 순위 기준 변경 핸들러
+  const handleRankByCompletedChange = useCallback((rankByCompleted: boolean) => {
+    setRankByCompleted(rankByCompleted);
+    // localStorage에 설정 저장
+    localStorage.setItem("rankByCompleted", JSON.stringify(rankByCompleted));
   }, []);
 
   // 카운트다운 타이머와 API 호출 동기화
@@ -216,23 +229,50 @@ const ChannelTalkCounter: React.FC = () => {
             </div>
 
             {/* 설명 텍스트와 필터 옵션 */}
-            <div className="mb-6 flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <span className="font-medium">n/n건 (예약완료 / 전체)</span> - 각 태그의 예약완료 건수와 전체 건수를 표시합니다.
-              </p>
+            <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm text-blue-800">
+                  <span className="font-medium">n/n건 (예약완료 / 전체)</span> - 각 태그의 예약완료 건수와 전체 건수를 표시합니다.
+                </p>
+              </div>
 
-              {/* 필터 옵션 */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="hideZeroReservations"
-                  checked={hideZeroReservations}
-                  onChange={(e) => handleHideZeroReservationsChange(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                />
-                <label htmlFor="hideZeroReservations" className="text-sm text-gray-700 cursor-pointer whitespace-nowrap">
-                  예약완료 건수가 0건인 태그 숨기기
-                </label>
+              {/* 순위 기준 선택 버튼 */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-blue-600 font-bold underline">순위 기준:</span>
+                  <div className="flex bg-gray-100 rounded-md p-0.5">
+                    <button
+                      onClick={() => handleRankByCompletedChange(true)}
+                      className={`px-2 py-0.5 text-xs rounded transition-all duration-200 ${
+                        rankByCompleted ? "bg-blue-500 text-white shadow-sm" : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+                      }`}
+                    >
+                      예약완료
+                    </button>
+                    <button
+                      onClick={() => handleRankByCompletedChange(false)}
+                      className={`px-2 py-0.5 text-xs rounded transition-all duration-200 ${
+                        !rankByCompleted ? "bg-blue-500 text-white shadow-sm" : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+                      }`}
+                    >
+                      전체
+                    </button>
+                  </div>
+                </div>
+
+                {/* 필터 옵션 */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="hideZeroReservations"
+                    checked={hideZeroReservations}
+                    onChange={(e) => handleHideZeroReservationsChange(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <label htmlFor="hideZeroReservations" className="text-sm text-gray-700 cursor-pointer whitespace-nowrap">
+                    예약완료 건수가 0건인 태그 숨기기
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -251,38 +291,55 @@ const ChannelTalkCounter: React.FC = () => {
 
               return (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {filteredTagCounts.map((tagCount, index) => {
-                    // 순위 계산 - 단순하게 인덱스 기반
-                    const rank = index + 1;
-                    const isFirst = rank === 1;
-                    const rankText = `${rank}위`;
-                    return (
-                      <div
-                        key={tagCount.tag}
-                        className={
-                          isFirst
-                            ? "p-1 rounded border transition-all duration-300 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200"
-                            : "p-1 rounded border transition-all duration-300 bg-blue-50 border-blue-200"
-                        }
-                      >
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span className={isFirst ? "font-medium text-green-800 text-xs" : "font-medium text-gray-800 text-xs"}>{tagCount.tag}</span>
-                          <span className={isFirst ? "text-[10px] text-green-500" : "text-[10px] text-gray-400"}>{rankText}</span>
+                  {(() => {
+                    // 선택된 기준에 따라 정렬
+                    const sortedTagCounts = [...filteredTagCounts].sort((a, b) => {
+                      if (rankByCompleted) {
+                        // 예약완료 기준 정렬 (내림차순)
+                        return b.leftCount - a.leftCount;
+                      } else {
+                        // 전체 기준 정렬 (내림차순)
+                        return b.rightCount - a.rightCount;
+                      }
+                    });
+
+                    return sortedTagCounts.map((tagCount, index) => {
+                      // 순위 계산 - 정렬된 인덱스 기반
+                      const rank = index + 1;
+                      const isFirst = rank === 1;
+                      const rankText = `${rank}위`;
+                      return (
+                        <div
+                          key={tagCount.tag}
+                          className={
+                            isFirst
+                              ? "p-1 rounded border transition-all duration-300 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200"
+                              : "p-1 rounded border transition-all duration-300 bg-blue-50 border-blue-200"
+                          }
+                        >
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className={isFirst ? "font-medium text-green-800 text-xs" : "font-medium text-gray-800 text-xs"}>{tagCount.tag}</span>
+                            <span className={isFirst ? "text-[10px] text-green-500" : "text-[10px] text-gray-400"}>{rankText}</span>
+                          </div>
+                          <div className={isFirst ? "text-base font-bold mb-0.5 text-green-600" : "text-base font-bold mb-0.5 text-blue-600"}>
+                            <span className="text-orange-500">{tagCount.leftCount}</span>/{tagCount.rightCount}건
+                          </div>
+                          <div className={isFirst ? "w-full rounded h-1 bg-green-200" : "w-full rounded h-1 bg-blue-200"}>
+                            <div
+                              className={isFirst ? "h-1 rounded transition-all duration-300 bg-green-600" : "h-1 rounded transition-all duration-300 bg-blue-400"}
+                              style={{
+                                width: `${
+                                  ((rankByCompleted ? tagCount.leftCount : tagCount.rightCount) /
+                                    Math.max(...sortedTagCounts.map((t) => (rankByCompleted ? t.leftCount : t.rightCount)))) *
+                                  100
+                                }%`,
+                              }}
+                            ></div>
+                          </div>
                         </div>
-                        <div className={isFirst ? "text-base font-bold mb-0.5 text-green-600" : "text-base font-bold mb-0.5 text-blue-600"}>
-                          {tagCount.leftCount}/{tagCount.rightCount}건
-                        </div>
-                        <div className={isFirst ? "w-full rounded h-1 bg-green-200" : "w-full rounded h-1 bg-blue-200"}>
-                          <div
-                            className={isFirst ? "h-1 rounded transition-all duration-300 bg-green-600" : "h-1 rounded transition-all duration-300 bg-blue-400"}
-                            style={{
-                              width: `${(tagCount.displayCount / Math.max(...filteredTagCounts.map((t) => t.displayCount))) * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    });
+                  })()}
                 </div>
               );
             })()}
