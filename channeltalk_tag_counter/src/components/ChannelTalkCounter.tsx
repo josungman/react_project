@@ -232,7 +232,7 @@ const ChannelTalkCounter: React.FC = () => {
             <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm text-blue-800">
-                  <span className="font-medium">n/n건 (예약완료 / 전체)</span> - 각 태그의 예약완료 건수와 전체 건수를 표시합니다.
+                  <span className="font-medium">n/n건 (예약완료 / 상담태그)</span> - 예약완료태그 건수와 상담태그 건수를 표시합니다.
                 </p>
               </div>
 
@@ -255,7 +255,7 @@ const ChannelTalkCounter: React.FC = () => {
                         !rankByCompleted ? "bg-blue-500 text-white shadow-sm" : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
                       }`}
                     >
-                      전체
+                      상담태그
                     </button>
                   </div>
                 </div>
