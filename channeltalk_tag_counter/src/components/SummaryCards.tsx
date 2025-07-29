@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ReservationDetail {
   date: string;
   time: string;
