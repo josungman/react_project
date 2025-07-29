@@ -301,3 +301,140 @@ export const getMockTagData = (): TagData => {
 
   return mockData;
 };
+
+// 예약금 관련 타입 정의
+export interface BankDeposit {
+  amount: number;
+  deposit_bank: string;
+  depositor_name: string;
+  reg_dt: string;
+}
+
+export interface BankDepositsResponse {
+  count: number;
+  data: BankDeposit[];
+}
+
+export interface CollectResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+// 날짜 형식 변환 함수 (YYYY-MM-DD → YYYYMMDD)
+const formatDateForAPI = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}${month}${day}`;
+};
+
+// 첫 번째 API: 예약금 수집
+export const collectBankDeposits = async (startDate: Date, endDate: Date): Promise<CollectResponse> => {
+  try {
+    const url = `https://elbserver.store/popbill/api/bank-deposits/collect`;
+    console.log("🌐 collectBankDeposits URL:", url);
+
+    // 날짜 순서 확인 및 수정 (시작일이 종료일보다 늦으면 안됨)
+    const actualStartDate = startDate <= endDate ? startDate : endDate;
+    const actualEndDate = startDate <= endDate ? endDate : startDate;
+
+    const requestBody = {
+      s_date: formatDateForAPI(actualStartDate),
+      e_date: formatDateForAPI(actualEndDate),
+    };
+    console.log("📤 collectBankDeposits 요청 데이터:", requestBody);
+    console.log("📤 collectBankDeposits 요청 본문:", JSON.stringify(requestBody, null, 2));
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("📡 collectBankDeposits 응답 상태:", response.status, response.statusText);
+    console.log("📡 collectBankDeposits 응답 헤더:", Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      // 응답 본문을 읽어서 더 자세한 에러 정보 확인
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.text();
+        console.log("📡 collectBankDeposits 에러 응답 본문:", errorData);
+        errorMessage += ` - ${errorData}`;
+      } catch (e) {
+        console.log("📡 collectBankDeposits 에러 응답 본문 읽기 실패:", e);
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log("📡 collectBankDeposits 응답 데이터:", data);
+
+    return {
+      success: true,
+      message: data.message || "예약금 수집이 완료되었습니다.",
+    };
+  } catch (error) {
+    console.error("❌ 예약금 수집 실패:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.",
+    };
+  }
+};
+
+// 두 번째 API: 예약금 데이터 조회
+export const fetchBankDeposits = async (startDate: Date, endDate: Date): Promise<BankDepositsResponse> => {
+  try {
+    const url = `https://elbserver.store/popbill/api/bank-deposits`;
+    console.log("🌐 fetchBankDeposits URL:", url);
+
+    // 날짜 순서 확인 및 수정 (시작일이 종료일보다 늦으면 안됨)
+    const actualStartDate = startDate <= endDate ? startDate : endDate;
+    const actualEndDate = startDate <= endDate ? endDate : startDate;
+
+    const requestBody = {
+      s_date: formatDateForAPI(actualStartDate),
+      e_date: formatDateForAPI(actualEndDate),
+    };
+    console.log("📤 fetchBankDeposits 요청 데이터:", requestBody);
+    console.log("📤 fetchBankDeposits 요청 본문:", JSON.stringify(requestBody, null, 2));
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("📡 fetchBankDeposits 응답 상태:", response.status, response.statusText);
+    console.log("📡 fetchBankDeposits 응답 헤더:", Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      // 응답 본문을 읽어서 더 자세한 에러 정보 확인
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.text();
+        console.log("📡 fetchBankDeposits 에러 응답 본문:", errorData);
+        errorMessage += ` - ${errorData}`;
+      } catch (e) {
+        console.log("📡 fetchBankDeposits 에러 응답 본문 읽기 실패:", e);
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log("📡 fetchBankDeposits 응답 데이터:", data);
+
+    return data;
+  } catch (error) {
+    console.error("❌ 예약금 데이터 조회 실패:", error);
+    throw error;
+  }
+};

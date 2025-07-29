@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 interface DailyData {
@@ -12,6 +12,8 @@ interface LineChartProps {
 }
 
 const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 추이" }) => {
+  const [chartType, setChartType] = useState<"line" | "bar">("line");
+
   if (data.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
@@ -24,8 +26,8 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
   // ApexCharts 설정
   const chartOptions = {
     chart: {
-      type: "line" as const,
-      height: 350,
+      type: chartType as "line" | "bar",
+      height: 280,
       toolbar: {
         show: false,
       },
@@ -46,15 +48,30 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
     stroke: {
       curve: "smooth" as const,
       width: 4,
-      colors: ["#1e40af"],
+      colors: ["#2563eb"],
     },
     markers: {
-      size: 8,
-      colors: ["#1e40af"],
+      size: chartType === "line" ? 8 : 0,
+      colors: ["#2563eb"],
       strokeColors: "#ffffff",
-      strokeWidth: 3,
+      strokeWidth: 2,
       hover: {
-        size: 10,
+        size: chartType === "line" ? 8 : 0,
+      },
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        columnWidth: "60%",
+        colors: {
+          ranges: [
+            {
+              from: 0,
+              to: 100000000,
+              color: "#2563eb",
+            },
+          ],
+        },
       },
     },
     xaxis: {
@@ -62,10 +79,16 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
       labels: {
         style: {
           colors: "#666",
-          fontSize: "16px",
+          fontSize: "11px",
           fontWeight: "500",
         },
+        rotate: -45,
+        rotateAlways: false,
+        maxHeight: 50,
+        hideOverlappingLabels: true,
+        showDuplicates: false,
       },
+      tickAmount: data.length > 15 ? Math.ceil(data.length / 3) : data.length,
     },
     yaxis: {
       labels: {
@@ -75,14 +98,18 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
     dataLabels: {
       enabled: true,
       formatter: function (val: number) {
-        return (val / 10000).toFixed(0) + "만원";
+        if (val >= 10000) {
+          return (val / 10000).toFixed(0) + "만원";
+        } else {
+          return val.toLocaleString() + "원";
+        }
       },
       style: {
-        fontSize: "12px",
+        fontSize: "9px",
         fontWeight: "bold",
-        colors: ["#1e40af"],
+        colors: ["#2563eb"],
       },
-      offsetY: -10,
+      offsetY: -6,
     },
     tooltip: {
       y: {
@@ -101,7 +128,7 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
       },
       yaxis: {
         lines: {
-          show: true,
+          show: false,
         },
       },
     },
@@ -109,17 +136,8 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
       show: false,
     },
     fill: {
-      type: "gradient",
-      gradient: {
-        shade: "light",
-        type: "vertical",
-        shadeIntensity: 0.2,
-        gradientToColors: ["#1e40af"],
-        inverseColors: false,
-        opacityFrom: 0.5,
-        opacityTo: 0.2,
-        stops: [0, 100],
-      },
+      type: "solid",
+      colors: ["transparent"],
     },
   };
 
@@ -131,9 +149,27 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="h-96">
-        <ReactApexChart options={chartOptions} series={chartSeries} type="line" height={400} />
+    <div className="bg-white rounded-lg shadow-lg p-2">
+      {/* 차트 타입 전환 버튼 */}
+      <div className="flex justify-end mb-2">
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setChartType("line")}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${chartType === "line" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"}`}
+          >
+            라인 차트
+          </button>
+          <button
+            onClick={() => setChartType("bar")}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${chartType === "bar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"}`}
+          >
+            막대 차트
+          </button>
+        </div>
+      </div>
+
+      <div className="h-80">
+        <ReactApexChart options={chartOptions} series={chartSeries} type={chartType} height={320} />
       </div>
     </div>
   );

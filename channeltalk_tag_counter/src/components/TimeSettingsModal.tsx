@@ -15,8 +15,11 @@ const TimeSettingsModal: React.FC<TimeSettingsModalProps> = ({ isOpen, onClose, 
   }, [updateInterval]);
 
   const handleSave = () => {
-    onUpdateIntervalChange(localInterval);
-    onClose();
+    // 유효성 검사: 60초 이상 3600초 이하인지 확인
+    if (localInterval >= 60 && localInterval <= 3600) {
+      onUpdateIntervalChange(localInterval);
+      onClose();
+    }
   };
 
   const handleCancel = () => {
@@ -52,29 +55,26 @@ const TimeSettingsModal: React.FC<TimeSettingsModalProps> = ({ isOpen, onClose, 
                   <div className="flex items-center gap-4">
                     <input
                       type="number"
-                      min="10"
-                      max="300"
+                      min="60"
+                      max="3600"
                       value={localInterval}
-                      onChange={(e) => setLocalInterval(parseInt(e.target.value) || 60)}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 60 && value <= 3600) {
+                          setLocalInterval(value);
+                        }
+                      }}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <span className="text-sm text-gray-500">초</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">최소 10초, 최대 300초 (5분)</p>
+                  <p className="text-xs text-gray-500 mt-1">최소 60초 (1분), 최대 3600초 (1시간)</p>
                 </div>
 
                 {/* 미리 정의된 간격 버튼들 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">빠른 선택</label>
                   <div className="grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => setLocalInterval(30)}
-                      className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                        localInterval === 30 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      30초
-                    </button>
                     <button
                       onClick={() => setLocalInterval(60)}
                       className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
@@ -90,6 +90,14 @@ const TimeSettingsModal: React.FC<TimeSettingsModalProps> = ({ isOpen, onClose, 
                       }`}
                     >
                       2분
+                    </button>
+                    <button
+                      onClick={() => setLocalInterval(300)}
+                      className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                        localInterval === 300 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      5분
                     </button>
                   </div>
                 </div>

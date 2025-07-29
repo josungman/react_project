@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
-import LineChart from "./LineChart";
 import NavigationHeader from "./common/NavigationHeader";
 import { formatTime } from "../utils/timeUtils";
 import TimeSettingsModal from "./TimeSettingsModal";
-
-interface DailyReservationData {
-  date: string;
-  amount: number;
-}
+import DateRangeSliderModal from "./DateRangeSliderModal";
+import AmountFilterModal from "./AmountFilterModal";
+import SummaryCards from "./SummaryCards";
+import ReservationChart from "./ReservationChart";
+import ReservationDetails from "./ReservationDetails";
+import Toast from "./Toast";
+import { collectBankDeposits, fetchBankDeposits, type BankDeposit } from "../services/api";
 
 interface ReservationDetail {
   date: string;
@@ -18,15 +19,14 @@ interface ReservationDetail {
 
 // 시간 설정 상수
 const TIME_CONFIG = {
-  COUNTDOWN_INITIAL: 60, //초
+  COUNTDOWN_INITIAL: 60, // 1분
   PROGRESS_UPDATE_INTERVAL: 1000, // 1초
   ANIMATION_DURATION: 1000,
 };
 
 export default function ReservationCounter() {
-  const [dailyData, setDailyData] = useState<DailyReservationData[]>([]);
   const [reservationDetails, setReservationDetails] = useState<ReservationDetail[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -37,77 +37,59 @@ export default function ReservationCounter() {
   });
   const [countdown, setCountdown] = useState<number>(updateInterval);
 
-  // 페이징 상태
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  // 조회 기간 상태 (일수 기반)
+  const [queryDays, setQueryDays] = useState<number>(() => {
+    // localStorage에서 저장된 조회 일수 불러오기
+    const savedDays = localStorage.getItem("reservationQueryDays");
+    const days = savedDays ? parseInt(savedDays) : 7;
+    return days >= 1 && days <= 30 ? days : 7;
+  });
 
-  // 정렬 상태
-  const [sortField, setSortField] = useState<"date" | "time" | "customerName" | "amount">("date");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-  // 일별 데이터 생성 함수 (상세 데이터에서 계산)
-  const generateDailyData = (details: ReservationDetail[]): DailyReservationData[] => {
-    const dailyMap = new Map<string, number>();
-
-    // 상세 데이터에서 날짜별로 예약금 합계 계산
-    details.forEach((detail) => {
-      const currentAmount = dailyMap.get(detail.date) || 0;
-      dailyMap.set(detail.date, currentAmount + detail.amount);
-    });
-
-    // 날짜 순으로 정렬하여 배열로 변환
-    const sortedDates = Array.from(dailyMap.keys()).sort((a, b) => {
-      const dateA = new Date(`2024/${a}`);
-      const dateB = new Date(`2024/${b}`);
-      return dateA.getTime() - dateB.getTime();
-    });
-
-    return sortedDates.map((date) => ({
-      date,
-      amount: dailyMap.get(date) || 0,
-    }));
-  };
-
-  // 상세 예약 데이터 생성 함수
-  const generateReservationDetails = (): ReservationDetail[] => {
-    const details: ReservationDetail[] = [];
+  // 날짜 계산 (일수 기반)
+  const [startDate, setStartDate] = useState<Date>(() => {
     const today = new Date();
-    const customerNames = ["김철수", "이영희", "박민수", "최지영", "정현우", "한소영", "윤태호", "임수진", "강동원", "조미영"];
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - queryDays + 1);
+    return startDate;
+  });
+  const [endDate, setEndDate] = useState<Date>(() => {
+    return new Date(); // 오늘을 종료일로
+  });
+  const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState<boolean>(false);
+  const [isAmountFilterModalOpen, setIsAmountFilterModalOpen] = useState<boolean>(false);
 
-    // 오늘부터 7일전까지 각 날짜별로 1~4개의 예약 생성
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
+  // 금액 필터 상태
+  const [maxAmountFilter, setMaxAmountFilter] = useState<number>(() => {
+    // localStorage에서 저장된 최대 금액 필터 불러오기
+    const savedAmount = localStorage.getItem("reservationMaxAmountFilter");
+    const amount = savedAmount ? parseInt(savedAmount) : 100000000; // 기본값: 1억원
+    return amount >= 100000 && amount <= 100000000 ? amount : 100000000;
+  });
 
-      const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-      const reservationCount = Math.floor(Math.random() * 4) + 1; // 1~4개 예약
+  // 토스트 상태
+  const [toast, setToast] = useState<{
+    isVisible: boolean;
+    message: string;
+    type: "success" | "error" | "info";
+  }>({
+    isVisible: false,
+    message: "",
+    type: "info",
+  });
 
-      for (let j = 0; j < reservationCount; j++) {
-        const timeStr = `${Math.floor(Math.random() * 24)
-          .toString()
-          .padStart(2, "0")}:${Math.floor(Math.random() * 60)
-          .toString()
-          .padStart(2, "0")}`;
-        const customerName = customerNames[Math.floor(Math.random() * customerNames.length)];
-        const amount = Math.floor(Math.random() * 1000000) + 200000; // 20만원 ~ 120만원
+  // API 데이터를 ReservationDetail 형식으로 변환하는 함수
+  const convertApiDataToReservationDetails = (apiData: BankDeposit[]): ReservationDetail[] => {
+    return apiData.map((deposit) => {
+      const regDate = new Date(deposit.reg_dt);
+      const dateStr = `${regDate.getMonth() + 1}/${regDate.getDate()}`;
+      const timeStr = `${regDate.getHours().toString().padStart(2, "0")}:${regDate.getMinutes().toString().padStart(2, "0")}`;
 
-        details.push({
-          date: dateStr,
-          time: timeStr,
-          customerName: customerName,
-          amount: amount,
-        });
-      }
-    }
-
-    // 날짜와 시간 순으로 정렬
-    return details.sort((a, b) => {
-      const dateA = new Date(`2024/${a.date}`);
-      const dateB = new Date(`2024/${b.date}`);
-      if (dateA.getTime() !== dateB.getTime()) {
-        return dateA.getTime() - dateB.getTime();
-      }
-      return a.time.localeCompare(b.time);
+      return {
+        date: dateStr,
+        time: timeStr,
+        customerName: deposit.depositor_name,
+        amount: deposit.amount,
+      };
     });
   };
 
@@ -116,19 +98,35 @@ export default function ReservationCounter() {
     setError(null);
 
     try {
-      setLoading(true);
-      const detailData = generateReservationDetails();
-      const mockData = generateDailyData(detailData);
-      setReservationDetails(detailData);
-      setDailyData(mockData);
-      setLastUpdated(new Date());
-      setCountdown(updateInterval); // 카운트다운을 현재 간격으로 리셋
+      // 첫 번째 API: 예약금 수집 (토스트 메시지 없음)
+      await collectBankDeposits(startDate, endDate);
+
+      // 두 번째 API: 예약금 데이터 조회 (성공/실패 상관없이 실행)
+      try {
+        const bankDepositsData = await fetchBankDeposits(startDate, endDate);
+        const detailData = convertApiDataToReservationDetails(bankDepositsData.data);
+
+        setReservationDetails(detailData);
+        setLastUpdated(new Date());
+        // 카운트다운 리셋하지 않음 - 자연스러운 진행 유지
+      } catch (fetchError) {
+        console.error("예약금 데이터 조회 실패:", fetchError);
+        setError("예약금 데이터를 불러오는데 실패했습니다.");
+      }
     } catch (err) {
       setError("예약금 데이터를 불러오는데 실패했습니다.");
-    } finally {
-      setLoading(false);
     }
-  }, [updateInterval]);
+  }, [updateInterval, startDate, endDate]);
+
+  // 날짜 업데이트 (queryDays가 변경될 때)
+  useEffect(() => {
+    const today = new Date();
+    const newStartDate = new Date(today);
+    newStartDate.setDate(today.getDate() - queryDays + 1);
+
+    setStartDate(newStartDate);
+    setEndDate(today);
+  }, [queryDays]);
 
   // 카운트다운 타이머와 API 호출 동기화
   useEffect(() => {
@@ -139,7 +137,7 @@ export default function ReservationCounter() {
     const countdownInterval = setInterval(() => {
       setCountdown((prev: number) => {
         if (prev <= 1) {
-          // 카운트다운이 끝나면 데이터 새로고침
+          // 카운트다운이 끝나면 데이터 새로고침 후 리셋
           fetchData();
           return updateInterval;
         }
@@ -153,82 +151,83 @@ export default function ReservationCounter() {
   // 프로그레스바 계산
   const progressPercentage = ((updateInterval - countdown) / updateInterval) * 100;
 
-  // 오늘 날짜 계산
-  const today = new Date();
-  const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
+  // 조회기간 일수 계산
+  const dateDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1);
 
-  // 금일 총 예약금 (오늘 날짜의 예약금만 합계)
-  const todayTotalAmount = reservationDetails.filter((item) => item.date === todayStr).reduce((sum, item) => sum + item.amount, 0);
+  // 조회 기간 변경 핸들러
+  const handleQueryDaysChange = useCallback(
+    (newDays: number) => {
+      setQueryDays(newDays);
 
-  // 전체 기간 총 예약금 (차트용)
-  const totalAmount = dailyData.reduce((sum, item) => sum + item.amount, 0);
+      // 날짜 업데이트
+      const today = new Date();
+      const newStartDate = new Date(today);
+      newStartDate.setDate(today.getDate() - newDays + 1);
 
-  // 정렬 함수
-  const sortData = (data: ReservationDetail[]) => {
-    return [...data].sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
+      setStartDate(newStartDate);
+      setEndDate(today);
 
-      switch (sortField) {
-        case "date":
-          aValue = new Date(`2024/${a.date}`).getTime();
-          bValue = new Date(`2024/${b.date}`).getTime();
-          break;
-        case "time":
-          aValue = a.time;
-          bValue = b.time;
-          break;
-        case "customerName":
-          aValue = a.customerName;
-          bValue = b.customerName;
-          break;
-        case "amount":
-          aValue = a.amount;
-          bValue = b.amount;
-          break;
-        default:
-          return 0;
-      }
+      // 조회 일수를 localStorage에 저장
+      localStorage.setItem("reservationQueryDays", newDays.toString());
 
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-  };
+      // 새로운 날짜로 직접 데이터 새로고침
+      const fetchDataWithNewDates = async () => {
+        setError(null);
 
-  // 정렬된 데이터
-  const sortedData = sortData(reservationDetails);
+        try {
+          // 첫 번째 API: 예약금 수집 (토스트 메시지 없음)
+          await collectBankDeposits(newStartDate, today);
+
+          // 두 번째 API: 예약금 데이터 조회 (성공/실패 상관없이 실행)
+          try {
+            const bankDepositsData = await fetchBankDeposits(newStartDate, today);
+            const detailData = convertApiDataToReservationDetails(bankDepositsData.data);
+
+            setReservationDetails(detailData);
+            setLastUpdated(new Date());
+            // 카운트다운 리셋하지 않음 - 자연스러운 진행 유지
+          } catch (fetchError) {
+            console.error("예약금 데이터 조회 실패:", fetchError);
+            setError("예약금 데이터를 불러오는데 실패했습니다.");
+          }
+        } catch (err) {
+          setError("예약금 데이터를 불러오는데 실패했습니다.");
+        }
+      };
+
+      fetchDataWithNewDates();
+    },
+    [updateInterval]
+  );
+
+  // 토스트 닫기 핸들러
+  const handleToastClose = useCallback(() => {
+    setToast((prev) => ({ ...prev, isVisible: false }));
+  }, []);
+
+  // 금액 필터 변경 핸들러
+  const handleMaxAmountChange = useCallback((newMaxAmount: number) => {
+    setMaxAmountFilter(newMaxAmount);
+    // localStorage에 최대 금액 필터 저장
+    localStorage.setItem("reservationMaxAmountFilter", newMaxAmount.toString());
+  }, []);
 
   // 업데이트 간격 변경 핸들러
   const handleUpdateIntervalChange = useCallback(
     (interval: number) => {
-      setUpdateInterval(interval);
-      setCountdown(interval); // 카운트다운을 새로운 간격으로 리셋
-      // localStorage에 업데이트 간격 저장
-      localStorage.setItem("reservationUpdateInterval", interval.toString());
+      // 유효성 검사: 60초 이상 3600초 이하인지 확인
+      if (interval >= 60 && interval <= 3600) {
+        setUpdateInterval(interval);
+        setCountdown(interval); // 새로운 간격으로 리셋
+        // localStorage에 업데이트 간격 저장
+        localStorage.setItem("reservationUpdateInterval", interval.toString());
 
-      // 즉시 데이터 새로고침하여 프로그레스바를 정상적으로 시작
-      fetchData();
+        // 즉시 데이터 새로고침
+        fetchData();
+      }
     },
     [fetchData]
   );
-
-  // 페이징 계산
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = sortedData.slice(startIndex, endIndex);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <NavigationHeader title="예약금 통계" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-lg text-gray-600">로딩 중...</div>
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -249,10 +248,37 @@ export default function ReservationCounter() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">{formatTime.dateOnly(new Date())} 화면구성완료(데이터 연동 필요. 목업데이터 사용중)</h2>
+              <p className="text-lg font-medium text-gray-700 mt-2">
+                <h2>
+                  조회 기간: {formatTime.dateOnly(startDate)} ~ {formatTime.dateOnly(endDate)}
+                </h2>
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <p className="text-lg text-gray-600 font-medium">최종 업데이트 일시: {formatTime.timeOnly(lastUpdated)}</p>
+              <button
+                onClick={() => setIsDateRangeModalOpen(true)}
+                className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                title="조회 기간 설정"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setIsAmountFilterModalOpen(true)}
+                className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                title="예약금 표출 설정"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"
+                  />
+                </svg>
+              </button>
               <button onClick={() => setIsSettingsOpen(true)} className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors" title="설정">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -291,138 +317,55 @@ export default function ReservationCounter() {
           )}
         </div>
 
+        {/* 필터 상태 표시 */}
+        {maxAmountFilter <= 100000000 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"
+                />
+              </svg>
+              <span className="text-blue-800 font-medium">
+                {maxAmountFilter >= 100000000 ? "1억원 이하 예약금만 표시" : `${(maxAmountFilter / 10000).toFixed(0)}만원 이하 예약금만 표시`}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">예약금 통계(최근 7일)</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">예약금 통계</h2>
 
           {/* 요약 카드들 */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-6 rounded-lg text-center">
-              <h3 className="text-lg font-medium text-blue-600 mb-2">금일 총 예약금</h3>
-              <p className="text-4xl font-bold text-blue-800">{todayTotalAmount.toLocaleString()}원</p>
-            </div>
-            <div className="bg-green-50 p-6 rounded-lg text-center">
-              <h3 className="text-lg font-medium text-green-600 mb-2">최근 7일 총 예약금</h3>
-              <p className="text-4xl font-bold text-green-800">{totalAmount.toLocaleString()}원</p>
-            </div>
-          </div>
+          <SummaryCards reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} dateDiff={dateDiff} />
 
           {/* 차트 */}
-          <div className="mb-6">
-            <LineChart data={dailyData} title="일별 예약금 추이" />
-          </div>
+          <ReservationChart reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} startDate={startDate} endDate={endDate} />
 
-          {/* 상세 테이블 */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">상세 내역</h3>
-              <div className="text-sm text-gray-600">
-                총 {sortedData.length}건 (페이지 {currentPage} / {totalPages})
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th
-                      className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => {
-                        if (sortField === "date") {
-                          setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-                        } else {
-                          setSortField("date");
-                          setSortDirection("asc");
-                        }
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <div className="flex items-center gap-1">
-                        날짜
-                        {sortField === "date" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
-                      </div>
-                    </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">일시</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">입금자명</th>
-                    <th
-                      className="px-4 py-2 text-right text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
-                      onClick={() => {
-                        if (sortField === "amount") {
-                          setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-                        } else {
-                          setSortField("amount");
-                          setSortDirection("asc");
-                        }
-                        setCurrentPage(1);
-                      }}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        예약금 (원)
-                        {sortField === "amount" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((item, index) => (
-                    <tr key={startIndex + index} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 text-sm text-gray-900 border-b">{item.date}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900 border-b">{item.time}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900 border-b">{item.customerName}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900 border-b text-right">{item.amount.toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* 페이징 컨트롤 */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center mt-6 space-x-2">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  이전
-                </button>
-
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`px-3 py-1 text-sm border rounded-md ${currentPage === pageNum ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-50"}`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  다음
-                </button>
-              </div>
-            )}
-          </div>
+          {/* 상세 내역 */}
+          <ReservationDetails reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} />
         </div>
       </div>
 
       {/* 시간 설정 모달 */}
       <TimeSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} updateInterval={updateInterval} onUpdateIntervalChange={handleUpdateIntervalChange} />
+
+      {/* 조회 기간 설정 모달 */}
+      <DateRangeSliderModal isOpen={isDateRangeModalOpen} onClose={() => setIsDateRangeModalOpen(false)} currentDays={queryDays} onDaysChange={handleQueryDaysChange} />
+
+      {/* 예약금 표출 설정 모달 */}
+      <AmountFilterModal
+        isOpen={isAmountFilterModalOpen}
+        onClose={() => setIsAmountFilterModalOpen(false)}
+        currentMaxAmount={maxAmountFilter}
+        onMaxAmountChange={handleMaxAmountChange}
+      />
+
+      {/* 토스트 알림 */}
+      <Toast message={toast.message} type={toast.type} isVisible={toast.isVisible} onClose={handleToastClose} />
     </div>
   );
 }
