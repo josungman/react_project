@@ -27,7 +27,7 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     const numValue = parseInt(value) || 0;
-    const clampedValue = Math.min(numValue, 100000000); // 최대 1억원
+    const clampedValue = Math.min(numValue, 10000000); // 최대 1000만원
 
     setLocalMaxAmount(clampedValue);
     setInputValue(clampedValue.toLocaleString());
@@ -80,14 +80,14 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
               <input
                 type="range"
                 min="100000"
-                max="100000000"
+                max="10000000"
                 step="100000"
                 value={localMaxAmount}
                 onChange={handleSliderChange}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((localMaxAmount - 100000) / 99900000) * 100}%, #e5e7eb ${
-                    ((localMaxAmount - 100000) / 99900000) * 100
+                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((localMaxAmount - 100000) / 9900000) * 100}%, #e5e7eb ${
+                    ((localMaxAmount - 100000) / 9900000) * 100
                   }%, #e5e7eb 100%)`,
                 }}
               />
@@ -95,9 +95,9 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
               {/* 슬라이더 마커들 */}
               <div className="flex justify-between text-xs text-gray-500 mt-1">
                 <span>10만원</span>
+                <span>100만원</span>
+                <span>500만원</span>
                 <span>1000만원</span>
-                <span>5000만원</span>
-                <span>1억원</span>
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
               />
               <span className="text-sm text-gray-500">원</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">최대 1억원까지 설정 가능합니다.</p>
+            <p className="text-xs text-gray-500 mt-1">최대 1000만원까지 설정 가능합니다.</p>
           </div>
 
           {/* 미리보기 */}
@@ -124,7 +124,6 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
             <div className="text-sm text-blue-700">
               <p>• {formatAmount(localMaxAmount)} 이하의 예약금만 표시됩니다.</p>
               <p>• {formatAmount(localMaxAmount)} 초과 예약금은 필터링됩니다.</p>
-              <p className="font-medium mt-1">이 설정은 상세 내역 테이블에만 적용됩니다.</p>
             </div>
           </div>
 
@@ -132,6 +131,17 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">빠른 선택</label>
             <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  setLocalMaxAmount(100000);
+                  setInputValue("100,000");
+                }}
+                className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                  localMaxAmount === 100000 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                10만원
+              </button>
               <button
                 onClick={() => {
                   setLocalMaxAmount(1000000);
@@ -164,17 +174,6 @@ export default function AmountFilterModal({ isOpen, onClose, currentMaxAmount, o
                 }`}
               >
                 1000만원
-              </button>
-              <button
-                onClick={() => {
-                  setLocalMaxAmount(100000000);
-                  setInputValue("100,000,000");
-                }}
-                className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                  localMaxAmount === 100000000 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                1억원
               </button>
             </div>
           </div>
