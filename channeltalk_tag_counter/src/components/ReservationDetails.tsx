@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ReservationDetail {
   date: string;
@@ -15,14 +15,25 @@ interface ReservationDetailsProps {
 export default function ReservationDetails({ reservationDetails, maxAmountFilter }: ReservationDetailsProps) {
   // 페이징 상태
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(() => {
+    const saved = localStorage.getItem("reservationItemsPerPage");
+    return saved ? parseInt(saved, 10) : 10;
+  });
 
   // 정렬 상태
   const [sortField, setSortField] = useState<"date" | "time" | "customerName" | "amount">("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  // 금액 필터 적용된 데이터
-  const filteredData = reservationDetails.filter((item) => item.amount <= maxAmountFilter);
+  // 검색 상태
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // itemsPerPage가 변경될 때 로컬스토리지에 저장
+  useEffect(() => {
+    localStorage.setItem("reservationItemsPerPage", itemsPerPage.toString());
+  }, [itemsPerPage]);
+
+  // 금액 필터와 검색어 적용된 데이터
+  const filteredData = reservationDetails.filter((item) => item.amount <= maxAmountFilter && item.customerName.toLowerCase().includes(searchTerm.toLowerCase()));
 
   // 정렬 함수
   const sortData = (data: ReservationDetail[]) => {
@@ -69,9 +80,60 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">상세 내역</h3>
-        <div className="text-sm text-gray-600">
-          총 {sortedData.length}건 (페이지 {currentPage} / {totalPages})
+        <div className="flex items-center gap-6">
+          <h3 className="text-lg font-semibold text-gray-700">상세 내역</h3>
+          {/* 검색 필터 */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="customerSearch" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+              입금자명 검색:
+            </label>
+            <input
+              type="text"
+              id="customerSearch"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // 검색 시 첫 페이지로 이동
+              }}
+              placeholder="입금자명을 입력하세요"
+              className="w-48 px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setCurrentPage(1);
+                }}
+                className="px-2 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              >
+                초기화
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="itemsPerPage" className="text-sm text-gray-600">
+              표시:
+            </label>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1); // 페이지당 항목 수 변경 시 첫 페이지로 이동
+              }}
+              className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value={5}>5개</option>
+              <option value={10}>10개</option>
+              <option value={15}>15개</option>
+              <option value={20}>20개</option>
+            </select>
+          </div>
+          <div className="text-sm text-gray-600">
+            총 {sortedData.length}건 (페이지 {currentPage} / {totalPages})
+          </div>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -79,7 +141,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           <thead>
             <tr className="bg-gray-50">
               <th
-                className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "date") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -95,10 +157,10 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                   {sortField === "date" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">일시</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">입금자명</th>
+              <th className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b">일시</th>
+              <th className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b">입금자명</th>
               <th
-                className="px-4 py-2 text-right text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-4 py-1.5 text-right text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "amount") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -119,10 +181,10 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           <tbody>
             {currentItems.map((item, index) => (
               <tr key={startIndex + index} className="hover:bg-gray-50">
-                <td className="px-4 py-2 text-sm text-gray-900 border-b">{item.date}</td>
-                <td className="px-4 py-2 text-sm text-gray-900 border-b">{item.time}</td>
-                <td className="px-4 py-2 text-sm text-gray-900 border-b">{item.customerName}</td>
-                <td className="px-4 py-2 text-sm text-gray-900 border-b text-right">{item.amount.toLocaleString()}</td>
+                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">{item.date}</td>
+                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">{item.time}</td>
+                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">{item.customerName}</td>
+                <td className="px-4 py-1.5 text-sm text-gray-900 border-b text-right">{item.amount.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>

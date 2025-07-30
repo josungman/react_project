@@ -362,16 +362,16 @@ export default function ReservationCounter() {
         )}
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">예약금 통계</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-0">예약금 통계</h2>
 
           {/* 요약 카드들 */}
           <SummaryCards reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} dateDiff={dateDiff} />
 
-          {/* 차트 */}
-          <ReservationChart reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} startDate={startDate} endDate={endDate} />
-
           {/* 상세 내역 */}
           <ReservationDetails reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} />
+
+          {/* 차트 */}
+          <ReservationChart reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} startDate={startDate} endDate={endDate} />
         </div>
       </div>
 

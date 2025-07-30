@@ -213,14 +213,14 @@ const ChannelTalkCounter: React.FC = () => {
                   </button>
                 </div>
                 <div>
-                  전체 건수{" "}
+                  예약 완료{" "}
                   <span className="font-bold text-green-600">
                     {(() => {
-                      let filteredTags = tagCounts.filter((tag) => !excludedTags.includes(tag.tag));
-                      if (hideZeroReservations) {
-                        filteredTags = filteredTags.filter((tag) => tag.leftCount > 0);
+                      const targetTag = tagCounts.find((tag) => tag.tag === "상담프로세스/예약완료");
+                      if (targetTag) {
+                        return `${targetTag.rightCount}`;
                       }
-                      return `${filteredTags.reduce((sum, tag) => sum + tag.leftCount, 0)}/${filteredTags.reduce((sum, tag) => sum + tag.rightCount, 0)}`;
+                      return "0/0";
                     })()}
                   </span>
                   건
@@ -233,6 +233,8 @@ const ChannelTalkCounter: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm text-blue-800">
                   <span className="font-medium">n/n건 (예약완료 / 상담태그)</span> - 예약완료태그 건수와 상담태그 건수를 표시합니다.
+                  <br />* 하나의 상담방에 여러 태그가 동시 등록된 경우, 예약완료 건수도 해당 태그별로 중복 집계됩니다.
+                  <br />* 이로 인해 태그별 예약, 총 예약완료 건수는 우측 상단 확인 가능합니다.
                 </p>
               </div>
 
