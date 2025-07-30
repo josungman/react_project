@@ -333,6 +333,7 @@ const formatDateForAPI = (date: Date): string => {
 export const collectBankDeposits = async (startDate: Date, endDate: Date): Promise<CollectResponse> => {
   try {
     const url = `https://elbserver.store/popbill/api/bank-deposits/collect`;
+    //const url = `http://127.0.0.1:5763/popbill/api/bank-deposits/collect`;
     console.log("🌐 collectBankDeposits URL:", url);
 
     // 날짜 순서 확인 및 수정 (시작일이 종료일보다 늦으면 안됨)
@@ -391,6 +392,7 @@ export const collectBankDeposits = async (startDate: Date, endDate: Date): Promi
 export const fetchBankDeposits = async (startDate: Date, endDate: Date): Promise<BankDepositsResponse> => {
   try {
     const url = `https://elbserver.store/popbill/api/bank-deposits`;
+    //const url = `http://127.0.0.1:5763/popbill/api/bank-deposits`;
     console.log("🌐 fetchBankDeposits URL:", url);
 
     // 날짜 순서 확인 및 수정 (시작일이 종료일보다 늦으면 안됨)

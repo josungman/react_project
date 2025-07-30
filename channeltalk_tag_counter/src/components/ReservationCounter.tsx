@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import NavigationHeader from "./common/NavigationHeader";
 import { formatTime } from "../utils/timeUtils";
 import TimeSettingsModal from "./TimeSettingsModal";
@@ -36,6 +36,10 @@ export default function ReservationCounter() {
     return saved ? parseInt(saved) : TIME_CONFIG.COUNTDOWN_INITIAL;
   });
   const [countdown, setCountdown] = useState<number>(updateInterval);
+
+  // 중복 요청 방지를 위한 상태
+  const [isCollecting, setIsCollecting] = useState<boolean>(false);
+  const lastCollectRequest = useRef<string>("");
 
   // 조회 기간 상태 (일수 기반)
   const [queryDays, setQueryDays] = useState<number>(() => {
@@ -97,7 +101,23 @@ export default function ReservationCounter() {
   const fetchData = useCallback(async () => {
     setError(null);
 
+    // 중복 요청 방지: 현재 요청 중이면 스킵
+    if (isCollecting) {
+      console.log("🔄 이미 수집 중인 요청이 있어서 스킵합니다.");
+      return;
+    }
+
+    // 동일한 날짜 범위에 대한 중복 요청 방지
+    const requestKey = `${startDate.toISOString().split("T")[0]}_${endDate.toISOString().split("T")[0]}`;
+    if (lastCollectRequest.current === requestKey) {
+      console.log("🔄 동일한 날짜 범위에 대한 중복 요청을 스킵합니다:", requestKey);
+      return;
+    }
+
     try {
+      setIsCollecting(true);
+      lastCollectRequest.current = requestKey;
+
       // 첫 번째 API: 예약금 수집 (토스트 메시지 없음)
       await collectBankDeposits(startDate, endDate);
 
@@ -115,8 +135,10 @@ export default function ReservationCounter() {
       }
     } catch (err) {
       setError("예약금 데이터를 불러오는데 실패했습니다.");
+    } finally {
+      setIsCollecting(false);
     }
-  }, [updateInterval, startDate, endDate]);
+  }, [updateInterval, startDate, endDate, isCollecting]);
 
   // 날짜 업데이트 (queryDays가 변경될 때)
   useEffect(() => {
@@ -170,34 +192,10 @@ export default function ReservationCounter() {
       // 조회 일수를 localStorage에 저장
       localStorage.setItem("reservationQueryDays", newDays.toString());
 
-      // 새로운 날짜로 직접 데이터 새로고침
-      const fetchDataWithNewDates = async () => {
-        setError(null);
-
-        try {
-          // 첫 번째 API: 예약금 수집 (토스트 메시지 없음)
-          await collectBankDeposits(newStartDate, today);
-
-          // 두 번째 API: 예약금 데이터 조회 (성공/실패 상관없이 실행)
-          try {
-            const bankDepositsData = await fetchBankDeposits(newStartDate, today);
-            const detailData = convertApiDataToReservationDetails(bankDepositsData.data);
-
-            setReservationDetails(detailData);
-            setLastUpdated(new Date());
-            // 카운트다운 리셋하지 않음 - 자연스러운 진행 유지
-          } catch (fetchError) {
-            console.error("예약금 데이터 조회 실패:", fetchError);
-            setError("예약금 데이터를 불러오는데 실패했습니다.");
-          }
-        } catch (err) {
-          setError("예약금 데이터를 불러오는데 실패했습니다.");
-        }
-      };
-
-      fetchDataWithNewDates();
+      // 새로운 날짜로 직접 데이터 새로고침 (중복 방지 로직이 fetchData에 포함됨)
+      fetchData();
     },
-    [updateInterval]
+    [fetchData]
   );
 
   // 토스트 닫기 핸들러
@@ -248,11 +246,9 @@ export default function ReservationCounter() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-lg font-medium text-gray-700 mt-2">
-                <h2>
-                  조회 기간: {formatTime.dateOnly(startDate)} ~ {formatTime.dateOnly(endDate)}
-                </h2>
-              </p>
+              <h2 className="text-lg font-medium text-gray-700 mt-2">
+                조회 기간: {formatTime.dateOnly(startDate)} ~ {formatTime.dateOnly(endDate)}
+              </h2>
             </div>
             <div className="flex items-center gap-4">
               <p className="text-lg text-gray-600 font-medium">최종 업데이트 일시: {formatTime.timeOnly(lastUpdated)}</p>
@@ -308,6 +304,19 @@ export default function ReservationCounter() {
                 }}
               ></div>
             </div>
+            {isCollecting && (
+              <div className="mt-2 text-sm text-blue-600 flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                데이터 수집 중...
+              </div>
+            )}
           </div>
 
           {error && (
