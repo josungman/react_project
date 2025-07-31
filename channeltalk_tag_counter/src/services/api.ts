@@ -308,6 +308,7 @@ export interface BankDeposit {
   deposit_bank: string;
   depositor_name: string;
   reg_dt: string;
+  account_number?: string; // 입금계좌번호 (선택적 필드)
 }
 
 export interface BankDepositsResponse {

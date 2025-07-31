@@ -15,6 +15,8 @@ interface ReservationDetail {
   time: string;
   customerName: string;
   amount: number;
+  depositBank: string;
+  accountNumber: string;
 }
 
 // 시간 설정 상수
@@ -93,6 +95,8 @@ export default function ReservationCounter() {
         time: timeStr,
         customerName: deposit.depositor_name,
         amount: deposit.amount,
+        depositBank: deposit.deposit_bank,
+        accountNumber: deposit.account_number || "-", // 계좌번호가 없으면 "-" 표시
       };
     });
   };
