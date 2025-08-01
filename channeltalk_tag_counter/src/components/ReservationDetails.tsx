@@ -89,41 +89,43 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-6">
-          <h3 className="text-lg font-semibold text-gray-700">상세 내역</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-700">상세 내역</h3>
           {/* 검색 필터 */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="customerSearch" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <label htmlFor="customerSearch" className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
               송금자명 검색:
             </label>
-            <input
-              type="text"
-              id="customerSearch"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // 검색 시 첫 페이지로 이동
-              }}
-              placeholder="송금자명을 입력하세요"
-              className="w-48 px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setCurrentPage(1);
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                id="customerSearch"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // 검색 시 첫 페이지로 이동
                 }}
-                className="px-2 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-              >
-                초기화
-              </button>
-            )}
+                placeholder="송금자명을 입력하세요"
+                className="w-full sm:w-48 px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setCurrentPage(1);
+                  }}
+                  className="px-2 py-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  초기화
+                </button>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-2">
-            <label htmlFor="itemsPerPage" className="text-sm text-gray-600">
+            <label htmlFor="itemsPerPage" className="text-xs sm:text-sm text-gray-600">
               표시:
             </label>
             <select
@@ -133,7 +135,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 setItemsPerPage(Number(e.target.value));
                 setCurrentPage(1); // 페이지당 항목 수 변경 시 첫 페이지로 이동
               }}
-              className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value={5}>5개</option>
               <option value={10}>10개</option>
@@ -141,17 +143,17 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
               <option value={20}>20개</option>
             </select>
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600">
             총 {sortedData.length}건 (페이지 {currentPage} / {totalPages})
           </div>
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full bg-white border border-gray-200 text-xs sm:text-sm">
           <thead>
             <tr className="bg-gray-50">
               <th
-                className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "date") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -168,7 +170,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 </div>
               </th>
               <th
-                className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "customerName") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -185,7 +187,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 </div>
               </th>
               <th
-                className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "depositBank") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -202,7 +204,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 </div>
               </th>
               <th
-                className="px-4 py-1.5 text-left text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "accountNumber") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -219,7 +221,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 </div>
               </th>
               <th
-                className="px-4 py-1.5 text-right text-sm font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-2 sm:px-4 py-1.5 text-right font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "amount") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -240,13 +242,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           <tbody>
             {currentItems.map((item, index) => (
               <tr key={startIndex + index} className="hover:bg-gray-50">
-                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">
+                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b">
                   {item.date} {item.time}
                 </td>
-                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">{item.customerName}</td>
-                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">{item.depositBank}</td>
-                <td className="px-4 py-1.5 text-sm text-gray-900 border-b">{item.accountNumber}</td>
-                <td className="px-4 py-1.5 text-sm text-gray-900 border-b text-right">{item.amount.toLocaleString()}</td>
+                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b break-words">{item.customerName}</td>
+                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b break-words">{item.depositBank}</td>
+                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b break-words">{item.accountNumber}</td>
+                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b text-right break-words">{item.amount.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -255,11 +257,11 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
 
       {/* 페이징 컨트롤 */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center mt-6 space-x-2">
+        <div className="flex items-center justify-center mt-4 sm:mt-6 space-x-1 sm:space-x-2">
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             이전
           </button>
@@ -280,7 +282,9 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
               <button
                 key={pageNum}
                 onClick={() => setCurrentPage(pageNum)}
-                className={`px-3 py-1 text-sm border rounded-md ${currentPage === pageNum ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-50"}`}
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border rounded-md ${
+                  currentPage === pageNum ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-50"
+                }`}
               >
                 {pageNum}
               </button>
@@ -290,7 +294,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           <button
             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             다음
           </button>

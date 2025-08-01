@@ -51,7 +51,7 @@ export default function ReservationChart({ reservationDetails, maxAmountFilter, 
   const filteredData = reservationDetails.filter((item) => item.amount <= maxAmountFilter);
 
   return (
-    <div className="mb-6">
+    <div className="mb-4 sm:mb-6">
       <LineChart data={generateChartData(filteredData)} title="일별 예약금 추이" />
     </div>
   );

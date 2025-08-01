@@ -16,8 +16,8 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">{title}</h2>
         <div className="text-center py-8 text-gray-500">표시할 데이터가 없습니다.</div>
       </div>
     );
@@ -79,7 +79,7 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
       labels: {
         style: {
           colors: "#666",
-          fontSize: "11px",
+          fontSize: "10px",
           fontWeight: "500",
         },
         rotate: -45,
@@ -105,7 +105,7 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
         }
       },
       style: {
-        fontSize: "9px",
+        fontSize: "8px",
         fontWeight: "bold",
         colors: ["#2563eb"],
       },
@@ -149,27 +149,31 @@ const LineChart: React.FC<LineChartProps> = ({ data, title = "일별 예약금 �
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-2">
+    <div className="bg-white rounded-lg shadow-lg p-2 sm:p-4">
       {/* 차트 타입 전환 버튼 */}
       <div className="flex justify-end mb-2">
         <div className="flex bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setChartType("line")}
-            className={`px-3 py-1 text-sm rounded-md transition-colors ${chartType === "line" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"}`}
+            className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition-colors ${
+              chartType === "line" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"
+            }`}
           >
             라인 차트
           </button>
           <button
             onClick={() => setChartType("bar")}
-            className={`px-3 py-1 text-sm rounded-md transition-colors ${chartType === "bar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"}`}
+            className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition-colors ${
+              chartType === "bar" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"
+            }`}
           >
             막대 차트
           </button>
         </div>
       </div>
 
-      <div className="h-80">
-        <ReactApexChart options={chartOptions} series={chartSeries} type={chartType} height={320} />
+      <div className="h-64 sm:h-80">
+        <ReactApexChart options={chartOptions} series={chartSeries} type={chartType} height={280} />
       </div>
     </div>
   );
