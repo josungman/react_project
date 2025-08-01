@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatTime } from "../utils/timeUtils";
 
 interface ReservationDetail {
   date: string;
@@ -12,9 +13,11 @@ interface ReservationDetail {
 interface ReservationDetailsProps {
   reservationDetails: ReservationDetail[];
   maxAmountFilter: number;
+  startDate: Date;
+  endDate: Date;
 }
 
-export default function ReservationDetails({ reservationDetails, maxAmountFilter }: ReservationDetailsProps) {
+export default function ReservationDetails({ reservationDetails, maxAmountFilter, startDate, endDate }: ReservationDetailsProps) {
   // 페이징 상태
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(() => {
@@ -91,7 +94,12 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700">상세 내역</h3>
+          <div className="flex items-center gap-4">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700">상세 내역</h3>
+            <p className="text-sm text-gray-600">
+              기간: {formatTime.dateOnly(startDate)} ~ {formatTime.dateOnly(endDate)}
+            </p>
+          </div>
           {/* 검색 필터 */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <label htmlFor="customerSearch" className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -153,7 +161,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           <thead>
             <tr className="bg-gray-50">
               <th
-                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "date") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -165,12 +173,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 }}
               >
                 <div className="flex items-center gap-1">
-                  날짜/시간
-                  {sortField === "date" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  <span className="hidden sm:inline">날짜/시간</span>
+                  <span className="sm:hidden text-xs">날짜</span>
+                  {sortField === "date" && <span className="text-blue-600 text-xs sm:text-sm">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>
               <th
-                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "customerName") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -182,12 +191,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 }}
               >
                 <div className="flex items-center gap-1">
-                  송금자명
-                  {sortField === "customerName" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  <span className="hidden sm:inline">송금자명</span>
+                  <span className="sm:hidden text-xs">송금자</span>
+                  {sortField === "customerName" && <span className="text-blue-600 text-xs sm:text-sm">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>
               <th
-                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "depositBank") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -199,12 +209,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 }}
               >
                 <div className="flex items-center gap-1">
-                  송금은행
-                  {sortField === "depositBank" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  <span className="hidden sm:inline">송금은행</span>
+                  <span className="sm:hidden text-xs">은행</span>
+                  {sortField === "depositBank" && <span className="text-blue-600 text-xs sm:text-sm">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>
               <th
-                className="px-2 sm:px-4 py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-left font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "accountNumber") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -216,12 +227,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 }}
               >
                 <div className="flex items-center gap-1">
-                  입금계좌번호
-                  {sortField === "accountNumber" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  <span className="hidden sm:inline">입금계좌번호</span>
+                  <span className="sm:hidden text-xs">계좌번호</span>
+                  {sortField === "accountNumber" && <span className="text-blue-600 text-xs sm:text-sm">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>
               <th
-                className="px-2 sm:px-4 py-1.5 text-right font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
+                className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-right font-medium text-gray-700 border-b cursor-pointer hover:bg-gray-100 select-none"
                 onClick={() => {
                   if (sortField === "amount") {
                     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -233,8 +245,9 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 }}
               >
                 <div className="flex items-center justify-end gap-1">
-                  예약금 (원)
-                  {sortField === "amount" && <span className="text-blue-600">{sortDirection === "asc" ? "↑" : "↓"}</span>}
+                  <span className="hidden sm:inline">예약금 (원)</span>
+                  <span className="sm:hidden text-xs">예약금</span>
+                  {sortField === "amount" && <span className="text-blue-600 text-xs sm:text-sm">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>
             </tr>
@@ -242,13 +255,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           <tbody>
             {currentItems.map((item, index) => (
               <tr key={startIndex + index} className="hover:bg-gray-50">
-                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b">
+                <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b text-xs sm:text-sm">
                   {item.date} {item.time}
                 </td>
-                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b break-words">{item.customerName}</td>
-                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b break-words">{item.depositBank}</td>
-                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b break-words">{item.accountNumber}</td>
-                <td className="px-2 sm:px-4 py-1.5 text-gray-900 border-b text-right break-words">{item.amount.toLocaleString()}</td>
+                <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b break-words text-xs sm:text-sm">{item.customerName}</td>
+                <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b break-words text-xs sm:text-sm">{item.depositBank}</td>
+                <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b break-words text-xs sm:text-sm">{item.accountNumber}</td>
+                <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b text-right break-words text-xs sm:text-sm">{item.amount.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
