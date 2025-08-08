@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function HomePage() {
+  // 브라우저 탭 제목 설정
+  useEffect(() => {
+    document.title = "우아한정리 대시보드";
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center">
-          <h1 className="text-6xl font-bold text-gray-900 mb-6">채널톡 대시보드</h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">채널톡 내부용 대시보드</p>
+          <h1 className="text-6xl font-bold text-gray-900 mb-6">우아한정리</h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">대시보드</p>
 
           <div className="mt-12 flex justify-center space-x-6">
             <Link to="/tag_dashboard">

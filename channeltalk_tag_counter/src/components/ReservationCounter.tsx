@@ -86,6 +86,11 @@ export default function ReservationCounter() {
     type: "info",
   });
 
+  // 브라우저 탭 제목 설정
+  useEffect(() => {
+    document.title = "우아한정리 예약금 확인";
+  }, []);
+
   // API 데이터를 ReservationDetail 형식으로 변환하는 함수
   const convertApiDataToReservationDetails = (apiData: BankDeposit[]): ReservationDetail[] => {
     return apiData.map((deposit) => {

@@ -41,6 +41,11 @@ const ChannelTalkCounter: React.FC = () => {
 
   const [countdown, setCountdown] = useState<number>(updateInterval);
 
+  // 브라우저 탭 제목 설정
+  useEffect(() => {
+    document.title = "우아한정리 채널톡 태그 통계";
+  }, []);
+
   // 데이터 가져오기 함수
   const fetchData = useCallback(async () => {
     console.log("🔄 데이터 가져오기 시작 - ChannelTalkCounter.tsx의 fetchData 함수");
