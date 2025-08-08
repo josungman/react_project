@@ -9,6 +9,7 @@ import ReservationChart from "./ReservationChart";
 import ReservationDetails from "./ReservationDetails";
 import Toast from "./Toast";
 import { collectBankDeposits, fetchBankDeposits, type BankDeposit } from "../services/api";
+import { updateMetaTags } from "../utils/metaUtils";
 
 interface ReservationDetail {
   date: string;
@@ -86,9 +87,13 @@ export default function ReservationCounter() {
     type: "info",
   });
 
-  // 브라우저 탭 제목 설정
+  // 브라우저 탭 제목 및 메타 태그 설정
   useEffect(() => {
-    document.title = "우아한정리 예약금 확인";
+    updateMetaTags({
+      title: "우아한정리 예약금 확인",
+      description: "우아한정리 예약금 현황 및 추이 확인",
+      url: window.location.href,
+    });
   }, []);
 
   // API 데이터를 ReservationDetail 형식으로 변환하는 함수

@@ -5,6 +5,7 @@ import type { TagCount } from "../services/api";
 import { formatTime } from "../utils/timeUtils";
 import ExcludedTagsModal from "./ExcludedTagsModal";
 import TimeSettingsModal from "./TimeSettingsModal";
+import { updateMetaTags } from "../utils/metaUtils";
 //import BarChart from "./BarChart";
 
 // 시간 설정 상수
@@ -41,9 +42,13 @@ const ChannelTalkCounter: React.FC = () => {
 
   const [countdown, setCountdown] = useState<number>(updateInterval);
 
-  // 브라우저 탭 제목 설정
+  // 브라우저 탭 제목 및 메타 태그 설정
   useEffect(() => {
-    document.title = "우아한정리 채널톡 태그 통계";
+    updateMetaTags({
+      title: "우아한정리 채널톡 태그 통계",
+      description: "우아한정리 채널톡 태그별 사용 빈도 및 통계 확인",
+      url: window.location.href,
+    });
   }, []);
 
   // 데이터 가져오기 함수

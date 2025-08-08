@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
+import { updateMetaTags } from "../utils/metaUtils";
 
 export default function HomePage() {
-  // 브라우저 탭 제목 설정
+  // 브라우저 탭 제목 및 메타 태그 설정
   useEffect(() => {
-    document.title = "우아한정리 대시보드";
+    updateMetaTags({
+      title: "우아한정리 대시보드",
+      description: "우아한정리 내부용 대시보드 - 태그 통계 및 예약금 확인",
+      url: window.location.href,
+    });
   }, []);
 
   return (
