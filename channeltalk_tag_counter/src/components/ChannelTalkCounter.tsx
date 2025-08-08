@@ -45,7 +45,7 @@ const ChannelTalkCounter: React.FC = () => {
   // 브라우저 탭 제목 및 메타 태그 설정
   useEffect(() => {
     updateMetaTags({
-      title: "우아한정리 채널톡 태그 통계",
+      title: "우아한정리 태그 및 예약완료 확인",
       description: "우아한정리 채널톡 태그별 사용 빈도 및 통계 확인",
       url: window.location.href,
     });
@@ -147,7 +147,7 @@ const ChannelTalkCounter: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <NavigationHeader title="채널톡 태그 통계" />
+      <NavigationHeader title="우아한정리 태그 및 예약완료 확인" />
 
       <div className="max-w-6xl mx-auto mt-8">
         {/* 컨트롤 패널 */}

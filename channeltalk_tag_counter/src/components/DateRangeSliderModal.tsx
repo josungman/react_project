@@ -88,12 +88,7 @@ export default function DateRangeSliderModal({ isOpen, onClose, currentDays, onD
               />
 
               {/* 슬라이더 마커들 */}
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>1일</span>
-                <span>7일</span>
-                <span>15일</span>
-                <span>30일</span>
-              </div>
+              <div className="flex justify-between text-xs text-gray-500 mt-1"></div>
             </div>
           </div>
 

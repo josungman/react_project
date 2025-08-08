@@ -263,7 +263,7 @@ export default function ReservationCounter() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <NavigationHeader title="예약금 통계" />
+        <NavigationHeader title="우아한정리 예약금 확인" />
         <div className="flex items-center justify-center h-64">
           <div className="text-lg text-red-600">{error}</div>
         </div>
@@ -273,7 +273,7 @@ export default function ReservationCounter() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <NavigationHeader title="예약금 통계" />
+      <NavigationHeader title="우아한정리 예약금 확인" />
       <div className="max-w-6xl mx-auto p-6">
         {/* 모니터링 상태 카드 */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -385,9 +385,9 @@ export default function ReservationCounter() {
         )}
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
+          {/* <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-800">예약금 통계</h2>
-          </div>
+          </div> */}
 
           {/* 요약 카드들 */}
           <SummaryCards reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} dateDiff={dateDiff} />
