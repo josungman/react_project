@@ -7,10 +7,9 @@ interface UseSendbirdChannelProps {
   setConnectionError: (error: string) => void;
   setChannel: (channel: any) => void;
   setIsChannelReady: (ready: boolean) => void;
-  setupChannelHandler: (channel: any, user: any) => void;
 }
 
-export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, setChannel, setIsChannelReady, setupChannelHandler }: UseSendbirdChannelProps) => {
+export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, setChannel, setIsChannelReady }: UseSendbirdChannelProps) => {
   const [isChannelReady] = useState(false);
 
   const enterChannelByUrl = useCallback(
@@ -192,9 +191,6 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
         setIsChannelReady(true);
         setConnectionError("");
 
-        // 채널 핸들러 설정
-        setupChannelHandler(channel, user);
-
         return;
       }
 
@@ -211,12 +207,9 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
         setChannel(channel);
         setIsChannelReady(true);
         setConnectionError("");
-
-        // 채널 핸들러 설정
-        setupChannelHandler(channel, user);
       });
     },
-    [setChannel, setIsChannelReady, setConnectionError, setupChannelHandler]
+    [setChannel, setIsChannelReady, setConnectionError]
   );
 
   return {

@@ -61,15 +61,15 @@ export default function ChatCreationPage() {
         });
       });
 
-      // 두 번째 사용자도 먼저 연결
+      // 두 번째 사용자도 먼저 연결 (실패 시 최소 정보로 대체)
       console.log("두 번째 사용자 연결 중:", user2Id);
-      const user2 = await new Promise((resolve, reject) => {
+      const user2 = await new Promise((resolve) => {
         const sb2 = new SendBird({ appId: APP_ID });
         sb2.connect(user2Id, (user: any, error: any) => {
           if (error) {
             console.error("두 번째 사용자 연결 실패:", error);
-            // 두 번째 사용자 연결 실패는 치명적이지 않으므로 resolve
-            resolve(null);
+            // 실패 시에도 user2는 최소 식별 정보로 채워서 null/undefined 방지
+            resolve({ userId: user2Id, connectionStatus: "unknown" });
             return;
           }
           console.log("두 번째 사용자 연결 성공:", user);
@@ -122,7 +122,7 @@ export default function ChatCreationPage() {
       // 두 사용자가 모두 연결되었으므로 채널 생성 완료
       console.log("두 사용자 모두 연결 완료!");
       console.log("user1 연결 상태:", user1Id);
-      console.log("user2 연결 상태:", user2Id);
+      console.log("user2 연결 상태:", (user2 as any)?.connectionStatus || "unknown");
 
       // 생성된 채널을 로컬 스토리지에 저장
       const channelInfo = {

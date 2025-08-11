@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useSendbirdConnection } from "../hooks/useSendbirdConnection";
 import { useSendbirdChannel } from "../hooks/useSendbirdChannel";
-import { useSendbirdMessages } from "../hooks/useSendbirdMessages";
+import { SendBirdProvider, Channel } from "@sendbird/uikit-react";
+import "@sendbird/uikit-react/dist/index.css";
 
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
 
@@ -12,7 +13,6 @@ export default function CustomerSupportPage() {
   const urlUserId = searchParams.get("user");
   const userType = searchParams.get("type"); // "customer" 또는 "agent"
   const navigate = useNavigate();
-  const location = useLocation();
 
   // APP_ID 확인 및 에러 처리
   if (!APP_ID) {
@@ -43,29 +43,19 @@ export default function CustomerSupportPage() {
   const [isChannelReady, setIsChannelReady] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  // 메시지 관련 훅
-  const { messages, newMessage, setNewMessage, currentHandlerId, setupChannelHandler, sendMessage, handleKeyPress } = useSendbirdMessages({
-    sb: null,
-    user: null,
-    channel,
-    isChannelReady,
-  });
-
   // 채널 관련 훅
-  const { enterChannelByUrl, enterChannel } = useSendbirdChannel({
+  const { enterChannelByUrl } = useSendbirdChannel({
     sb: null,
     user: null,
     setConnectionError: () => {},
     setChannel,
     setIsChannelReady,
-    setupChannelHandler,
   });
 
   // 연결 관련 훅
   const { isConnected, sb, user, isConnecting, connectionError, retryConnection } = useSendbirdConnection({
     channelId,
     urlUserId: urlUserId || undefined,
-    enterChannelByUrl,
   });
 
   // 사용자가 준비되면 채널 입장 시도
@@ -92,23 +82,17 @@ export default function CustomerSupportPage() {
     try {
       // 상담사만 채널을 닫을 수 있음
       if (userType === "agent") {
-        // 채널 상태를 "closed"로 변경하는 메시지 전송
-        const closeMessage = {
-          message: "상담이 종료되었습니다.",
-          data: JSON.stringify({ action: "close_support", timestamp: Date.now() }),
-        };
+        // 간단히 종료 안내 메시지 전송 후 나가기
+        await new Promise((resolve) => {
+          if (channel?.sendUserMessage) {
+            channel.sendUserMessage("상담이 종료되었습니다.", () => resolve(null));
+          } else {
+            resolve(null);
+          }
+        });
 
-        await sendMessage(user, closeMessage);
-
-        // 채널에서 나가기
-        if (channel.leave) {
-          channel.leave((response: any, error: any) => {
-            if (error) {
-              console.error("채널 나가기 실패:", error);
-            } else {
-              console.log("채널 나가기 성공");
-            }
-          });
+        if (channel?.leave) {
+          channel.leave((_: any, __: any) => {});
         }
 
         alert("상담이 종료되었습니다.");
@@ -136,7 +120,7 @@ export default function CustomerSupportPage() {
     try {
       // 채널에서 나가기
       if (channel.leave) {
-        channel.leave((response: any, error: any) => {
+        channel.leave((_: any, error: any) => {
           if (error) {
             console.error("채널 나가기 실패:", error);
           } else {
@@ -222,56 +206,26 @@ export default function CustomerSupportPage() {
         </div>
       </div>
 
-      {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.length === 0 ? (
-          <div className="text-center text-gray-500 mt-8">
-            <div className="text-6xl mb-4">💬</div>
-            <p className="text-lg">상담을 시작해보세요!</p>
-            <p className="text-sm text-gray-400 mt-2">실시간 상담이 가능합니다.</p>
-            <p className="text-xs text-gray-400 mt-1">상담방: {channelId}</p>
-          </div>
+      {/* UIKit 메시지 영역 */}
+      <div className="flex-1 min-h-0">
+        {APP_ID && isConnected && isChannelReady && (channel?.url || channelId) ? (
+          <SendBirdProvider appId={APP_ID as string} sdkInstance={(sb as any) || null} userId={user!.userId} key={user!.userId}>
+            <Channel
+              channelUrl={(channel?.url as string) || (channelId as string)}
+              key={(channel?.url as string) || (channelId as string)}
+              isTypingIndicatorEnabled
+              isMessageReceiptStatusEnabled
+              isReactionEnabled
+            />
+          </SendBirdProvider>
         ) : (
-          messages.map((msg) => (
-            <div key={msg.messageId} className={`flex ${msg.sender?.userId === user?.userId ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`rounded-lg px-4 py-2 max-w-xs lg:max-w-md ${
-                  msg.sender?.userId === user?.userId ? "bg-blue-500 text-white" : "bg-white text-gray-800 border border-gray-200"
-                }`}
-              >
-                <div className="text-sm font-medium mb-1">{msg.sender?.userId === user?.userId ? "나" : msg.sender?.nickname || msg.sender?.userId}</div>
-                <div className="text-sm">{msg.message}</div>
-                <div className="text-xs opacity-75 mt-1">{new Date(msg.createdAt).toLocaleTimeString()}</div>
-              </div>
-            </div>
-          ))
+          <div className="p-6 text-center text-gray-500">
+            {(!APP_ID && "APP_ID가 설정되지 않았습니다.") ||
+              (!isConnected && "연결 중 또는 실패") ||
+              (!isChannelReady && channelId && "채널 준비 중...") ||
+              (!channelId && "채널 ID가 없습니다.")}
+          </div>
         )}
-      </div>
-
-      {/* 메시지 입력 영역 */}
-      <div className="bg-white border-t px-6 py-4">
-        <div className="flex space-x-4">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={isChannelReady ? "메시지를 입력하세요..." : "채널 준비 중..."}
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            disabled={!isConnected || !isChannelReady}
-          />
-          <button
-            onClick={() => sendMessage(user)}
-            disabled={!newMessage.trim() || !isConnected || !isChannelReady}
-            className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white font-medium px-6 py-2 rounded-lg transition-colors"
-          >
-            전송
-          </button>
-        </div>
-        {!isConnected && !isConnecting && <p className="text-sm text-red-500 mt-2">연결에 실패했습니다. 재시도 버튼을 클릭해주세요.</p>}
-        {isConnecting && <p className="text-sm text-yellow-500 mt-2">연결 중... 잠시만 기다려주세요.</p>}
-        {isConnected && !isChannelReady && <p className="text-sm text-blue-500 mt-2">상담방에 입장 중입니다... 잠시만 기다려주세요.</p>}
-        {isConnected && isChannelReady && <p className="text-sm text-green-600 mt-2">✅ 실시간 상담이 가능합니다!</p>}
       </div>
     </div>
   );
