@@ -4,3 +4,4 @@
 폐기물_데이터_업로더/*
 geojson데이터백업/*
 waste_stats_app/.env
+sendbird-chat-app/.env
