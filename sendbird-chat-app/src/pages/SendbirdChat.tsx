@@ -17,11 +17,9 @@ export default function SendbirdChat() {
   const { channelId } = useParams();
   const [searchParams] = useSearchParams();
   const urlUserId = searchParams.get("user");
-
   const [channel, setChannel] = useState<any>(null);
   const [isChannelReady, setIsChannelReady] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const [isForeground, setIsForeground] = useState<boolean>(typeof document !== "undefined" ? !document.hidden : true);
   // Calls 상태
   const [directCall, setDirectCall] = useState<any>(null);
   const [isCallUIOpen, setIsCallUIOpen] = useState(false);
@@ -30,7 +28,6 @@ export default function SendbirdChat() {
   const callsInitializedRef = useRef(false);
   const callEstablishedAtRef = useRef<number | null>(null);
   const callConnectedAtRef = useRef<number | null>(null);
-  const blurTimerRef = useRef<number | null>(null);
 
   const sendCallLog = async (c: any, endReason?: string) => {
     try {
@@ -176,55 +173,53 @@ export default function SendbirdChat() {
     };
   }, [user?.userId]);
 
-  // 포그라운드/백그라운드 감지 → 읽음/배달 표시 UI 제어
+  // UIKit 기본 동작 사용: 별도의 포그라운드 감지/읽음 제어 로직 제거
   useEffect(() => {
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        if (blurTimerRef.current) {
-          clearTimeout(blurTimerRef.current);
-          blurTimerRef.current = null;
-        }
-        setIsForeground(false);
-      } else {
-        setIsForeground(true);
+    if (!sb || !user) return;
+    const handlerId = `unread-api-${user.userId}-${Date.now()}`;
+
+    const HandlerCtor = (sb as any)?.groupChannel?.GroupChannelHandler || (sb as any).GroupChannelHandler || (sb as any).ChannelHandler;
+
+    if (!HandlerCtor) return;
+    const handler = new HandlerCtor();
+
+    handler.onMessageReceived = (ch: any, msg: any) => {
+      const curUrl = (channel?.url as string) || (channelId as string);
+      if (!curUrl || ch?.url !== curUrl) return;
+
+      // 포그라운드 여부 확인후 알림톡 API 호출(Test API)
+      const foreground = document.visibilityState === "visible" && document.hasFocus();
+      if (!foreground) {
+        const TEST_PAYLOAD = {
+          phnumber: "01050945763", // 하이픈 없이
+          userid: "naver_test_user_001", // 임의 고정값
+          servicedate: "2025-08-13 16:00:00", // "YYYY-MM-DD HH:mm:ss"
+        };
+
+        fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(TEST_PAYLOAD),
+        }).catch(() => {});
       }
     };
 
-    const onFocus = () => {
-      if (blurTimerRef.current) {
-        clearTimeout(blurTimerRef.current);
-        blurTimerRef.current = null;
-      }
-      setIsForeground(true);
-    };
-
-    const onBlur = () => {
-      if (blurTimerRef.current) {
-        clearTimeout(blurTimerRef.current);
-      }
-      // 파일 선택 등 일시적인 blur는 무시하기 위해 지연 후 적용
-      blurTimerRef.current = window.setTimeout(() => {
-        setIsForeground(false);
-        blurTimerRef.current = null;
-      }, 1500);
-    };
-
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("focus", onFocus);
-    window.addEventListener("blur", onBlur);
-    // 초기 계산
-    onVisibilityChange();
+    if ((sb as any)?.groupChannel?.addGroupChannelHandler) {
+      (sb as any).groupChannel.addGroupChannelHandler(handlerId, handler);
+    } else if ((sb as any).addChannelHandler) {
+      (sb as any).addChannelHandler(handlerId, handler);
+    }
 
     return () => {
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("focus", onFocus);
-      window.removeEventListener("blur", onBlur);
-      if (blurTimerRef.current) {
-        clearTimeout(blurTimerRef.current);
-        blurTimerRef.current = null;
-      }
+      try {
+        if ((sb as any)?.groupChannel?.removeGroupChannelHandler) {
+          (sb as any).groupChannel.removeGroupChannelHandler(handlerId);
+        } else if ((sb as any).removeChannelHandler) {
+          (sb as any).removeChannelHandler(handlerId);
+        }
+      } catch {}
     };
-  }, []);
+  }, [sb, user?.userId, channel?.url, channelId]);
 
   const attachCallListeners = (c: any) => {
     try {
@@ -370,8 +365,8 @@ export default function SendbirdChat() {
                 <Channel
                   channelUrl={(channel?.url as string) || (channelId as string)}
                   key={`${(channel?.url as string) || (channelId as string)}-stable`}
-                  isTypingIndicatorEnabled={isForeground}
-                  isMessageReceiptStatusEnabled={isForeground}
+                  isTypingIndicatorEnabled={true}
+                  isMessageReceiptStatusEnabled={true}
                   isReactionEnabled={true}
                   renderChannelHeader={() => null}
                   renderMessageContent={(contentProps: any) => {

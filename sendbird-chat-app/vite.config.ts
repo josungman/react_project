@@ -18,5 +18,17 @@ export default defineConfig({
     host: "0.0.0.0", // 내부망 허용
     port: 5173,
     https: true, // HTTPS 활성화 (SendBird Calls SDK 요구사항)
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/recordings": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });
