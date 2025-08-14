@@ -67,10 +67,26 @@ export default function SendbirdChat() {
   const ringingNotifyIntervalRef = useRef<number | null>(null);
   const ringingOscRef = useRef<{ osc: OscillatorNode; gain: GainNode } | null>(null);
   const ringingBeepTimerRef = useRef<number | null>(null);
-  // throttle 제거 요청으로 비활성화
-  // const biztalkThrottleRef = useRef<Record<string, number>>({});
-  const [peerPresence, setPeerPresence] = useState<{ online: boolean | null; lastSeenAt: number }>({ online: null, lastSeenAt: 0 });
+  // peerPresence 캐시는 더 이상 사용하지 않음 (정리됨)
   const peerIdRef = useRef<string | null>(null);
+  const queryPresence = (sdk: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
+    return new Promise((resolve) => {
+      try {
+        const q = sdk.createApplicationUserListQuery();
+        q.userIdsFilter = [pid];
+        q.next((users: any[], error: any) => {
+          if (error || !users?.length) return resolve({ online: null, lastSeenAt: 0 });
+          const u = users[0] || {};
+          const ONLINE = (sdk?.User && sdk.User.ONLINE) || "online";
+          const online = typeof u.connectionStatus === "string" ? String(u.connectionStatus).toLowerCase() === String(ONLINE).toLowerCase() : null;
+          const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
+          resolve({ online, lastSeenAt });
+        });
+      } catch {
+        resolve({ online: null, lastSeenAt: 0 });
+      }
+    });
+  };
 
   const startRingingBiztalkLoop = () => {
     try {
@@ -282,47 +298,15 @@ export default function SendbirdChat() {
     };
   }, [user?.userId]);
 
-  // Presence 폴링: 상대 사용자 온라인/최근 접속 시간 조회
+  // 채널 멤버 기반으로 상대 ID만 추출 (peerPresence 캐시 제거에 따른 단순화)
   useEffect(() => {
-    if (!sb || !user?.userId || !channel) return;
+    if (!channel || !user?.userId) return;
     try {
       const members = (channel.members || []) as any[];
-      const peerId = members.find((m) => m?.userId && m.userId !== user.userId)?.userId;
-      if (!peerId) return;
-      peerIdRef.current = peerId;
-
-      let alive = true;
-      const fetchPresenceLocal = async (sdk: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
-        return new Promise((resolve) => {
-          try {
-            const q = sdk.createApplicationUserListQuery();
-            q.userIdsFilter = [pid];
-            q.next((users: any[], error: any) => {
-              if (error || !users?.length) return resolve({ online: null, lastSeenAt: 0 });
-              const u = users[0] || {};
-              const ONLINE = (sdk?.User && sdk.User.ONLINE) || "online";
-              const online = typeof u.connectionStatus === "string" ? String(u.connectionStatus).toLowerCase() === String(ONLINE).toLowerCase() : null;
-              const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
-              resolve({ online, lastSeenAt });
-            });
-          } catch {
-            resolve({ online: null, lastSeenAt: 0 });
-          }
-        });
-      };
-
-      const tick = async () => {
-        const p = await fetchPresenceLocal(sb, peerId);
-        if (alive) setPeerPresence(p);
-      };
-      tick();
-      const timer = setInterval(tick, 15000);
-      return () => {
-        alive = false;
-        clearInterval(timer);
-      };
+      const pid = members.find((m) => m?.userId && m.userId !== user.userId)?.userId || null;
+      peerIdRef.current = pid;
     } catch {}
-  }, [sb, channel?.url, user?.userId]);
+  }, [channel?.url, user?.userId]);
 
   // UIKit 기본 동작 사용: 별도의 포그라운드 감지/읽음 제어 로직 제거
   useEffect(() => {
@@ -526,20 +510,25 @@ export default function SendbirdChat() {
                   onBeforeSendUserMessage={(text: any) => {
                     try {
                       const peerId = peerIdRef.current || "";
-                      const offlineByPresence = peerPresence.online === false;
-                      const offlineByStaleness = peerPresence.lastSeenAt > 0 && Date.now() - peerPresence.lastSeenAt > 60000; // 60s
-                      const shouldNotify = offlineByPresence || offlineByStaleness;
-                      if (shouldNotify && peerId) {
-                        const TEST_PAYLOAD = {
-                          phnumber: "01050945763",
-                          userid: "naver_test_user_001",
-                          servicedate: "접속안함 알림톡",
-                        } as any;
-                        fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(TEST_PAYLOAD),
-                        }).catch(() => {});
+                      // 메시지 전송 직전 1회 Presence 조회(비동기). 전송은 지연시키지 않음.
+                      if (peerId && sb) {
+                        queryPresence(sb, peerId)
+                          .then((p) => {
+                            const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
+                            if (offlineNow) {
+                              const TEST_PAYLOAD = {
+                                phnumber: "01050945763",
+                                userid: "naver_test_user_001",
+                                servicedate: "접속안함 알림톡1",
+                              } as any;
+                              fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(TEST_PAYLOAD),
+                              }).catch(() => {});
+                            }
+                          })
+                          .catch(() => {});
                       }
                     } catch {}
                     const messageText = typeof text === "string" ? text : String(text ?? "");
