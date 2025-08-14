@@ -64,6 +64,101 @@ export default function SendbirdChat() {
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const ringingNotifyIntervalRef = useRef<number | null>(null);
+  const ringingOscRef = useRef<{ osc: OscillatorNode; gain: GainNode } | null>(null);
+  const ringingBeepTimerRef = useRef<number | null>(null);
+
+  const startRingingBiztalkLoop = () => {
+    try {
+      if (ringingNotifyIntervalRef.current) return;
+      const sendOnce = () => {
+        try {
+          const foreground = document.visibilityState === "visible" && document.hasFocus();
+          if (!foreground) {
+            const TEST_PAYLOAD = {
+              phnumber: "01050945763",
+              userid: "naver_test_user_001",
+              servicedate: "2025-08-13 16:00:00",
+            };
+            fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(TEST_PAYLOAD),
+            }).catch(() => {});
+          }
+        } catch {}
+      };
+      // 즉시 1회 전송 후 주기 전송
+      sendOnce();
+      ringingNotifyIntervalRef.current = window.setInterval(sendOnce, 10000);
+    } catch {}
+  };
+
+  const stopRingingBiztalkLoop = () => {
+    try {
+      if (ringingNotifyIntervalRef.current) {
+        clearInterval(ringingNotifyIntervalRef.current);
+        ringingNotifyIntervalRef.current = null;
+      }
+    } catch {}
+  };
+
+  const startLocalRingtone = async () => {
+    try {
+      await resumeAudioAutoplay();
+      if (ringingOscRef.current) return;
+      const ctx = audioContextRef.current;
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 800;
+      gain.gain.value = 0.0;
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      ringingOscRef.current = { osc, gain };
+
+      const beep = () => {
+        try {
+          if (!ringingOscRef.current || !audioContextRef.current) return;
+          const g = ringingOscRef.current.gain;
+          const now = audioContextRef.current.currentTime;
+          g.gain.setValueAtTime(0.15, now);
+          setTimeout(() => {
+            try {
+              if (!ringingOscRef.current || !audioContextRef.current) return;
+              const n2 = audioContextRef.current.currentTime;
+              ringingOscRef.current.gain.gain.setValueAtTime(0.0, n2);
+            } catch {}
+          }, 1000);
+        } catch {}
+      };
+
+      beep();
+      ringingBeepTimerRef.current = window.setInterval(beep, 2000);
+    } catch {}
+  };
+
+  const stopLocalRingtone = () => {
+    try {
+      if (ringingBeepTimerRef.current) {
+        clearInterval(ringingBeepTimerRef.current);
+        ringingBeepTimerRef.current = null;
+      }
+      if (ringingOscRef.current) {
+        try {
+          ringingOscRef.current.osc.stop();
+        } catch {}
+        try {
+          ringingOscRef.current.osc.disconnect();
+        } catch {}
+        try {
+          ringingOscRef.current.gain.disconnect();
+        } catch {}
+        ringingOscRef.current = null;
+      }
+    } catch {}
+  };
 
   const resumeAudioAutoplay = async () => {
     try {
@@ -154,6 +249,16 @@ export default function SendbirdChat() {
               setIsCallUIOpen(true);
               setCallStatus("ringing");
               attachCallListeners(incoming);
+              try {
+                const foreground = document.visibilityState === "visible" && document.hasFocus();
+                if (foreground) {
+                  startLocalRingtone();
+                } else {
+                  startRingingBiztalkLoop();
+                }
+              } catch {
+                startRingingBiztalkLoop();
+              }
             },
           });
           callsListenerIdRef.current = id;
@@ -183,7 +288,7 @@ export default function SendbirdChat() {
     if (!HandlerCtor) return;
     const handler = new HandlerCtor();
 
-    handler.onMessageReceived = (ch: any, msg: any) => {
+    handler.onMessageReceived = (ch: any, _msg: any) => {
       const curUrl = (channel?.url as string) || (channelId as string);
       if (!curUrl || ch?.url !== curUrl) return;
 
@@ -230,6 +335,8 @@ export default function SendbirdChat() {
       c.onConnected = () => {
         callConnectedAtRef.current = Date.now();
         setCallStatus("connected");
+        stopLocalRingtone();
+        stopRingingBiztalkLoop();
         try {
           // 보호적 재연결과 재생
           c.setRemoteMediaView?.(remoteAudioRef.current);
@@ -241,6 +348,8 @@ export default function SendbirdChat() {
         setIsCallUIOpen(false);
         setDirectCall(null);
         setIsIncoming(false);
+        stopLocalRingtone();
+        stopRingingBiztalkLoop();
         sendCallLog(c);
       };
     } catch {}
