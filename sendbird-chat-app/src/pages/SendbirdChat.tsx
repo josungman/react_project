@@ -28,6 +28,8 @@ export default function SendbirdChat() {
   const callsInitializedRef = useRef(false);
   const callEstablishedAtRef = useRef<number | null>(null);
   const callConnectedAtRef = useRef<number | null>(null);
+  // 통화 UI에 오프라인 배지를 표시하지 않으므로 상태는 유지하지 않음
+  // const [isPeerOffline, setIsPeerOffline] = useState<boolean>(false);
 
   const sendCallLog = async (c: any, endReason?: string) => {
     try {
@@ -67,7 +69,7 @@ export default function SendbirdChat() {
   const ringingNotifyIntervalRef = useRef<number | null>(null);
   const ringingOscRef = useRef<{ osc: OscillatorNode; gain: GainNode } | null>(null);
   const ringingBeepTimerRef = useRef<number | null>(null);
-  // peerPresence 캐시는 더 이상 사용하지 않음 (정리됨)
+  const callPresenceIntervalRef = useRef<number | null>(null);
   const peerIdRef = useRef<string | null>(null);
   const queryPresence = (sdk: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
     return new Promise((resolve) => {
@@ -98,7 +100,7 @@ export default function SendbirdChat() {
             const TEST_PAYLOAD = {
               phnumber: "01050945763",
               userid: "naver_test_user_001",
-              servicedate: "2025-08-13 16:00:00",
+              servicedate: "백그라운드 전화 알림톡",
             };
             fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
               method: "POST",
@@ -119,6 +121,47 @@ export default function SendbirdChat() {
       if (ringingNotifyIntervalRef.current) {
         clearInterval(ringingNotifyIntervalRef.current);
         ringingNotifyIntervalRef.current = null;
+      }
+    } catch {}
+  };
+
+  // 발신 중 상대 Presence를 주기적으로 확인하여 오프라인이면 Biztalk 호출
+  const startCallPresenceCheckLoop = (peerId: string) => {
+    try {
+      if (!peerId || !sb) return;
+      if (callPresenceIntervalRef.current) return;
+      const sendOnce = () => {
+        try {
+          queryPresence(sb, peerId)
+            .then((p) => {
+              const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
+              if (offlineNow) {
+                const TEST_PAYLOAD = {
+                  phnumber: "01050945763",
+                  userid: "상담중 부재중 전화",
+                  servicedate: "접속안함 전화 알림톡",
+                } as any;
+                fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(TEST_PAYLOAD),
+                }).catch(() => {});
+              }
+            })
+            .catch(() => {});
+        } catch {}
+      };
+      // 즉시 1회 실행 후 주기 실행(10초)
+      sendOnce();
+      callPresenceIntervalRef.current = window.setInterval(sendOnce, 10000);
+    } catch {}
+  };
+
+  const stopCallPresenceCheckLoop = () => {
+    try {
+      if (callPresenceIntervalRef.current) {
+        clearInterval(callPresenceIntervalRef.current);
+        callPresenceIntervalRef.current = null;
       }
     } catch {}
   };
@@ -367,6 +410,7 @@ export default function SendbirdChat() {
         setCallStatus("connected");
         stopLocalRingtone();
         stopRingingBiztalkLoop();
+        stopCallPresenceCheckLoop();
         try {
           // 보호적 재연결과 재생
           c.setRemoteMediaView?.(remoteAudioRef.current);
@@ -380,6 +424,7 @@ export default function SendbirdChat() {
         setIsIncoming(false);
         stopLocalRingtone();
         stopRingingBiztalkLoop();
+        stopCallPresenceCheckLoop();
         sendCallLog(c);
       };
     } catch {}
@@ -391,6 +436,32 @@ export default function SendbirdChat() {
       const members = (channel.members || []) as any[];
       const calleeId = members.find((m) => m.userId !== user.userId)?.userId;
       if (!calleeId) return;
+      // 발신 시: 즉시 1회 Presence 확인 후 주기 확인 루프 시작
+      try {
+        const peerId = peerIdRef.current || calleeId;
+        if (peerId && sb) {
+          queryPresence(sb, peerId)
+            .then((p) => {
+              const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
+              if (offlineNow) {
+                const TEST_PAYLOAD = {
+                  phnumber: "01050945763",
+                  userid: "상담중 부재중 전화",
+                  servicedate: "접속안함 전화 알림톡",
+                } as any;
+                fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(TEST_PAYLOAD),
+                }).catch(() => {});
+              }
+              startCallPresenceCheckLoop(peerId);
+            })
+            .catch(() => {
+              startCallPresenceCheckLoop(peerId);
+            });
+        }
+      } catch {}
       setIsIncoming(false);
       setCallStatus("dialing");
       await resumeAudioAutoplay();
