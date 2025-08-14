@@ -67,6 +67,10 @@ export default function SendbirdChat() {
   const ringingNotifyIntervalRef = useRef<number | null>(null);
   const ringingOscRef = useRef<{ osc: OscillatorNode; gain: GainNode } | null>(null);
   const ringingBeepTimerRef = useRef<number | null>(null);
+  // throttle 제거 요청으로 비활성화
+  // const biztalkThrottleRef = useRef<Record<string, number>>({});
+  const [peerPresence, setPeerPresence] = useState<{ online: boolean | null; lastSeenAt: number }>({ online: null, lastSeenAt: 0 });
+  const peerIdRef = useRef<string | null>(null);
 
   const startRingingBiztalkLoop = () => {
     try {
@@ -278,6 +282,48 @@ export default function SendbirdChat() {
     };
   }, [user?.userId]);
 
+  // Presence 폴링: 상대 사용자 온라인/최근 접속 시간 조회
+  useEffect(() => {
+    if (!sb || !user?.userId || !channel) return;
+    try {
+      const members = (channel.members || []) as any[];
+      const peerId = members.find((m) => m?.userId && m.userId !== user.userId)?.userId;
+      if (!peerId) return;
+      peerIdRef.current = peerId;
+
+      let alive = true;
+      const fetchPresenceLocal = async (sdk: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
+        return new Promise((resolve) => {
+          try {
+            const q = sdk.createApplicationUserListQuery();
+            q.userIdsFilter = [pid];
+            q.next((users: any[], error: any) => {
+              if (error || !users?.length) return resolve({ online: null, lastSeenAt: 0 });
+              const u = users[0] || {};
+              const ONLINE = (sdk?.User && sdk.User.ONLINE) || "online";
+              const online = typeof u.connectionStatus === "string" ? String(u.connectionStatus).toLowerCase() === String(ONLINE).toLowerCase() : null;
+              const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
+              resolve({ online, lastSeenAt });
+            });
+          } catch {
+            resolve({ online: null, lastSeenAt: 0 });
+          }
+        });
+      };
+
+      const tick = async () => {
+        const p = await fetchPresenceLocal(sb, peerId);
+        if (alive) setPeerPresence(p);
+      };
+      tick();
+      const timer = setInterval(tick, 15000);
+      return () => {
+        alive = false;
+        clearInterval(timer);
+      };
+    } catch {}
+  }, [sb, channel?.url, user?.userId]);
+
   // UIKit 기본 동작 사용: 별도의 포그라운드 감지/읽음 제어 로직 제거
   useEffect(() => {
     if (!sb || !user) return;
@@ -298,7 +344,7 @@ export default function SendbirdChat() {
         const TEST_PAYLOAD = {
           phnumber: "01050945763", // 하이픈 없이
           userid: "naver_test_user_001", // 임의 고정값
-          servicedate: "2025-08-13 16:00:00", // "YYYY-MM-DD HH:mm:ss"
+          servicedate: "백그라운드 알림톡", // "YYYY-MM-DD HH:mm:ss"
         };
 
         fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
@@ -477,6 +523,28 @@ export default function SendbirdChat() {
                   isTypingIndicatorEnabled={true}
                   isMessageReceiptStatusEnabled={true}
                   isReactionEnabled={true}
+                  onBeforeSendUserMessage={(text: any) => {
+                    try {
+                      const peerId = peerIdRef.current || "";
+                      const offlineByPresence = peerPresence.online === false;
+                      const offlineByStaleness = peerPresence.lastSeenAt > 0 && Date.now() - peerPresence.lastSeenAt > 60000; // 60s
+                      const shouldNotify = offlineByPresence || offlineByStaleness;
+                      if (shouldNotify && peerId) {
+                        const TEST_PAYLOAD = {
+                          phnumber: "01050945763",
+                          userid: "naver_test_user_001",
+                          servicedate: "접속안함 알림톡",
+                        } as any;
+                        fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(TEST_PAYLOAD),
+                        }).catch(() => {});
+                      }
+                    } catch {}
+                    const messageText = typeof text === "string" ? text : String(text ?? "");
+                    return { message: messageText } as any;
+                  }}
                   renderChannelHeader={() => null}
                   renderMessageContent={(contentProps: any) => {
                     const m: any = contentProps?.message;
