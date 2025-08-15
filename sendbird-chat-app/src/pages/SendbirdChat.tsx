@@ -71,16 +71,18 @@ export default function SendbirdChat() {
   const ringingBeepTimerRef = useRef<number | null>(null);
   const callPresenceIntervalRef = useRef<number | null>(null);
   const peerIdRef = useRef<string | null>(null);
-  const queryPresence = (sdk: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
+  const queryPresence = (sb: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
     return new Promise((resolve) => {
       try {
-        const q = sdk.createApplicationUserListQuery();
+        if (!pid || !sb?.createApplicationUserListQuery) return resolve({ online: null, lastSeenAt: 0 });
+        const q = sb.createApplicationUserListQuery();
         q.userIdsFilter = [pid];
+        q.limit = 1;
         q.next((users: any[], error: any) => {
-          if (error || !users?.length) return resolve({ online: null, lastSeenAt: 0 });
+          if (error || !users || users.length === 0) return resolve({ online: null, lastSeenAt: 0 });
           const u = users[0] || {};
-          const ONLINE = (sdk?.User && sdk.User.ONLINE) || "online";
-          const online = typeof u.connectionStatus === "string" ? String(u.connectionStatus).toLowerCase() === String(ONLINE).toLowerCase() : null;
+          const status = typeof u.connectionStatus === "string" ? u.connectionStatus.toLowerCase() : "";
+          const online = status ? status === "online" : null;
           const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
           resolve({ online, lastSeenAt });
         });
@@ -130,25 +132,22 @@ export default function SendbirdChat() {
     try {
       if (!peerId || !sb) return;
       if (callPresenceIntervalRef.current) return;
-      const sendOnce = () => {
+      const sendOnce = async () => {
         try {
-          queryPresence(sb, peerId)
-            .then((p) => {
-              const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
-              if (offlineNow) {
-                const TEST_PAYLOAD = {
-                  phnumber: "01050945763",
-                  userid: "상담중 부재중 전화",
-                  servicedate: "접속안함 전화 알림톡",
-                } as any;
-                fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(TEST_PAYLOAD),
-                }).catch(() => {});
-              }
-            })
-            .catch(() => {});
+          const p = await queryPresence(sb, peerId);
+          const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
+          if (offlineNow) {
+            const TEST_PAYLOAD = {
+              phnumber: "01050945763",
+              userid: "상담중 부재중 전화",
+              servicedate: "접속안함 전화 알림톡",
+            } as any;
+            fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(TEST_PAYLOAD),
+            }).catch(() => {});
+          }
         } catch {}
       };
       // 즉시 1회 실행 후 주기 실행(10초)
@@ -370,8 +369,8 @@ export default function SendbirdChat() {
       if (!foreground) {
         const TEST_PAYLOAD = {
           phnumber: "01050945763", // 하이픈 없이
-          userid: "naver_test_user_001", // 임의 고정값
-          servicedate: "백그라운드 알림톡", // "YYYY-MM-DD HH:mm:ss"
+          userid: "채팅 부재 알림톡", // 임의 고정값
+          servicedate: "백그라운드 채팅 알림톡", // "YYYY-MM-DD HH:mm:ss"
         };
 
         fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
@@ -440,26 +439,23 @@ export default function SendbirdChat() {
       try {
         const peerId = peerIdRef.current || calleeId;
         if (peerId && sb) {
-          queryPresence(sb, peerId)
-            .then((p) => {
-              const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
-              if (offlineNow) {
-                const TEST_PAYLOAD = {
-                  phnumber: "01050945763",
-                  userid: "상담중 부재중 전화",
-                  servicedate: "접속안함 전화 알림톡",
-                } as any;
-                fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(TEST_PAYLOAD),
-                }).catch(() => {});
-              }
-              startCallPresenceCheckLoop(peerId);
-            })
-            .catch(() => {
-              startCallPresenceCheckLoop(peerId);
-            });
+          try {
+            const p = await queryPresence(sb, peerId);
+            const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
+            if (offlineNow) {
+              const TEST_PAYLOAD = {
+                phnumber: "01050945763",
+                userid: "상담중 부재중 전화",
+                servicedate: "접속안함 전화 알림톡",
+              } as any;
+              fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(TEST_PAYLOAD),
+              }).catch(() => {});
+            }
+          } catch {}
+          startCallPresenceCheckLoop(peerId);
         }
       } catch {}
       setIsIncoming(false);
@@ -583,14 +579,15 @@ export default function SendbirdChat() {
                       const peerId = peerIdRef.current || "";
                       // 메시지 전송 직전 1회 Presence 조회(비동기). 전송은 지연시키지 않음.
                       if (peerId && sb) {
-                        queryPresence(sb, peerId)
-                          .then((p) => {
+                        (async () => {
+                          try {
+                            const p = await queryPresence(sb, peerId);
                             const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
                             if (offlineNow) {
                               const TEST_PAYLOAD = {
                                 phnumber: "01050945763",
                                 userid: "naver_test_user_001",
-                                servicedate: "접속안함 알림톡1",
+                                servicedate: "접속안함 채팅 알림톡1",
                               } as any;
                               fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
                                 method: "POST",
@@ -598,8 +595,8 @@ export default function SendbirdChat() {
                                 body: JSON.stringify(TEST_PAYLOAD),
                               }).catch(() => {});
                             }
-                          })
-                          .catch(() => {});
+                          } catch {}
+                        })();
                       }
                     } catch {}
                     const messageText = typeof text === "string" ? text : String(text ?? "");

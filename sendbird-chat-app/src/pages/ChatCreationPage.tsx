@@ -43,9 +43,11 @@ export default function ChatCreationPage() {
     setIsCreating(true);
     setCreationError("");
 
+    let sb: any = null;
+    let sb2: any = null;
     try {
       // Sendbird 초기화
-      const sb = new SendBird({ appId: APP_ID });
+      sb = new SendBird({ appId: APP_ID });
 
       // 첫 번째 사용자 연결
       console.log("첫 번째 사용자 연결 중:", user1Id);
@@ -64,7 +66,7 @@ export default function ChatCreationPage() {
       // 두 번째 사용자도 먼저 연결 (실패 시 최소 정보로 대체)
       console.log("두 번째 사용자 연결 중:", user2Id);
       const user2 = await new Promise((resolve) => {
-        const sb2 = new SendBird({ appId: APP_ID });
+        sb2 = new SendBird({ appId: APP_ID });
         sb2.connect(user2Id, (user: any, error: any) => {
           if (error) {
             console.error("두 번째 사용자 연결 실패:", error);
@@ -153,6 +155,12 @@ export default function ChatCreationPage() {
       }
       throw error;
     } finally {
+      try {
+        sb.disconnect();
+      } catch {}
+      try {
+        (sb2 as any)?.disconnect?.();
+      } catch {}
       setIsCreating(false);
     }
   }, []);
