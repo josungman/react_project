@@ -8,6 +8,11 @@ interface UseSendbirdConnectionProps {
   urlUserId?: string;
 }
 
+/**
+ * useSendbirdConnection
+ * - SendBird v3 SDK 초기화 및 사용자 연결/재연결을 관리합니다.
+ * - 연결 상태, 에러 메시지, 재시도 함수를 제공합니다.
+ */
 export const useSendbirdConnection = ({ channelId, urlUserId }: UseSendbirdConnectionProps) => {
   const [isConnected, setIsConnected] = useState(false);
   const [sb, setSb] = useState<any>(null);
@@ -15,7 +20,10 @@ export const useSendbirdConnection = ({ channelId, urlUserId }: UseSendbirdConne
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState<string>("");
 
-  // 연결 시도 함수
+  /**
+   * 연결 시도 함수
+   * - 사용자 ID로 SendBird 연결을 시도하고, 실패 시 지수적 지연으로 재시도합니다.
+   */
   const attemptConnection = useCallback(
     (sendbird: any, userId: string, retryCount = 0) => {
       try {
@@ -56,7 +64,10 @@ export const useSendbirdConnection = ({ channelId, urlUserId }: UseSendbirdConne
     [channelId]
   );
 
-  // 자동 재연결 함수
+  /**
+   * 자동 재연결 함수
+   * - 연결 이벤트 핸들러에서 호출되어 강제로 재연결을 시도합니다.
+   */
   const autoReconnect = useCallback(
     (sendbird: any, userId: string) => {
       console.log("자동 재연결 시도...");
@@ -68,7 +79,10 @@ export const useSendbirdConnection = ({ channelId, urlUserId }: UseSendbirdConne
     [attemptConnection]
   );
 
-  // 메인 연결 useEffect
+  /**
+   * 메인 연결 useEffect
+   * - SDK 초기화, 최초 연결 시도, 연결 핸들러 등록/해제를 수행합니다.
+   */
   useEffect(() => {
     console.log("SendBird 초기화 시작...");
     console.log("사용할 APP_ID:", APP_ID);
@@ -114,7 +128,7 @@ export const useSendbirdConnection = ({ channelId, urlUserId }: UseSendbirdConne
     };
   }, [channelId, urlUserId, attemptConnection, autoReconnect]);
 
-  // 연결 상태 변화 감지
+  /** 연결 상태 변화 감지 */
   useEffect(() => {
     if (user && isConnected && channelId) {
       console.log("=== 연결 완료 ===", { userId: user.userId, channelId });
@@ -122,9 +136,10 @@ export const useSendbirdConnection = ({ channelId, urlUserId }: UseSendbirdConne
     }
   }, [user?.userId, isConnected, channelId]);
 
-  // 연결 상태 모니터링 (더 적극적)
+  /** 연결 상태 모니터링 (확장용 placeholder) */
   useEffect(() => {}, [sb]);
 
+  /** 수동 재연결(페이지 리로드) 트리거 함수 */
   const retryConnection = useCallback(() => {
     setConnectionError("");
     setIsConnected(false);

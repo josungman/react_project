@@ -9,9 +9,17 @@ interface UseSendbirdChannelProps {
   setIsChannelReady: (ready: boolean) => void;
 }
 
+/**
+ * useSendbirdChannel
+ * - 채널 URL로 GroupChannel을 조회/선택하고 입장 상태를 세팅합니다.
+ * - UIKit 사용을 전제로, 찾은 채널 객체만 상위에 전달합니다.
+ */
 export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, setChannel, setIsChannelReady }: UseSendbirdChannelProps) => {
   const [isChannelReady] = useState(false);
 
+  /**
+   * 주어진 channelUrl과 사용자로 채널에 입장합니다. (실제 조회/선택은 proceedWithChannelWork 내부에서 수행)
+   */
   const enterChannelByUrl = useCallback(
     async (channelUrl: string, user: any) => {
       console.log("=== GroupChannel 입장 시도 ===");
@@ -57,7 +65,7 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
     [sb, setConnectionError]
   );
 
-  // 채널 작업을 진행하는 별도 함수
+  /** 채널 조회/선택을 수행하는 내부 함수 */
   const proceedWithChannelWork = useCallback(
     async (channelUrl: string, user: any) => {
       console.log("=== proceedWithChannelWork 시작 ===");
@@ -163,6 +171,7 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
     [sb, setConnectionError]
   );
 
+  /** 최종 채널을 상위 상태에 반영하는 함수 */
   const enterChannel = useCallback(
     (channel: any, user: any) => {
       console.log("=== 채널 입장 함수 ===");

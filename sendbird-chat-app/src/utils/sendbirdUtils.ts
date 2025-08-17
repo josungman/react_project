@@ -1,6 +1,7 @@
 // SendBird 관련 유틸리티 함수들
 
 // 1대1 채팅 채널 URL 생성 함수
+/** 두 사용자 ID로 항상 동일한 1:1 채널 URL을 생성합니다. */
 export const createOneToOneChannelUrl = (user1Id: string, user2Id: string) => {
   // 더 간단하고 확실한 방법으로 채널 ID 생성
   // 두 사용자 ID를 정렬하여 항상 같은 채널 ID 생성
@@ -9,6 +10,7 @@ export const createOneToOneChannelUrl = (user1Id: string, user2Id: string) => {
 };
 
 // 채팅 URL 생성 함수
+/** 테스트용 간단한 사용자 ID로 채팅 URL 세트를 생성합니다. */
 export const generateChatUrls = (_unusedUserId: string) => {
   const timestamp = Date.now();
   // 더 간단한 사용자 ID 생성
@@ -39,6 +41,10 @@ export const generateChatUrls = (_unusedUserId: string) => {
 // 사용되지 않는 보조/테스트 함수들은 제거했습니다.
 
 // 채널 URL 파싱 함수
+/**
+ * 채널 URL에서 예상되는 사용자 ID 두 개를 추출합니다.
+ * - 지원하지 않는 형식은 강제로 현재 사용자와 임시 사용자로 매핑합니다.
+ */
 export const parseChannelUrl = (channelUrl: string, currentUserId: string) => {
   console.log("채널 URL:", channelUrl);
 
@@ -80,6 +86,7 @@ export const parseChannelUrl = (channelUrl: string, currentUserId: string) => {
 };
 
 // 멤버 확인 함수
+/** 현재 사용자가 추출된 멤버 둘 중 하나인지 확인합니다. */
 export const checkChannelMembership = (currentUserId: string, user1Id: string, user2Id: string) => {
   const isCurrentUserInChannel = currentUserId === user1Id || currentUserId === user2Id;
   console.log("현재 사용자가 채널 멤버인가?", isCurrentUserInChannel);
