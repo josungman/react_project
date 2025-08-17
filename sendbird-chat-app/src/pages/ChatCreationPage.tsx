@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { generateChatUrls } from "../utils/sendbirdUtils";
 import SendbirdChat from "@sendbird/chat";
 import { GroupChannelModule } from "@sendbird/chat/groupChannel";
 import type { GroupChannelCreateParams } from "@sendbird/chat/groupChannel";
+import { encryptToBase64, toBase64Url } from "../utils/crypto";
 
 // 환경변수에서 APP_ID 가져오기
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
@@ -14,6 +14,8 @@ export default function ChatCreationPage() {
   const [showChatUrls, setShowChatUrls] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [creationError, setCreationError] = useState<string>("");
+  const [phone1, setPhone1] = useState<string>("");
+  const [phone2, setPhone2] = useState<string>("");
 
   // APP_ID 확인
   if (!APP_ID) {
@@ -61,8 +63,7 @@ export default function ChatCreationPage() {
         name: `채팅방 ${user1Id} & ${user2Id}`,
         invitedUserIds: [user1Id, user2Id],
         isDistinct: true,
-        // v4 SDK는 channelUrl 직접 지정 미지원. 필요 시 customType/data에 보관
-        customType: channelUrl,
+        // customType은 길이 제한(<=128)이 있어 긴 식별자 저장에 부적합하므로 생략
       };
       const channel = await sb.groupChannel.createChannel(params);
       console.log("채널 생성 성공:", channel);
@@ -121,27 +122,58 @@ export default function ChatCreationPage() {
     }
   }, []);
 
+  const sanitizePhone = useCallback((p: string) => p.replace(/\D/g, ""), []);
+
+  const deriveUserIdFromPhone = useCallback(
+    async (rawPhone: string) => {
+      const digits = sanitizePhone(rawPhone);
+      // 휴대폰 번호를 AES-GCM으로 암호화하고 base64url 토큰으로 변환
+      const encrypted = await encryptToBase64(digits); // "iv:ct" (base64)
+      const token = toBase64Url(encrypted); // base64url
+      return `user_${token}`;
+    },
+    [sanitizePhone]
+  );
+
   const createNewChat = useCallback(async () => {
     try {
-      // 먼저 generateChatUrls 함수를 사용하여 사용자 ID와 URL 생성
-      const urls = generateChatUrls(`user_${Date.now()}`);
+      setCreationError("");
+      const p1 = sanitizePhone(phone1);
+      const p2 = sanitizePhone(phone2);
+      if (!p1 || !p2) {
+        setCreationError("두 사용자 모두의 휴대폰 번호를 입력하세요.");
+        return;
+      }
+      if (p1.length < 7 || p2.length < 7) {
+        setCreationError("휴대폰 번호 형식이 올바르지 않습니다.");
+        return;
+      }
 
-      // 생성된 사용자 ID를 사용하여 채널 생성
-      const user1Id = urls.user1Id;
-      const user2Id = urls.user2Id;
-      const channelUrl = urls.channelUrl;
+      // 휴대폰 번호에서 유저 ID 파생 (비가역적 해시)
+      const user1Id = await deriveUserIdFromPhone(p1);
+      const user2Id = await deriveUserIdFromPhone(p2);
+      const sorted = [user1Id, user2Id].sort();
+      const channelUrl = `group_chat_${sorted[0]}_${sorted[1]}`; // customType로 저장됨
 
-      console.log("생성된 사용자 ID:", { user1Id, user2Id, channelUrl });
+      console.log("파생 사용자 ID:", { user1Id, user2Id, channelUrl });
 
       // 실제 채널 생성 및 사용자 연결
       await createChannelAndConnectUsers(user1Id, user2Id, channelUrl);
 
+      const currentOrigin = window.location.origin;
+      const urls = {
+        user1Id,
+        user2Id,
+        channelUrl,
+        url1: `${currentOrigin}/chat/${channelUrl}?user=${user1Id}`,
+        url2: `${currentOrigin}/chat/${channelUrl}?user=${user2Id}`,
+      };
       setChatUrls(urls);
       setShowChatUrls(true);
     } catch (error) {
       console.error("새 채팅 생성 실패:", error);
     }
-  }, [createChannelAndConnectUsers]);
+  }, [phone1, phone2, sanitizePhone, deriveUserIdFromPhone, createChannelAndConnectUsers]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -173,7 +205,18 @@ export default function ChatCreationPage() {
       <div className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">채팅 생성</h2>
-          <p className="text-gray-600 mb-6">새로운 1대1 채팅 채널을 생성합니다.</p>
+          <p className="text-gray-600 mb-6">두 사용자의 휴대폰 번호를 입력하면 암호화된 ID로 채팅 URL을 생성합니다.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">사용자 1 휴대폰 번호</label>
+              <input value={phone1} onChange={(e) => setPhone1(e.target.value)} placeholder="010-1234-5678" className="w-full border rounded px-3 py-2 text-sm" inputMode="tel" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">사용자 2 휴대폰 번호</label>
+              <input value={phone2} onChange={(e) => setPhone2(e.target.value)} placeholder="010-9876-5432" className="w-full border rounded px-3 py-2 text-sm" inputMode="tel" />
+            </div>
+          </div>
 
           {/* 생성 상태 표시 */}
           {isCreating && (

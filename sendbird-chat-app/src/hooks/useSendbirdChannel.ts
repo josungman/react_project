@@ -116,17 +116,23 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
           existingChannel = await sb.groupChannel.getChannel(channelUrl);
         } catch {}
 
-        // 실패 시: customType에 우리가 생성한 논리 URL을 보관했으므로 그걸로 목록 조회
+        // 실패 시: 멤버 일치 필터로 조회 (isDistinct 채널 1개를 찾아 사용)
         if (!existingChannel) {
-          const params: GroupChannelListQueryParams = {
-            includeEmpty: true,
-            limit: 20,
-            customTypesFilter: [channelUrl],
-          } as GroupChannelListQueryParams;
-          const query = sb.groupChannel.createMyGroupChannelListQuery(params);
-          const channels = await query.next();
-          const list = Array.isArray(channels) ? channels : (channels as any)?.channels || [];
-          existingChannel = list[0] || null;
+          try {
+            const { user1Id, user2Id } = parseChannelUrl(channelUrl, user.userId);
+            const members = [user1Id, user2Id].filter(Boolean);
+            if (members.length === 2) {
+              const params: GroupChannelListQueryParams = {
+                includeEmpty: true,
+                limit: 30,
+                membersExactlyInFilter: members,
+              } as GroupChannelListQueryParams;
+              const query = sb.groupChannel.createMyGroupChannelListQuery(params);
+              const result = await query.next();
+              const list = Array.isArray(result) ? result : (result as any)?.channels || [];
+              existingChannel = list[0] || null;
+            }
+          } catch {}
         }
 
         if (!existingChannel) {

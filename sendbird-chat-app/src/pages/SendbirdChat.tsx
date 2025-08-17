@@ -11,6 +11,7 @@ import { MessageMenu } from "@sendbird/uikit-react/ui/MessageMenu";
 import "@sendbird/uikit-react/dist/index.css";
 //import "../uikit-overrides.css";
 import SendBirdCall from "sendbird-calls";
+import { decryptFromBase64, fromBase64UrlToString } from "../utils/crypto";
 
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
 
@@ -90,6 +91,56 @@ export default function SendbirdChat() {
     });
   };
 
+  // Helper: decrypt current user's phone number from currentUserId (format: user_<token>)
+  const getPhoneFromUserId = useRef<null | ((currentUserId: string) => Promise<string | null>)>(null);
+  if (!getPhoneFromUserId.current) {
+    getPhoneFromUserId.current = async (currentUserId: string) => {
+      try {
+        if (!currentUserId || !currentUserId.startsWith("user_")) return null;
+        const token = currentUserId.slice(5);
+        // token은 base64url로 인코딩된 원문 또는 AES-GCM 암호문(iv:ct base64) 문자열일 수 있음
+        const maybe = fromBase64UrlToString(token);
+        if (!maybe) return null;
+        // 암호문 패턴(iv:ct) → 복호화, 아니면 원문으로 간주
+        if (maybe.includes(":")) {
+          const dec = await decryptFromBase64(maybe);
+          return dec;
+        }
+        return maybe;
+      } catch {
+        return null;
+      }
+    };
+  }
+
+  // Helper: resolve peer userId and phone number
+  const getPeerUserId = useRef<null | ((ch?: any) => string | null)>(null);
+  if (!getPeerUserId.current) {
+    getPeerUserId.current = (ch?: any) => {
+      try {
+        if (ch?.members && urlUserId) {
+          const m = (ch.members || []).find((mm: any) => mm?.userId && mm.userId !== urlUserId);
+          return m?.userId || null;
+        }
+        if (peerIdRef.current) return peerIdRef.current;
+        if (channel?.members && urlUserId) {
+          const m = (channel.members || []).find((mm: any) => mm?.userId && mm.userId !== urlUserId);
+          return m?.userId || null;
+        }
+      } catch {}
+      return null;
+    };
+  }
+
+  const getPeerPhone = useRef<null | ((ch?: any, fallbackPeerId?: string) => Promise<string | null>)>(null);
+  if (!getPeerPhone.current) {
+    getPeerPhone.current = async (ch?: any, fallbackPeerId?: string) => {
+      const pid = fallbackPeerId || getPeerUserId.current?.(ch) || null;
+      if (!pid) return null;
+      return (await getPhoneFromUserId.current?.(pid)) || null;
+    };
+  }
+
   const startRingingBiztalkLoop = () => {
     try {
       if (ringingNotifyIntervalRef.current) return;
@@ -97,16 +148,22 @@ export default function SendbirdChat() {
         try {
           const foreground = document.visibilityState === "visible" && document.hasFocus();
           if (!foreground) {
-            const TEST_PAYLOAD = {
-              phnumber: "01050945763",
-              userid: "naver_test_user_001",
-              servicedate: "백그라운드 전화 알림톡",
-            };
-            fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(TEST_PAYLOAD),
-            }).catch(() => {});
+            (async () => {
+              let phoneDecrypted: string | null = null;
+              try {
+                phoneDecrypted = (await getPeerPhone.current?.()) || null;
+              } catch {}
+              const TEST_PAYLOAD = {
+                phnumber: phoneDecrypted || "",
+                userid: "naver_test_user_001",
+                servicedate: "백그라운드 전화 알림톡",
+              } as any;
+              fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(TEST_PAYLOAD),
+              }).catch(() => {});
+            })();
           }
         } catch {}
       };
@@ -135,8 +192,12 @@ export default function SendbirdChat() {
           const p = await queryPresence(sb, peerId);
           const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
           if (offlineNow) {
+            let phoneDecrypted: string | null = null;
+            try {
+              phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
+            } catch {}
             const TEST_PAYLOAD = {
-              phnumber: "01050945763",
+              phnumber: phoneDecrypted || "",
               userid: "상담중 부재중 전화",
               servicedate: "접속안함 전화 알림톡",
             } as any;
@@ -361,17 +422,22 @@ export default function SendbirdChat() {
       // 포그라운드 여부 확인후 알림톡 API 호출(Test API)
       const foreground = document.visibilityState === "visible" && document.hasFocus();
       if (!foreground) {
-        const TEST_PAYLOAD = {
-          phnumber: "01050945763", // 하이픈 없이
-          userid: "채팅 부재 알림톡", // 임의 고정값
-          servicedate: "백그라운드 채팅 알림톡", // "YYYY-MM-DD HH:mm:ss"
-        };
-
-        fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(TEST_PAYLOAD),
-        }).catch(() => {});
+        (async () => {
+          let phoneDecrypted: string | null = null;
+          try {
+            phoneDecrypted = (await getPeerPhone.current?.(ch)) || null;
+          } catch {}
+          const TEST_PAYLOAD = {
+            phnumber: phoneDecrypted || "",
+            userid: "채팅 부재 알림톡",
+            servicedate: "백그라운드 채팅 알림톡",
+          } as any;
+          fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(TEST_PAYLOAD),
+          }).catch(() => {});
+        })();
       }
     };
 
@@ -429,8 +495,12 @@ export default function SendbirdChat() {
             const p = await queryPresence(sb, peerId);
             const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
             if (offlineNow) {
+              let phoneDecrypted: string | null = null;
+              try {
+                phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
+              } catch {}
               const TEST_PAYLOAD = {
-                phnumber: "01050945763",
+                phnumber: phoneDecrypted || "",
                 userid: "상담중 부재중 전화",
                 servicedate: "접속안함 전화 알림톡",
               } as any;
@@ -570,8 +640,12 @@ export default function SendbirdChat() {
                             const p = await queryPresence(sb, peerId);
                             const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
                             if (offlineNow) {
+                              let phoneDecrypted: string | null = null;
+                              try {
+                                phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
+                              } catch {}
                               const TEST_PAYLOAD = {
-                                phnumber: "01050945763",
+                                phnumber: phoneDecrypted || "",
                                 userid: "naver_test_user_001",
                                 servicedate: "접속안함 채팅 알림톡1",
                               } as any;
