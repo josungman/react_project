@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSendbirdConnection } from "../hooks/useSendbirdConnection";
 import { useSendbirdChannel } from "../hooks/useSendbirdChannel";
-// 통화 관련 훅/컴포넌트 제거
+// UIKit Provider/Channel
 import { SendBirdProvider, Channel } from "@sendbird/uikit-react";
+import { GroupChannelHandler } from "@sendbird/chat/groupChannel";
 import Avatar from "@sendbird/uikit-react/ui/Avatar";
 import MessageContent from "@sendbird/uikit-react/ui/MessageContent";
 import { MessageMenu } from "@sendbird/uikit-react/ui/MessageMenu";
@@ -72,20 +73,17 @@ export default function SendbirdChat() {
   const callPresenceIntervalRef = useRef<number | null>(null);
   const peerIdRef = useRef<string | null>(null);
   const queryPresence = (sb: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       try {
         if (!pid || !sb?.createApplicationUserListQuery) return resolve({ online: null, lastSeenAt: 0 });
-        const q = sb.createApplicationUserListQuery();
-        q.userIdsFilter = [pid];
-        q.limit = 1;
-        q.next((users: any[], error: any) => {
-          if (error || !users || users.length === 0) return resolve({ online: null, lastSeenAt: 0 });
-          const u = users[0] || {};
-          const status = typeof u.connectionStatus === "string" ? u.connectionStatus.toLowerCase() : "";
-          const online = status ? status === "online" : null;
-          const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
-          resolve({ online, lastSeenAt });
-        });
+        const query = sb.createApplicationUserListQuery({ userIdsFilter: [pid], limit: 1 });
+        const users = await query.next();
+        if (!users || users.length === 0) return resolve({ online: null, lastSeenAt: 0 });
+        const u = users[0];
+        const status = typeof u.connectionStatus === "string" ? u.connectionStatus.toLowerCase() : "";
+        const online = status ? status === "online" : null;
+        const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
+        resolve({ online, lastSeenAt });
       } catch {
         resolve({ online: null, lastSeenAt: 0 });
       }
@@ -353,12 +351,8 @@ export default function SendbirdChat() {
   // UIKit 기본 동작 사용: 별도의 포그라운드 감지/읽음 제어 로직 제거
   useEffect(() => {
     if (!sb || !user) return;
-    const handlerId = `unread-api-${user.userId}-${Date.now()}`;
-
-    const HandlerCtor = (sb as any)?.groupChannel?.GroupChannelHandler || (sb as any).GroupChannelHandler || (sb as any).ChannelHandler;
-
-    if (!HandlerCtor) return;
-    const handler = new HandlerCtor();
+    const handlerId = `group-handler-${user.userId}-${Date.now()}`;
+    const handler = new GroupChannelHandler();
 
     handler.onMessageReceived = (ch: any, _msg: any) => {
       const curUrl = (channel?.url as string) || (channelId as string);
@@ -381,19 +375,11 @@ export default function SendbirdChat() {
       }
     };
 
-    if ((sb as any)?.groupChannel?.addGroupChannelHandler) {
-      (sb as any).groupChannel.addGroupChannelHandler(handlerId, handler);
-    } else if ((sb as any).addChannelHandler) {
-      (sb as any).addChannelHandler(handlerId, handler);
-    }
+    (sb as any)?.groupChannel?.addGroupChannelHandler?.(handlerId, handler);
 
     return () => {
       try {
-        if ((sb as any)?.groupChannel?.removeGroupChannelHandler) {
-          (sb as any).groupChannel.removeGroupChannelHandler(handlerId);
-        } else if ((sb as any).removeChannelHandler) {
-          (sb as any).removeChannelHandler(handlerId);
-        }
+        (sb as any)?.groupChannel?.removeGroupChannelHandler?.(handlerId);
       } catch {}
     };
   }, [sb, user?.userId, channel?.url, channelId]);
@@ -565,7 +551,7 @@ export default function SendbirdChat() {
 
       <div className="flex-1 min-h-0">
         {APP_ID && isConnected && isChannelReady && sb && user?.userId && (channel?.url || channelId) ? (
-          <SendBirdProvider appId={APP_ID as string} sdkInstance={sb as any} userId={user.userId} accessToken={(user as any)?.accessToken || undefined} key={user.userId}>
+          <SendBirdProvider appId={APP_ID as string} userId={user.userId} accessToken={(user as any)?.accessToken || undefined} key={user.userId}>
             <div className="relative flex h-[calc(100vh-120px)] min-w-0">
               <div className="flex-1 min-h-0 min-w-0">
                 <Channel

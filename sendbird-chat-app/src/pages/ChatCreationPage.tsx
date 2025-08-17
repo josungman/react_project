@@ -1,7 +1,9 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { generateChatUrls } from "../utils/sendbirdUtils";
-import SendBird from "sendbird";
+import SendbirdChat from "@sendbird/chat";
+import { GroupChannelModule } from "@sendbird/chat/groupChannel";
+import type { GroupChannelCreateParams } from "@sendbird/chat/groupChannel";
 
 // 환경변수에서 APP_ID 가져오기
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
@@ -38,7 +40,7 @@ export default function ChatCreationPage() {
     );
   }
 
-  // Sendbird 채널 생성 및 사용자 연결 함수
+  // Sendbird 채널 생성 및 사용자 연결 함수 (v4)
   const createChannelAndConnectUsers = useCallback(async (user1Id: string, user2Id: string, channelUrl: string) => {
     setIsCreating(true);
     setCreationError("");
@@ -46,90 +48,44 @@ export default function ChatCreationPage() {
     let sb: any = null;
     let sb2: any = null;
     try {
-      // Sendbird 초기화
-      sb = new SendBird({ appId: APP_ID });
+      // Sendbird v4 초기화 및 각 사용자 연결
+      sb = await SendbirdChat.init({ appId: APP_ID as string, modules: [new GroupChannelModule()] });
+      await sb.connect(user1Id);
 
-      // 첫 번째 사용자 연결
-      console.log("첫 번째 사용자 연결 중:", user1Id);
-      await new Promise((resolve, reject) => {
-        sb.connect(user1Id, (user: any, error: any) => {
-          if (error) {
-            console.error("첫 번째 사용자 연결 실패:", error);
-            reject(error);
-            return;
-          }
-          console.log("첫 번째 사용자 연결 성공:", user);
-          resolve(user);
-        });
-      });
+      sb2 = await SendbirdChat.init({ appId: APP_ID as string, modules: [new GroupChannelModule()] });
+      await sb2.connect(user2Id);
 
-      // 두 번째 사용자도 먼저 연결 (실패 시 최소 정보로 대체)
-      console.log("두 번째 사용자 연결 중:", user2Id);
-      const user2 = await new Promise((resolve) => {
-        sb2 = new SendBird({ appId: APP_ID });
-        sb2.connect(user2Id, (user: any, error: any) => {
-          if (error) {
-            console.error("두 번째 사용자 연결 실패:", error);
-            // 실패 시에도 user2는 최소 식별 정보로 채워서 null/undefined 방지
-            resolve({ userId: user2Id, connectionStatus: "unknown" });
-            return;
-          }
-          console.log("두 번째 사용자 연결 성공:", user);
-          resolve(user);
-        });
-      });
-
-      // 채널 생성 (두 사용자 모두 연결된 후)
+      // 채널 생성 (두 사용자 모두 연결된 후) v4
       console.log("채널 생성 중:", channelUrl);
-      const channel = await new Promise((resolve, reject) => {
-        const params = new sb.GroupChannelParams();
-        params.channelUrl = channelUrl;
-        params.name = `채팅방 ${user1Id} & ${user2Id}`;
-        params.addUserIds([user1Id, user2Id]);
-        params.isDistinct = true;
-
-        sb.GroupChannel.createChannel(params, (channel: any, error: any) => {
-          if (error) {
-            console.error("채널 생성 실패:", error);
-            reject(error);
-            return;
-          }
-          console.log("채널 생성 성공:", channel);
-          console.log("=== ChatCreationPage 채널 상세 정보 ===");
-          console.log("채널 URL:", channel.url);
-          console.log("채널 이름:", channel.name);
-          console.log("채널 타입:", channel.channelType);
-          console.log("채널 생성자:", channel.creator?.userId);
-          console.log("채널 초대자:", channel.inviter?.userId);
-          console.log("총 멤버 수:", channel.memberCount);
-          console.log("참여 멤버 수:", channel.joinedMemberCount);
-          console.log(
-            "채널 멤버 목록:",
-            channel.members?.map((m: any) => m.userId)
-          );
-          console.log(
-            "채널 멤버 상세:",
-            channel.members?.map((m: any) => ({
-              userId: m.userId,
-              nickname: m.nickname,
-              profileUrl: m.profileUrl,
-              connectionStatus: m.connectionStatus,
-            }))
-          );
-          console.log("=== ChatCreationPage 채널 정보 끝 ===");
-          resolve(channel);
-        });
-      });
+      const params: GroupChannelCreateParams = {
+        name: `채팅방 ${user1Id} & ${user2Id}`,
+        invitedUserIds: [user1Id, user2Id],
+        isDistinct: true,
+        // v4 SDK는 channelUrl 직접 지정 미지원. 필요 시 customType/data에 보관
+        customType: channelUrl,
+      };
+      const channel = await sb.groupChannel.createChannel(params);
+      console.log("채널 생성 성공:", channel);
+      console.log("=== ChatCreationPage 채널 상세 정보 ===");
+      console.log("채널 URL:", channel.url);
+      console.log("채널 이름:", channel.name);
+      console.log("총 멤버 수:", channel.memberCount);
+      console.log(
+        "채널 멤버 목록:",
+        channel.members?.map((m: any) => m.userId)
+      );
+      console.log("=== ChatCreationPage 채널 정보 끝 ===");
 
       // 두 사용자가 모두 연결되었으므로 채널 생성 완료
       console.log("두 사용자 모두 연결 완료!");
-      console.log("user1 연결 상태:", user1Id);
-      console.log("user2 연결 상태:", (user2 as any)?.connectionStatus || "unknown");
+      console.log("user1:", user1Id);
+      console.log("user2:", user2Id);
 
       // 생성된 채널을 로컬 스토리지에 저장
       const channelInfo = {
         id: channelUrl,
         channelUrl,
+        actualUrl: (channel as any)?.url,
         user1Id,
         user2Id,
         createdAt: new Date().toISOString(),
@@ -156,10 +112,10 @@ export default function ChatCreationPage() {
       throw error;
     } finally {
       try {
-        sb.disconnect();
+        await sb?.disconnect?.();
       } catch {}
       try {
-        (sb2 as any)?.disconnect?.();
+        await (sb2 as any)?.disconnect?.();
       } catch {}
       setIsCreating(false);
     }

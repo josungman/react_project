@@ -43,19 +43,19 @@ export default function CustomerSupportPage() {
   const [isChannelReady, setIsChannelReady] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  // 채널 관련 훅
-  const { enterChannelByUrl } = useSendbirdChannel({
-    sb: null,
-    user: null,
-    setConnectionError: () => {},
-    setChannel,
-    setIsChannelReady,
-  });
-
   // 연결 관련 훅
   const { isConnected, sb, user, isConnecting, connectionError, retryConnection } = useSendbirdConnection({
     channelId,
     urlUserId: urlUserId || undefined,
+  });
+
+  // 채널 관련 훅 (정상적인 sb 전달)
+  const { enterChannelByUrl } = useSendbirdChannel({
+    sb,
+    user,
+    setConnectionError: () => {},
+    setChannel,
+    setIsChannelReady,
   });
 
   // 사용자가 준비되면 채널 입장 시도
@@ -82,18 +82,13 @@ export default function CustomerSupportPage() {
     try {
       // 상담사만 채널을 닫을 수 있음
       if (userType === "agent") {
-        // 간단히 종료 안내 메시지 전송 후 나가기
-        await new Promise((resolve) => {
-          if (channel?.sendUserMessage) {
-            channel.sendUserMessage("상담이 종료되었습니다.", () => resolve(null));
-          } else {
-            resolve(null);
-          }
-        });
-
-        if (channel?.leave) {
-          channel.leave((_: any, __: any) => {});
-        }
+        // 종료 안내 메시지 전송 (v4)
+        try {
+          await channel.sendUserMessage({ message: "상담이 종료되었습니다." });
+        } catch {}
+        try {
+          await channel.leave();
+        } catch {}
 
         alert("상담이 종료되었습니다.");
         navigate("/support/list");
@@ -118,15 +113,11 @@ export default function CustomerSupportPage() {
     setIsClosing(true);
 
     try {
-      // 채널에서 나가기
-      if (channel.leave) {
-        channel.leave((_: any, error: any) => {
-          if (error) {
-            console.error("채널 나가기 실패:", error);
-          } else {
-            console.log("채널 나가기 성공");
-          }
-        });
+      // 채널에서 나가기 (v4)
+      try {
+        await channel.leave();
+      } catch (error) {
+        console.error("채널 나가기 실패:", error);
       }
 
       alert("상담방을 나갑니다.");
@@ -209,7 +200,7 @@ export default function CustomerSupportPage() {
       {/* UIKit 메시지 영역 */}
       <div className="flex-1 min-h-0">
         {APP_ID && isConnected && isChannelReady && (channel?.url || channelId) ? (
-          <SendBirdProvider appId={APP_ID as string} sdkInstance={(sb as any) || null} userId={user!.userId} key={user!.userId}>
+          <SendBirdProvider appId={APP_ID as string} userId={user!.userId} key={user!.userId}>
             <Channel
               channelUrl={(channel?.url as string) || (channelId as string)}
               key={(channel?.url as string) || (channelId as string)}

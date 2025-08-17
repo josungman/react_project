@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import SendBird from "sendbird";
+import SendbirdChat from "@sendbird/chat";
+import { GroupChannelModule } from "@sendbird/chat/groupChannel";
+import type { GroupChannelListQueryParams } from "@sendbird/chat/groupChannel";
 
 // 환경변수에서 APP_ID 가져오기
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
@@ -56,71 +58,34 @@ export default function SupportListPage() {
     setError("");
 
     try {
-      // SendBird SDK 초기화
-      const sb = new SendBird({ appId: APP_ID });
+      const sb = await SendbirdChat.init({ appId: APP_ID as string, modules: [new GroupChannelModule()] });
 
-      // 관리자 사용자로 연결 (모든 채널에 접근 가능)
       const adminUserId = "admin_user_" + Date.now();
+      await sb.connect(adminUserId);
 
-      await new Promise((resolve, reject) => {
-        sb.connect(adminUserId, (user: any, error: any) => {
-          if (error) {
-            console.error("관리자 사용자 연결 실패:", error);
-            reject(error);
-            return;
-          }
-          console.log("관리자 사용자 연결 성공:", user);
-          resolve(user);
-        });
+      const params: GroupChannelListQueryParams = { includeEmpty: true, limit: 100 };
+      const query = sb.groupChannel.createMyGroupChannelListQuery(params);
+      const channelList = await query.next();
+
+      const list = Array.isArray(channelList) ? channelList : (channelList as any)?.channels || [];
+
+      const convertedChannels = list.map((channel: any) => {
+        return {
+          id: channel.url,
+          channelUrl: channel.url,
+          user1Id: (channel.members?.[0]?.userId as string) || "unknown_user1",
+          user2Id: (channel.members?.[1]?.userId as string) || "unknown_user2",
+          createdAt: new Date(channel.createdAt).toISOString(),
+          status: channel.isFrozen ? "closed" : "active",
+          type: "chat",
+          lastMessage: channel.lastMessage?.message || "",
+          lastMessageTime: channel.lastMessage ? new Date(channel.lastMessage.createdAt).toISOString() : undefined,
+          memberCount: channel.memberCount,
+          joinedMemberCount: channel.joinedMemberCount,
+        } as ChatChannel;
       });
 
-      // 채널 목록 조회
-      const channels = await new Promise<ChatChannel[]>((resolve, reject) => {
-        const channelListQuery = sb.GroupChannel.createMyGroupChannelListQuery();
-        channelListQuery.limit = 100; // 최대 100개 채널 조회
-
-        channelListQuery.next((channelList: any[], error: any) => {
-          if (error) {
-            console.error("채널 목록 조회 실패:", error);
-            reject(error);
-            return;
-          }
-
-          console.log("조회된 채널 목록:", channelList);
-
-          // 채널 데이터 변환
-          const convertedChannels = channelList.map((channel: any) => {
-            const channelUrl = channel.url;
-            let user1Id = "unknown_user1";
-            let user2Id = "unknown_user2";
-
-            // group_chat_user1_user2 형식에서 사용자 ID 추출
-            if (channelUrl.includes("group_chat_")) {
-              const parts = channelUrl.split("group_chat_")[1]?.split("_");
-              if (parts && parts.length >= 2) {
-                user1Id = parts[0];
-                user2Id = parts[1];
-              }
-            }
-
-            return {
-              id: channel.url,
-              channelUrl: channel.url,
-              user1Id,
-              user2Id,
-              createdAt: new Date(channel.createdAt).toISOString(),
-              status: channel.isFrozen ? "closed" : "active",
-              type: "chat",
-              lastMessage: channel.lastMessage?.message || "",
-              lastMessageTime: channel.lastMessage ? new Date(channel.lastMessage.createdAt).toISOString() : undefined,
-              memberCount: channel.memberCount,
-              joinedMemberCount: channel.joinedMemberCount,
-            };
-          });
-
-          resolve(convertedChannels as ChatChannel[]);
-        });
-      });
+      const channels = convertedChannels as ChatChannel[];
 
       const allChannels = channels;
 

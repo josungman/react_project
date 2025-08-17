@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { parseChannelUrl, checkChannelMembership } from "../utils/sendbirdUtils";
+import type { GroupChannel, GroupChannelListQueryParams } from "@sendbird/chat/groupChannel";
 
 interface UseSendbirdChannelProps {
   sb: any;
@@ -13,7 +14,7 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
   const [isChannelReady] = useState(false);
 
   const enterChannelByUrl = useCallback(
-    (channelUrl: string, user: any) => {
+    async (channelUrl: string, user: any) => {
       console.log("=== GroupChannel 입장 시도 ===");
       console.log("채널 URL:", channelUrl);
       console.log("SendBird 인스턴스:", sb);
@@ -46,7 +47,7 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
         console.log("실제 채널 작업을 진행합니다.");
 
         // 실제 채널 작업 진행
-        proceedWithChannelWork(channelUrl, currentUser);
+        await proceedWithChannelWork(channelUrl, currentUser);
       } else {
         console.error("❌ 사용자 정보가 없습니다.");
         console.error("sb.currentUser:", sb.currentUser);
@@ -59,7 +60,7 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
 
   // 채널 작업을 진행하는 별도 함수
   const proceedWithChannelWork = useCallback(
-    (channelUrl: string, user: any) => {
+    async (channelUrl: string, user: any) => {
       console.log("=== proceedWithChannelWork 시작 ===");
       console.log("channelUrl:", channelUrl);
       console.log("user:", user);
@@ -107,45 +108,42 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
       console.log("🔍 채널 파라미터 설정 시작...");
 
       try {
-        // 이미 존재하는 채널에 참여하기
+        // v4: 우선 channelUrl로 직접 조회 시도 (실제 Sendbird 고유 URL일 때만 성공)
         console.log("🔍 기존 채널 참여 시도:", channelUrl);
         console.log("참여할 사용자 ID:", user.userId);
+        let existingChannel: GroupChannel | null = null;
+        try {
+          existingChannel = await sb.groupChannel.getChannel(channelUrl);
+        } catch {}
 
-        // 기존 채널 가져오기
-        sendbirdInstance.GroupChannel.getChannel(channelUrl, (existingChannel: any, getError: any) => {
-          console.log("📞 getChannel 콜백 실행됨");
-          console.log("요청한 채널 URL:", channelUrl);
-          console.log("현재 사용자 ID:", user?.userId);
+        // 실패 시: customType에 우리가 생성한 논리 URL을 보관했으므로 그걸로 목록 조회
+        if (!existingChannel) {
+          const params: GroupChannelListQueryParams = {
+            includeEmpty: true,
+            limit: 20,
+            customTypesFilter: [channelUrl],
+          } as GroupChannelListQueryParams;
+          const query = sb.groupChannel.createMyGroupChannelListQuery(params);
+          const channels = await query.next();
+          const list = Array.isArray(channels) ? channels : (channels as any)?.channels || [];
+          existingChannel = list[0] || null;
+        }
 
-          if (getError) {
-            console.error("❌ 기존 채널 찾기 실패:", getError);
-            console.error("에러 코드:", getError.code);
-            console.error("에러 메시지:", getError.message);
+        if (!existingChannel) {
+          throw new Error("채널을 찾을 수 없습니다. (URL 또는 customType 기준)");
+        }
 
-            // 채널이 존재하지 않는 경우 더 자세한 정보 출력
-            if (getError.code === 400 || getError.message?.includes("not found")) {
-              console.error("채널이 존재하지 않습니다. 다음을 확인해주세요:");
-              console.error("1. 채널 생성이 완료되었는지 확인");
-              console.error("2. 채널 URL이 올바른지 확인:", channelUrl);
-              console.error("3. 사용자 ID가 채널 멤버에 포함되어 있는지 확인");
-            }
-
-            setConnectionError(`채널 접근 실패: ${getError.message}`);
-          } else {
-            console.log("✅ 기존 채널 찾기 성공:", existingChannel);
-            console.log("실제 채널 URL:", existingChannel.url);
-            console.log(
-              "기존 채널 멤버:",
-              existingChannel.members?.map((m: any) => m.userId)
-            );
-
-            console.log("📞 enterChannel 호출...");
-            enterChannel(existingChannel, user);
-          }
-        });
-      } catch (error) {
+        console.log("✅ 채널 찾기 성공:", existingChannel);
+        console.log("실제 채널 URL:", existingChannel.url);
+        console.log(
+          "기존 채널 멤버:",
+          existingChannel.members?.map((m: any) => m.userId)
+        );
+        console.log("📞 enterChannel 호출...");
+        enterChannel(existingChannel as any, user);
+      } catch (error: any) {
         console.error("❌ 채널 작업 중 예외 발생:", error);
-        setConnectionError(`채널 작업 실패: ${error}`);
+        setConnectionError(`채널 작업 실패: ${error?.message || String(error)}`);
       }
     },
     [sb, setConnectionError]
@@ -169,8 +167,8 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
         return;
       }
 
-      // GroupChannel인지 확인 (더 정확한 체크)
-      const isGroupChannel = channel.constructor.name === "GroupChannel" || channel.url?.includes("group") || channel.channelType === "group";
+      // v4 GroupChannel 판별
+      const isGroupChannel = !!channel?.isDistinct || !!channel?.members;
 
       console.log("GroupChannel 여부:", isGroupChannel);
       console.log("채널 타입 상세:", {
@@ -194,20 +192,10 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
         return;
       }
 
-      // OpenChannel인 경우에만 enter() 호출
-      console.log("OpenChannel 감지됨 - enter() 호출");
-      channel.enter((response: any, error: any) => {
-        if (error) {
-          console.error("채널 입장 실패:", error);
-          setConnectionError(`채널 입장 실패: ${error.message}`);
-          return;
-        }
-
-        console.log("채널 입장 성공:", response);
-        setChannel(channel);
-        setIsChannelReady(true);
-        setConnectionError("");
-      });
+      // OpenChannel은 사용하지 않음 (필요 시 v4 openChannel.enter 사용)
+      setChannel(channel);
+      setIsChannelReady(true);
+      setConnectionError("");
     },
     [setChannel, setIsChannelReady, setConnectionError]
   );
