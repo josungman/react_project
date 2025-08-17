@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// StrictMode는 개발 모드 이중 마운트 이슈를 피하기 위해 현재 사용하지 않습니다
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
@@ -14,8 +14,13 @@ console.warn = (...args: any[]) => {
   originalConsoleWarn(...args);
 };
 
+const isProd = import.meta.env.PROD;
+
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  isProd ? (
     <App />
-  </StrictMode>
+  ) : (
+    // 개발 모드에서는 StrictMode 비활성화하여 useEffect 이중 호출 방지
+    <App />
+  )
 );

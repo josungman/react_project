@@ -2,14 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSendbirdConnection } from "../hooks/useSendbirdConnection";
 import { useSendbirdChannel } from "../hooks/useSendbirdChannel";
-// UIKit Provider/Channel
 import { SendBirdProvider, Channel } from "@sendbird/uikit-react";
-import { GroupChannelHandler } from "@sendbird/chat/groupChannel";
 import Avatar from "@sendbird/uikit-react/ui/Avatar";
 import MessageContent from "@sendbird/uikit-react/ui/MessageContent";
 import { MessageMenu } from "@sendbird/uikit-react/ui/MessageMenu";
 import "@sendbird/uikit-react/dist/index.css";
-//import "../uikit-overrides.css";
 import SendBirdCall from "sendbird-calls";
 import { decryptFromBase64, fromBase64UrlToString } from "../utils/crypto";
 
@@ -69,49 +66,28 @@ export default function SendbirdChat() {
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const ringingNotifyIntervalRef = useRef<number | null>(null);
-  const ringingOscRef = useRef<{ osc: OscillatorNode; gain: GainNode } | null>(null);
-  const ringingBeepTimerRef = useRef<number | null>(null);
   const callPresenceIntervalRef = useRef<number | null>(null);
   const peerIdRef = useRef<string | null>(null);
   const queryPresence = (sb: any, pid: string): Promise<{ online: boolean | null; lastSeenAt: number }> => {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       try {
         if (!pid || !sb?.createApplicationUserListQuery) return resolve({ online: null, lastSeenAt: 0 });
-        const query = sb.createApplicationUserListQuery({ userIdsFilter: [pid], limit: 1 });
-        const users = await query.next();
-        if (!users || users.length === 0) return resolve({ online: null, lastSeenAt: 0 });
-        const u = users[0];
-        const status = typeof u.connectionStatus === "string" ? u.connectionStatus.toLowerCase() : "";
-        const online = status ? status === "online" : null;
-        const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
-        resolve({ online, lastSeenAt });
+        const q = sb.createApplicationUserListQuery();
+        q.userIdsFilter = [pid];
+        q.limit = 1;
+        q.next((users: any[], error: any) => {
+          if (error || !users || users.length === 0) return resolve({ online: null, lastSeenAt: 0 });
+          const u = users[0] || {};
+          const status = typeof u.connectionStatus === "string" ? u.connectionStatus.toLowerCase() : "";
+          const online = status ? status === "online" : null;
+          const lastSeenAt = typeof u.lastSeenAt === "number" ? u.lastSeenAt : 0;
+          resolve({ online, lastSeenAt });
+        });
       } catch {
         resolve({ online: null, lastSeenAt: 0 });
       }
     });
   };
-
-  // Helper: decrypt current user's phone number from currentUserId (format: user_<token>)
-  const getPhoneFromUserId = useRef<null | ((currentUserId: string) => Promise<string | null>)>(null);
-  if (!getPhoneFromUserId.current) {
-    getPhoneFromUserId.current = async (currentUserId: string) => {
-      try {
-        if (!currentUserId || !currentUserId.startsWith("user_")) return null;
-        const token = currentUserId.slice(5);
-        // token은 base64url로 인코딩된 원문 또는 AES-GCM 암호문(iv:ct base64) 문자열일 수 있음
-        const maybe = fromBase64UrlToString(token);
-        if (!maybe) return null;
-        // 암호문 패턴(iv:ct) → 복호화, 아니면 원문으로 간주
-        if (maybe.includes(":")) {
-          const dec = await decryptFromBase64(maybe);
-          return dec;
-        }
-        return maybe;
-      } catch {
-        return null;
-      }
-    };
-  }
 
   // Helper: resolve peer userId and phone number
   const getPeerUserId = useRef<null | ((ch?: any) => string | null)>(null);
@@ -137,9 +113,38 @@ export default function SendbirdChat() {
     getPeerPhone.current = async (ch?: any, fallbackPeerId?: string) => {
       const pid = fallbackPeerId || getPeerUserId.current?.(ch) || null;
       if (!pid) return null;
-      return (await getPhoneFromUserId.current?.(pid)) || null;
+      try {
+        if (!pid.startsWith("user_")) return null;
+        const token = pid.slice(5);
+        const maybe = fromBase64UrlToString(token);
+        if (!maybe) return null;
+        if (maybe.includes(":")) {
+          const dec = await decryptFromBase64(maybe);
+          return dec;
+        }
+        return maybe;
+      } catch {
+        return null;
+      }
     };
   }
+
+  // Helper: get own (receiver) phone number from current userId (read at call time)
+  const getSelfPhone = async (): Promise<string | null> => {
+    try {
+      const selfId = ((sb as any)?.currentUser?.userId as string) || (user?.userId as string) || null;
+      if (!selfId || !selfId.startsWith("user_")) return null;
+      const token = selfId.slice(5);
+      const maybe = fromBase64UrlToString(token);
+      if (!maybe) return null;
+      if (maybe.includes(":")) {
+        return await decryptFromBase64(maybe);
+      }
+      return maybe;
+    } catch {
+      return null;
+    }
+  };
 
   const startRingingBiztalkLoop = () => {
     try {
@@ -151,7 +156,7 @@ export default function SendbirdChat() {
             (async () => {
               let phoneDecrypted: string | null = null;
               try {
-                phoneDecrypted = (await getPeerPhone.current?.()) || null;
+                phoneDecrypted = (await getSelfPhone()) || null;
               } catch {}
               const TEST_PAYLOAD = {
                 phnumber: phoneDecrypted || "",
@@ -224,62 +229,7 @@ export default function SendbirdChat() {
     } catch {}
   };
 
-  const startLocalRingtone = async () => {
-    try {
-      await resumeAudioAutoplay();
-      if (ringingOscRef.current) return;
-      const ctx = audioContextRef.current;
-      if (!ctx) return;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.value = 800;
-      gain.gain.value = 0.0;
-      osc.connect(gain).connect(ctx.destination);
-      osc.start();
-      ringingOscRef.current = { osc, gain };
-
-      const beep = () => {
-        try {
-          if (!ringingOscRef.current || !audioContextRef.current) return;
-          const g = ringingOscRef.current.gain;
-          const now = audioContextRef.current.currentTime;
-          g.gain.setValueAtTime(0.15, now);
-          setTimeout(() => {
-            try {
-              if (!ringingOscRef.current || !audioContextRef.current) return;
-              const n2 = audioContextRef.current.currentTime;
-              ringingOscRef.current.gain.gain.setValueAtTime(0.0, n2);
-            } catch {}
-          }, 1000);
-        } catch {}
-      };
-
-      beep();
-      ringingBeepTimerRef.current = window.setInterval(beep, 2000);
-    } catch {}
-  };
-
-  const stopLocalRingtone = () => {
-    try {
-      if (ringingBeepTimerRef.current) {
-        clearInterval(ringingBeepTimerRef.current);
-        ringingBeepTimerRef.current = null;
-      }
-      if (ringingOscRef.current) {
-        try {
-          ringingOscRef.current.osc.stop();
-        } catch {}
-        try {
-          ringingOscRef.current.osc.disconnect();
-        } catch {}
-        try {
-          ringingOscRef.current.gain.disconnect();
-        } catch {}
-        ringingOscRef.current = null;
-      }
-    } catch {}
-  };
+  // 로컬 벨 사운드 기능 제거
 
   const resumeAudioAutoplay = async () => {
     try {
@@ -289,12 +239,6 @@ export default function SendbirdChat() {
       }
       if (audioContextRef.current?.state === "suspended") {
         await audioContextRef.current.resume();
-      }
-    } catch {}
-    try {
-      if (localAudioRef.current) {
-        localAudioRef.current.muted = true;
-        localAudioRef.current.volume = 0;
       }
     } catch {}
     try {
@@ -372,9 +316,7 @@ export default function SendbirdChat() {
               attachCallListeners(incoming);
               try {
                 const foreground = document.visibilityState === "visible" && document.hasFocus();
-                if (foreground) {
-                  startLocalRingtone();
-                } else {
+                if (!foreground) {
                   startRingingBiztalkLoop();
                 }
               } catch {
@@ -413,7 +355,12 @@ export default function SendbirdChat() {
   useEffect(() => {
     if (!sb || !user) return;
     const handlerId = `group-handler-${user.userId}-${Date.now()}`;
-    const handler = new GroupChannelHandler();
+    const HandlerCtor = (sb as any).ChannelHandler || (sb as any).GroupChannelHandler || (sb as any)?.groupChannel?.GroupChannelHandler;
+    if (!HandlerCtor) {
+      console.warn("[SB][handler] no HandlerCtor available on v3 sdk");
+      return;
+    }
+    const handler = new HandlerCtor();
 
     handler.onMessageReceived = (ch: any, _msg: any) => {
       const curUrl = (channel?.url as string) || (channelId as string);
@@ -421,17 +368,20 @@ export default function SendbirdChat() {
 
       // 포그라운드 여부 확인후 알림톡 API 호출(Test API)
       const foreground = document.visibilityState === "visible" && document.hasFocus();
+      console.log("[SB][recv] msg", { curUrl, ch: ch?.url, foreground });
       if (!foreground) {
         (async () => {
           let phoneDecrypted: string | null = null;
           try {
-            phoneDecrypted = (await getPeerPhone.current?.(ch)) || null;
+            phoneDecrypted = (await getSelfPhone()) || null;
           } catch {}
+
           const TEST_PAYLOAD = {
             phnumber: phoneDecrypted || "",
             userid: "채팅 부재 알림톡",
             servicedate: "백그라운드 채팅 알림톡",
           } as any;
+          console.log("[SB][recv] send bg", TEST_PAYLOAD);
           fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -441,11 +391,23 @@ export default function SendbirdChat() {
       }
     };
 
-    (sb as any)?.groupChannel?.addGroupChannelHandler?.(handlerId, handler);
+    if ((sb as any)?.addChannelHandler) {
+      (sb as any).addChannelHandler(handlerId, handler);
+      console.log("[SB][handler] addChannelHandler", handlerId);
+    } else if ((sb as any)?.groupChannel?.addGroupChannelHandler) {
+      (sb as any).groupChannel.addGroupChannelHandler(handlerId, handler);
+      console.log("[SB][handler] addGroupChannelHandler", handlerId);
+    }
 
     return () => {
       try {
-        (sb as any)?.groupChannel?.removeGroupChannelHandler?.(handlerId);
+        if ((sb as any)?.removeChannelHandler) {
+          (sb as any).removeChannelHandler(handlerId);
+          console.log("[SB][handler] removeChannelHandler", handlerId);
+        } else if ((sb as any)?.groupChannel?.removeGroupChannelHandler) {
+          (sb as any).groupChannel.removeGroupChannelHandler(handlerId);
+          console.log("[SB][handler] removeGroupChannelHandler", handlerId);
+        }
       } catch {}
     };
   }, [sb, user?.userId, channel?.url, channelId]);
@@ -459,7 +421,6 @@ export default function SendbirdChat() {
       c.onConnected = () => {
         callConnectedAtRef.current = Date.now();
         setCallStatus("connected");
-        stopLocalRingtone();
         stopRingingBiztalkLoop();
         stopCallPresenceCheckLoop();
         try {
@@ -473,7 +434,6 @@ export default function SendbirdChat() {
         setIsCallUIOpen(false);
         setDirectCall(null);
         setIsIncoming(false);
-        stopLocalRingtone();
         stopRingingBiztalkLoop();
         stopCallPresenceCheckLoop();
         sendCallLog(c);
@@ -621,7 +581,7 @@ export default function SendbirdChat() {
 
       <div className="flex-1 min-h-0">
         {APP_ID && isConnected && isChannelReady && sb && user?.userId && (channel?.url || channelId) ? (
-          <SendBirdProvider appId={APP_ID as string} userId={user.userId} accessToken={(user as any)?.accessToken || undefined} key={user.userId}>
+          <SendBirdProvider appId={APP_ID as string} sdkInstance={sb as any} userId={user.userId} accessToken={(user as any)?.accessToken || undefined} key={user.userId}>
             <div className="relative flex h-[calc(100vh-120px)] min-w-0">
               <div className="flex-1 min-h-0 min-w-0">
                 <Channel

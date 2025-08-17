@@ -40,17 +40,25 @@ export const generateChatUrls = (_unusedUserId: string) => {
 
 // 채널 URL 파싱 함수
 export const parseChannelUrl = (channelUrl: string, currentUserId: string) => {
-  const channelUrlParts = channelUrl.split("_");
-  console.log("채널 URL 파트:", channelUrlParts);
+  console.log("채널 URL:", channelUrl);
 
-  let user1Id, user2Id;
+  let user1Id: string | undefined;
+  let user2Id: string | undefined;
 
-  if (channelUrlParts.length >= 4 && channelUrlParts[0] === "group" && channelUrlParts[1] === "chat") {
-    // 형식: group_chat_user1_123_user2_124
-    user1Id = channelUrlParts[2]; // user1
-    user2Id = channelUrlParts[4]; // user2
-    console.log("정규 채널 URL 형식 감지:", { user1Id, user2Id });
-  } else if (channelUrlParts.length >= 3 && channelUrlParts[0] === "manual") {
+  // 형식: group_chat_user_<ID1>_user_<ID2>  (ID는 base64url 가능 → '_' 포함될 수 있음)
+  if (channelUrl.startsWith("group_chat_")) {
+    try {
+      let rest = channelUrl.slice("group_chat_".length); // user_<ID1>_user_<ID2>
+      if (rest.startsWith("user_")) rest = rest.slice(5); // <ID1>_user_<ID2>
+      const sep = "_user_";
+      const idx = rest.indexOf(sep);
+      if (idx > 0) {
+        user1Id = "user_" + rest.slice(0, idx);
+        user2Id = "user_" + rest.slice(idx + sep.length);
+        console.log("정규 채널 URL 형식 감지:", { user1Id, user2Id });
+      }
+    } catch {}
+  } else if (channelUrl.startsWith("manual_")) {
     // 형식: manual_group_777 (고정 테스트용)
     user1Id = currentUserId; // 현재 사용자의 실제 ID를 사용
     user2Id = `test_user2_${Date.now()}`;
@@ -68,7 +76,7 @@ export const parseChannelUrl = (channelUrl: string, currentUserId: string) => {
     console.log("강제 처리 결과:", { user1Id, user2Id });
   }
 
-  return { user1Id, user2Id };
+  return { user1Id: user1Id as string, user2Id: user2Id as string };
 };
 
 // 멤버 확인 함수

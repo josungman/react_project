@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { parseChannelUrl, checkChannelMembership } from "../utils/sendbirdUtils";
-import type { GroupChannel, GroupChannelListQueryParams } from "@sendbird/chat/groupChannel";
 
 interface UseSendbirdChannelProps {
   sb: any;
@@ -108,12 +107,17 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
       console.log("🔍 채널 파라미터 설정 시작...");
 
       try {
-        // v4: 우선 channelUrl로 직접 조회 시도 (실제 Sendbird 고유 URL일 때만 성공)
+        // v3: 우선 channelUrl로 직접 조회 시도 (실제 Sendbird 고유 URL일 때만 성공)
         console.log("🔍 기존 채널 참여 시도:", channelUrl);
         console.log("참여할 사용자 ID:", user.userId);
-        let existingChannel: GroupChannel | null = null;
+        let existingChannel: any | null = null;
         try {
-          existingChannel = await sb.groupChannel.getChannel(channelUrl);
+          existingChannel = await new Promise((resolve, reject) => {
+            (sb as any).GroupChannel.getChannel(channelUrl, (ch: any, err: any) => {
+              if (err) return reject(err);
+              resolve(ch);
+            });
+          });
         } catch {}
 
         // 실패 시: 멤버 일치 필터로 조회 (isDistinct 채널 1개를 찾아 사용)
@@ -122,15 +126,19 @@ export const useSendbirdChannel = ({ sb, user: _unusedUser, setConnectionError, 
             const { user1Id, user2Id } = parseChannelUrl(channelUrl, user.userId);
             const members = [user1Id, user2Id].filter(Boolean);
             if (members.length === 2) {
-              const params: GroupChannelListQueryParams = {
-                includeEmpty: true,
-                limit: 30,
-                membersExactlyInFilter: members,
-              } as GroupChannelListQueryParams;
-              const query = sb.groupChannel.createMyGroupChannelListQuery(params);
-              const result = await query.next();
-              const list = Array.isArray(result) ? result : (result as any)?.channels || [];
-              existingChannel = list[0] || null;
+              const list = await new Promise<any[]>((resolve, reject) => {
+                const query = (sb as any).GroupChannel.createMyGroupChannelListQuery();
+                query.includeEmpty = true;
+                query.limit = 30;
+                // v3는 userIdsExactFilter로 정확히 멤버 일치 필터 가능
+                query.userIdsExactFilter = members;
+                query.next((channels: any[], err: any) => {
+                  if (err) return reject(err);
+                  resolve(channels || []);
+                });
+              });
+              // 동일 멤버 조합에서 최신 채널을 선택 (isDistinct면 1개)
+              existingChannel = list.sort((a: any, b: any) => (b.createdAt || 0) - (a.createdAt || 0))[0] || null;
             }
           } catch {}
         }
