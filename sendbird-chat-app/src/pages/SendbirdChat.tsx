@@ -151,7 +151,7 @@ export default function SendbirdChat() {
       if (ringingNotifyIntervalRef.current) return;
       const sendOnce = () => {
         try {
-          const foreground = document.visibilityState === "visible" && document.hasFocus();
+          const foreground = document.visibilityState === "visible";
           if (!foreground) {
             (async () => {
               let phoneDecrypted: string | null = null;
@@ -315,7 +315,7 @@ export default function SendbirdChat() {
               setCallStatus("ringing");
               attachCallListeners(incoming);
               try {
-                const foreground = document.visibilityState === "visible" && document.hasFocus();
+                const foreground = document.visibilityState === "visible";
                 if (!foreground) {
                   startRingingBiztalkLoop();
                 }
@@ -367,7 +367,7 @@ export default function SendbirdChat() {
       if (!curUrl || ch?.url !== curUrl) return;
 
       // 포그라운드 여부 확인후 알림톡 API 호출(Test API)
-      const foreground = document.visibilityState === "visible" && document.hasFocus();
+      const foreground = document.visibilityState === "visible";
       console.log("[SB][recv] msg", { curUrl, ch: ch?.url, foreground });
       if (!foreground) {
         (async () => {
@@ -607,7 +607,7 @@ export default function SendbirdChat() {
                               const TEST_PAYLOAD = {
                                 phnumber: phoneDecrypted || "",
                                 userid: "naver_test_user_001",
-                                servicedate: "접속안함 채팅 알림톡1",
+                                servicedate: "접속안함 채팅 알림톡",
                               } as any;
                               fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
                                 method: "POST",
