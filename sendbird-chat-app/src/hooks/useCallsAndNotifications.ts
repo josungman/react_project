@@ -34,6 +34,8 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
   const ringingNotifyIntervalRef = useRef<number | null>(null);
   const callPresenceIntervalRef = useRef<number | null>(null);
   const peerIdRef = useRef<string | null>(null);
+  const peerNotReadyIntervalRef = useRef<number | null>(null);
+  const peerNotReadyTimeoutRef = useRef<number | null>(null);
 
   /**
    * 링크 구성용 안전 폴백 헬퍼
@@ -247,6 +249,58 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
     } catch {}
   };
 
+  /** 피호출자 미준비 시(미인증) 10초 동안 주기 알림톡 전송 */
+  const stopPeerNotReadyNotifyBurst = () => {
+    try {
+      if (peerNotReadyIntervalRef.current) {
+        clearInterval(peerNotReadyIntervalRef.current);
+        peerNotReadyIntervalRef.current = null;
+      }
+      if (peerNotReadyTimeoutRef.current) {
+        clearTimeout(peerNotReadyTimeoutRef.current);
+        peerNotReadyTimeoutRef.current = null;
+      }
+    } catch {}
+  };
+
+  const sendMissedCallNotifyToPeer = async (peerId: string, statusText: string) => {
+    try {
+      let phoneDecrypted: string | null = null;
+      try {
+        phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
+      } catch {}
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const channelKey = getChannelKeyForLink();
+      const peerLink = origin && channelKey && peerId ? `${origin}/chat/${channelKey}?user=${peerId}` : "";
+      const PAYLOAD = {
+        send_number: phoneDecrypted || "",
+        conn_status: statusText,
+        link: peerLink,
+      } as any;
+      fetch(`${BACKEND_URL}/biztalkchating/missed_call`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(PAYLOAD),
+      }).catch(() => {});
+    } catch {}
+  };
+
+  const startPeerNotReadyNotifyBurst = (peerId: string, durationMs: number = 10000, intervalMs: number = 2000) => {
+    try {
+      stopPeerNotReadyNotifyBurst();
+      // 즉시 1회 전송
+      sendMissedCallNotifyToPeer(peerId, "상대가 통화 미인증 상태(첫접속필요)");
+      // 주기 전송
+      peerNotReadyIntervalRef.current = window.setInterval(() => {
+        sendMissedCallNotifyToPeer(peerId, "상대가 통화 미인증 상태(첫접속필요)");
+      }, intervalMs);
+      // duration 이후 자동 종료
+      peerNotReadyTimeoutRef.current = window.setTimeout(() => {
+        stopPeerNotReadyNotifyBurst();
+      }, durationMs);
+    } catch {}
+  };
+
   /** 자동 재생 제약 회피를 위해 오디오 컨텍스트/원격 오디오를 재생합니다. */
   const resumeAudioAutoplay = async () => {
     try {
@@ -278,6 +332,7 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         setCallStatus("connected");
         stopRingingBiztalkLoop();
         stopCallPresenceCheckLoop();
+        stopPeerNotReadyNotifyBurst();
         try {
           c.setRemoteMediaView?.(remoteAudioRef.current);
           remoteAudioRef.current?.play?.();
@@ -287,12 +342,28 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         try {
           console.log("[CALL] onEnded", { endResult: (c as any)?.endResult });
         } catch {}
+        const endResult = (c as any)?.endResult;
+        const endedBeforeConnect = !callEstablishedAtRef.current && !callConnectedAtRef.current;
+        if (endedBeforeConnect && endResult === "dial_failed") {
+          // 미인증 등 다이얼 실패: 팝업 유지, 안내 상태로 전환, 알림 버스트 시작
+          setIsIncoming(false);
+          setIsCallUIOpen(true);
+          setCallStatus("peer_not_ready");
+          setDirectCall(null);
+          try {
+            const peerId = peerIdRef.current || getPeerUserId.current?.() || null;
+            if (peerId) startPeerNotReadyNotifyBurst(peerId, 10000, 2000);
+          } catch {}
+          return;
+        }
+        // 정상 종료 플로우
         setCallStatus("ended");
         setIsCallUIOpen(false);
         setDirectCall(null);
         setIsIncoming(false);
         stopRingingBiztalkLoop();
         stopCallPresenceCheckLoop();
+        stopPeerNotReadyNotifyBurst();
         try {
           callEstablishedAtRef.current = null;
           callConnectedAtRef.current = null;
@@ -352,23 +423,35 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
           } as MediaTrackConstraints,
         });
       } catch {}
-      const newCall = await (SendBirdCall as any).dial?.({
-        userId: calleeId,
-        isVideoCall: false,
-        callOption: {
-          audioEnabled: true,
-          videoEnabled: false,
-          remoteMediaView: remoteAudioRef.current,
-        },
-      });
-      console.log("[CALL] dial result", { hasCall: !!newCall });
-      if (newCall) {
-        setDirectCall(newCall);
+      try {
+        const newCall = await (SendBirdCall as any).dial?.({
+          userId: calleeId,
+          isVideoCall: false,
+          callOption: {
+            audioEnabled: true,
+            videoEnabled: false,
+            remoteMediaView: remoteAudioRef.current,
+          },
+        });
+        console.log("[CALL] dial result", { hasCall: !!newCall });
+        if (newCall) {
+          setDirectCall(newCall);
+          setIsCallUIOpen(true);
+          attachCallListeners(newCall);
+          try {
+            newCall.setRemoteMediaView?.(remoteAudioRef.current);
+          } catch {}
+        }
+      } catch (err: any) {
+        // 피호출자 미인증 에러 처리: 팝업 유지, 상태 변경, 10초 알림톡 버스트
+        const message = String(err?.message || err || "");
+        console.warn("[CALL] dial error", message);
+        setIsIncoming(false);
         setIsCallUIOpen(true);
-        attachCallListeners(newCall);
-        try {
-          newCall.setRemoteMediaView?.(remoteAudioRef.current);
-        } catch {}
+        setCallStatus("peer_not_ready");
+        const peerId = peerIdRef.current || calleeId;
+        if (peerId) startPeerNotReadyNotifyBurst(peerId, 10000, 2000);
+        return; // 이후 오류 흐름으로 떨어지지 않도록 종료
       }
     } catch (e) {
       console.error("dial 실패", e);

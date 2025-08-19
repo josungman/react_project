@@ -22,6 +22,9 @@ export default function CallOverlay({
       <div className="bg-white shadow-xl rounded-lg p-4 w-80">
         <div className="text-sm text-gray-500 mb-2">{isIncoming ? "수신 통화" : "발신 통화"}</div>
         <div className="text-lg font-semibold mb-4">상태: {status}</div>
+        <div className="text-xs text-orange-700 bg-orange-50 border border-orange-200 rounded px-2 py-1 mb-3">
+          무음/볼륨 0 상태에서는 들리지 않을 수 있어요. 기기 무음을 해제하고 볼륨을 올려 주세요.
+        </div>
         <audio ref={localRef} hidden autoPlay />
         <audio ref={remoteRef} hidden autoPlay />
         <div className="flex gap-2 justify-end">
