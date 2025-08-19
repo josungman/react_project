@@ -22,6 +22,7 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
   const [isIncoming, setIsIncoming] = useState(false);
 
   const callsInitializedRef = useRef(false);
+  const callsReadyRef = useRef(false);
   const callEstablishedAtRef = useRef<number | null>(null);
   const callConnectedAtRef = useRef<number | null>(null);
   const callsListenerIdRef = useRef<string | null>(null);
@@ -264,10 +265,13 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
   const attachCallListeners = (c: any) => {
     try {
       c.onEstablished = () => {
+        console.log("[CALL] onEstablished");
         callEstablishedAtRef.current = Date.now();
         setCallStatus("established");
+        setIsCallUIOpen(true);
       };
       c.onConnected = () => {
+        console.log("[CALL] onConnected");
         callConnectedAtRef.current = Date.now();
         setCallStatus("connected");
         stopRingingBiztalkLoop();
@@ -278,6 +282,9 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         } catch {}
       };
       c.onEnded = () => {
+        try {
+          console.log("[CALL] onEnded", { endResult: (c as any)?.endResult });
+        } catch {}
         setCallStatus("ended");
         setIsCallUIOpen(false);
         setDirectCall(null);
@@ -293,11 +300,29 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
   const startVoiceCall = async () => {
     try {
       if (!channel || !user?.userId) return;
+      // Calls 준비가 안 되어 있으면 즉시 준비 시도
+      if (!callsReadyRef.current) {
+        try {
+          if (!callsInitializedRef.current && appId) {
+            try {
+              (SendBirdCall as any).init?.(appId);
+            } catch {}
+            callsInitializedRef.current = true;
+          }
+          await (SendBirdCall as any).authenticate?.({ userId: user.userId, accessToken: (user as any)?.accessToken });
+          await (SendBirdCall as any).connectWebSocket?.();
+          callsReadyRef.current = true;
+          console.log("[CALL] prepared calls in startVoiceCall");
+        } catch (e) {
+          console.warn("[CALL] prepare calls in startVoiceCall failed", e);
+        }
+      }
       const members = (channel.members || []) as any[];
       const calleeId = members.find((m) => m.userId !== user.userId)?.userId;
       if (!calleeId) return;
       try {
         const peerId = peerIdRef.current || calleeId;
+        console.log("[CALL] startVoiceCall", { calleeId, peerId });
         if (peerId && sb) {
           try {
             const p = await queryPresence(sb, peerId);
@@ -324,6 +349,7 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
       } catch {}
       setIsIncoming(false);
       setCallStatus("dialing");
+      console.log("[CALL] set status dialing");
       await resumeAudioAutoplay();
       try {
         await navigator.mediaDevices?.getUserMedia?.({
@@ -344,9 +370,9 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
           remoteMediaView: remoteAudioRef.current,
         },
       });
+      console.log("[CALL] dial result", { hasCall: !!newCall });
       if (newCall) {
         setDirectCall(newCall);
-        setIsCallUIOpen(true);
         attachCallListeners(newCall);
         try {
           newCall.setRemoteMediaView?.(remoteAudioRef.current);
@@ -439,7 +465,9 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         try {
           await (SendBirdCall as any).authenticate?.({ userId: user.userId, accessToken: (user as any)?.accessToken });
           await (SendBirdCall as any).connectWebSocket?.();
+          callsReadyRef.current = true;
         } catch (e) {
+          callsReadyRef.current = false;
           console.warn("Calls authenticate/connect 실패", e);
         }
 
@@ -478,6 +506,7 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
           (SendBirdCall as any).removeListener?.(callsListenerIdRef.current);
           callsListenerIdRef.current = null;
         }
+        callsReadyRef.current = false;
       } catch {}
     };
   }, [user?.userId, appId]);
