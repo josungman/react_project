@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 /**
  * useMessageBackgroundNotify
  * - 현재 채널로 수신된 메시지를 감지하고, 브라우저가 백그라운드 상태일 때 Biztalk 알림을 전송합니다.
@@ -27,16 +29,21 @@ export function useMessageBackgroundNotify({ sb, user, channel, channelId, getSe
           try {
             phoneDecrypted = (await getSelfPhone()) || null;
           } catch {}
-          const TEST_PAYLOAD = {
-            phnumber: phoneDecrypted || "",
-            userid: "채팅 부재 알림톡",
-            servicedate: "백그라운드 채팅 알림톡",
+          const messageText = typeof _msg?.message === "string" ? _msg.message : String(_msg?.message ?? "");
+          const origin = typeof window !== "undefined" ? window.location.origin : "";
+          const channelKey = curUrl;
+          const peerLink = origin && channelKey && user?.userId ? `${origin}/chat/${channelKey}?user=${user.userId}` : "";
+          const PAYLOAD = {
+            send_number: phoneDecrypted,
+            conn_status: "채팅 백그라운드 상태",
+            re_message: messageText,
+            link: peerLink,
           } as any;
-          console.log("[SB][recv] send bg", TEST_PAYLOAD);
-          fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+          console.log("[SB][recv] send bg", PAYLOAD);
+          fetch(`${BACKEND_URL}/biztalkchating/missed_message`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(TEST_PAYLOAD),
+            body: JSON.stringify(PAYLOAD),
           }).catch(() => {});
         })();
       }
