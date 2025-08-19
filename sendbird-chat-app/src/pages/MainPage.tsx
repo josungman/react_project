@@ -38,13 +38,12 @@ export default function MainPage() {
                 <ul className="text-gray-600 space-y-2">
                   <li>• 1대1 실시간 메시지 전송</li>
                   <li>• 파일 업로드 (이미지, PDF, 문서)</li>
-                  <li>• 실시간 연결 상태 모니터링(작업필요.)</li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-3">📞 통화 기능(검토중)</h3>
+                <h3 className="text-lg font-semibold mb-3">📞 통화 기능</h3>
                 <ul className="text-gray-600 space-y-2">
-                  <li>• 음성 녹음 및 자동 업로드</li>
+                  <li>• 음성 녹음 및 자동 업로드(기본 기능 사용,작업예정)</li>
                 </ul>
               </div>
             </div>

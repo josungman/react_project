@@ -18,6 +18,7 @@ import { decryptFromBase64, fromBase64UrlToString } from "../utils/crypto";
  * - 통화 훅을 사용하여 통화 UI를 제어하고, 백그라운드 메시지 알림 훅을 활성화합니다.
  */
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function SendbirdChat() {
   const { channelId } = useParams();
@@ -210,6 +211,7 @@ export default function SendbirdChat() {
                   isMessageReceiptStatusEnabled={true}
                   isReactionEnabled={true}
                   onBeforeSendUserMessage={(text: any) => {
+                    const messageText = typeof text === "string" ? text : String(text ?? "");
                     try {
                       const peerId = peerIdRef.current || "";
                       if (peerId && sb) {
@@ -222,22 +224,25 @@ export default function SendbirdChat() {
                               try {
                                 phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
                               } catch {}
-                              const TEST_PAYLOAD = {
-                                phnumber: phoneDecrypted || "",
-                                userid: "naver_test_user_001",
-                                servicedate: "접속안함 채팅 알림톡",
+                              const origin = typeof window !== "undefined" ? window.location.origin : "";
+                              const channelKey = (channelId as string) || (channel?.url as string) || "";
+                              const peerLink = origin && channelKey ? `${origin}/chat/${channelKey}?user=${peerId}` : "";
+                              const PAYLOAD = {
+                                send_number: phoneDecrypted,
+                                conn_status: "채팅 접속 안함",
+                                re_message: messageText,
+                                link: peerLink,
                               } as any;
-                              fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+                              fetch(`${BACKEND_URL}/biztalkchating/missed_message`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(TEST_PAYLOAD),
+                                body: JSON.stringify(PAYLOAD),
                               }).catch(() => {});
                             }
                           } catch {}
                         })();
                       }
                     } catch {}
-                    const messageText = typeof text === "string" ? text : String(text ?? "");
                     return { message: messageText } as any;
                   }}
                   renderChannelHeader={() => null}
