@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "@sendbird/uikit-react/ui/Avatar";
 
 /**
@@ -7,20 +7,53 @@ import Avatar from "@sendbird/uikit-react/ui/Avatar";
  */
 export default function ChannelInfoSheet({ channel, onClose }: { channel: any; onClose: () => void }) {
   const members = (channel?.members || []) as any[];
-  const [notify, setNotify] = useState<boolean>(!!channel?.myPushTriggerOption && channel.myPushTriggerOption !== "off");
+  const [description, setDescription] = useState<string>("");
 
-  const toggleNotify = async () => {
-    try {
-      const next = notify ? "off" : "all";
-      if (typeof channel?.setMyPushTriggerOption === "function") {
-        channel.setMyPushTriggerOption(next, (_: any, err: any) => {
-          if (!err) setNotify(!notify);
-        });
-      } else {
-        setNotify(!notify);
+  // 채팅방 메타데이터/데이터에서 설명을 로드
+  useEffect(() => {
+    let active = true;
+    const fromData = () => {
+      try {
+        const raw = channel?.data;
+        if (typeof raw === "string" && raw.trim()) {
+          const parsed = JSON.parse(raw);
+          const desc = typeof parsed?.description === "string" ? parsed.description : "";
+          if (active && desc) setDescription(desc);
+        }
+      } catch {}
+    };
+
+    const fromMetadata = async () => {
+      try {
+        if (typeof channel?.getAllMetaData === "function") {
+          channel.getAllMetaData((meta: Record<string, string> | undefined, err: any) => {
+            if (!active || err || !meta) return fromData();
+            const desc = typeof meta.description === "string" ? meta.description : "";
+            if (desc) setDescription(desc);
+            else fromData();
+          });
+          return;
+        }
+        if (typeof channel?.getMetaData === "function") {
+          channel.getMetaData(["description"], (meta: Record<string, string> | undefined, err: any) => {
+            if (!active || err || !meta) return fromData();
+            const desc = typeof meta.description === "string" ? meta.description : "";
+            if (desc) setDescription(desc);
+            else fromData();
+          });
+          return;
+        }
+        fromData();
+      } catch {
+        fromData();
       }
-    } catch {}
-  };
+    };
+
+    fromMetadata();
+    return () => {
+      active = false;
+    };
+  }, [channel?.url]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/30 flex justify-end" onClick={onClose}>
@@ -37,19 +70,16 @@ export default function ChannelInfoSheet({ channel, onClose }: { channel: any; o
           <div className="flex items-center gap-3">
             <Avatar height={40} width={40} src={channel?.coverUrl} />
             <div className="min-w-0">
-              <div className="font-semibold truncate">{channel?.name || channel?.url}</div>
-              <div className="text-xs text-gray-500 truncate">{channel?.url}</div>
+              <div className="font-semibold truncate">채팅방</div>
             </div>
           </div>
         </div>
 
-        <div className="p-4 border-b">
-          <label className="flex items-center gap-3 text-sm">
-            <input type="checkbox" checked={notify} onChange={toggleNotify} /> 알림 On/Off
-          </label>
-        </div>
-
         <div className="p-4">
+          <div className="mb-4">
+            <div className="text-xs font-semibold text-gray-500 mb-1">설명</div>
+            <div className="text-sm text-gray-800 whitespace-pre-wrap break-words min-h-[1.25rem]">{description || "등록된 설명이 없습니다."}</div>
+          </div>
           <div className="text-xs font-semibold text-gray-500 mb-2">멤버</div>
           <div className="space-y-2 max-h-[50vh] overflow-auto pr-1">
             {members.map((m) => (

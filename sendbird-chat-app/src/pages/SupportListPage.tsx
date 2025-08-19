@@ -210,10 +210,10 @@ export default function SupportListPage() {
 
                       <div className="mt-2 text-sm text-gray-600">
                         <p>
-                          <strong>사용자 1:</strong> {channel.user1Id}
+                          <strong>고객:</strong> {channel.user1Id}
                         </p>
                         <p>
-                          <strong>사용자 2:</strong> {channel.user2Id}
+                          <strong>작업자:</strong> {channel.user2Id}
                         </p>
                         <p>
                           <strong>생성일:</strong> {new Date(channel.createdAt).toLocaleString()}
@@ -232,14 +232,14 @@ export default function SupportListPage() {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      {/* 사용자 1 입장 버튼 */}
+                      {/* 고객 입장 버튼 */}
                       <button onClick={() => joinChatChannel(channel, "user1")} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium">
-                        사용자 1 입장
+                        고객 입장
                       </button>
 
-                      {/* 사용자 2 입장 버튼 */}
+                      {/* 작업자 입장 버튼 */}
                       <button onClick={() => joinChatChannel(channel, "user2")} className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium">
-                        사용자 2 입장
+                        작업자 입장
                       </button>
 
                       {/* 상태 변경 버튼 */}
@@ -269,10 +269,10 @@ export default function SupportListPage() {
           <h4 className="text-sm font-medium text-yellow-800 mb-2">사용 방법</h4>
           <ul className="text-xs text-yellow-700 space-y-1">
             <li>
-              • <strong>사용자 1 입장:</strong> 첫 번째 사용자로 채팅 채널에 입장합니다.
+              • <strong>고객 입장:</strong> 첫 번째 참가자로 채팅 채널에 입장합니다.
             </li>
             <li>
-              • <strong>사용자 2 입장:</strong> 두 번째 사용자로 채팅 채널에 입장합니다.
+              • <strong>작업자 입장:</strong> 두 번째 참가자로 채팅 채널에 입장합니다.
             </li>
             <li>
               • <strong>종료/재개:</strong> 채팅 채널 상태를 변경합니다.

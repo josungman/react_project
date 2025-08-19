@@ -16,6 +16,7 @@ export default function ChatCreationPage() {
   const [creationError, setCreationError] = useState<string>("");
   const [phone1, setPhone1] = useState<string>("");
   const [phone2, setPhone2] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   // APP_ID 확인
   if (!APP_ID) {
@@ -43,7 +44,7 @@ export default function ChatCreationPage() {
   }
 
   // Sendbird 채널 생성 및 사용자 연결 함수 (v4)
-  const createChannelAndConnectUsers = useCallback(async (user1Id: string, user2Id: string, channelUrl: string) => {
+  const createChannelAndConnectUsers = useCallback(async (user1Id: string, user2Id: string, channelUrl: string, desc: string) => {
     setIsCreating(true);
     setCreationError("");
 
@@ -53,9 +54,19 @@ export default function ChatCreationPage() {
       // Sendbird v4 초기화 및 각 사용자 연결
       sb = await SendbirdChat.init({ appId: APP_ID as string, modules: [new GroupChannelModule()] });
       await sb.connect(user1Id);
+      try {
+        await (sb as any)?.updateCurrentUserInfo?.({ nickname: "고객" });
+      } catch (e) {
+        console.warn("고객 닉네임 설정 실패", e);
+      }
 
       sb2 = await SendbirdChat.init({ appId: APP_ID as string, modules: [new GroupChannelModule()] });
       await sb2.connect(user2Id);
+      try {
+        await (sb2 as any)?.updateCurrentUserInfo?.({ nickname: "작업자" });
+      } catch (e) {
+        console.warn("작업자 닉네임 설정 실패", e);
+      }
 
       // 채널 생성 (두 사용자 모두 연결된 후) v4
       console.log("채널 생성 중:", channelUrl);
@@ -63,9 +74,20 @@ export default function ChatCreationPage() {
         name: `채팅방 ${user1Id} & ${user2Id}`,
         invitedUserIds: [user1Id, user2Id],
         isDistinct: true,
-        // customType은 길이 제한(<=128)이 있어 긴 식별자 저장에 부적합하므로 생략
+        // 메타성 정보는 params.data(JSON)에도 기록 (호환 목적)
+        data: desc ? JSON.stringify({ description: desc }) : undefined,
       };
       const channel = await sb.groupChannel.createChannel(params);
+      // 생성 직후 메타데이터에도 저장 시도 (가능한 SDK 버전에서만)
+      if (desc) {
+        try {
+          await (channel as any)?.createMetaData?.({ description: desc });
+        } catch {
+          try {
+            await (channel as any)?.updateMetaData?.({ description: desc });
+          } catch {}
+        }
+      }
       console.log("채널 생성 성공:", channel);
       console.log("=== ChatCreationPage 채널 상세 정보 ===");
       console.log("채널 URL:", channel.url);
@@ -158,7 +180,7 @@ export default function ChatCreationPage() {
       console.log("파생 사용자 ID:", { user1Id, user2Id, channelUrl });
 
       // 실제 채널 생성 및 사용자 연결
-      await createChannelAndConnectUsers(user1Id, user2Id, channelUrl);
+      await createChannelAndConnectUsers(user1Id, user2Id, channelUrl, description.trim());
 
       const currentOrigin = window.location.origin;
       const urls = {
@@ -173,7 +195,7 @@ export default function ChatCreationPage() {
     } catch (error) {
       console.error("새 채팅 생성 실패:", error);
     }
-  }, [phone1, phone2, sanitizePhone, deriveUserIdFromPhone, createChannelAndConnectUsers]);
+  }, [phone1, phone2, description, sanitizePhone, deriveUserIdFromPhone, createChannelAndConnectUsers]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -193,7 +215,7 @@ export default function ChatCreationPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-full bg-gray-100 overflow-auto">
       {/* 헤더 */}
       <div className="bg-white shadow-sm border-b px-6 py-4">
         <div className="flex items-center justify-between">
@@ -209,13 +231,25 @@ export default function ChatCreationPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm text-gray-700 mb-1">사용자 1 휴대폰 번호</label>
+              <label className="block text-sm text-gray-700 mb-1">고객 휴대폰 번호</label>
               <input value={phone1} onChange={(e) => setPhone1(e.target.value)} placeholder="010-1234-5678" className="w-full border rounded px-3 py-2 text-sm" inputMode="tel" />
             </div>
             <div>
-              <label className="block text-sm text-gray-700 mb-1">사용자 2 휴대폰 번호</label>
+              <label className="block text-sm text-gray-700 mb-1">작업자 휴대폰 번호</label>
               <input value={phone2} onChange={(e) => setPhone2(e.target.value)} placeholder="010-9876-5432" className="w-full border rounded px-3 py-2 text-sm" inputMode="tel" />
             </div>
+          </div>
+
+          {/* 채팅 설명 입력 */}
+          <div className="mb-6">
+            <label className="block text-sm text-gray-700 mb-1">채팅 설명 (선택)</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="예) 고객 문의 내용 요약, 초기 접수 메모 등"
+              className="w-full border rounded px-3 py-2 text-sm h-24 resize-y"
+            />
+            <p className="mt-1 text-xs text-gray-500">입력한 설명은 채팅방 메타데이터에 저장되어 정보 화면에서 확인할 수 있습니다.</p>
           </div>
 
           {/* 생성 상태 표시 */}
@@ -265,7 +299,7 @@ export default function ChatCreationPage() {
             <div className="space-y-4">
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-blue-800">사용자 1 (첫 번째 참가자)</div>
+                  <div className="text-sm font-medium text-blue-800">고객 (첫 번째 참가자)</div>
                   <div className="flex space-x-2">
                     <button onClick={() => copyToClipboard(chatUrls.url1)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
                       복사
@@ -280,7 +314,7 @@ export default function ChatCreationPage() {
 
               <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium text-green-800">사용자 2 (두 번째 참가자)</div>
+                  <div className="text-sm font-medium text-green-800">작업자 (두 번째 참가자)</div>
                   <div className="flex space-x-2">
                     <button onClick={() => copyToClipboard(chatUrls.url2)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">
                       복사
@@ -294,15 +328,7 @@ export default function ChatCreationPage() {
               </div>
             </div>
 
-            <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <h4 className="text-sm font-medium text-yellow-800 mb-2">사용 방법</h4>
-              <ul className="text-xs text-yellow-700 space-y-1">
-                <li>• 각 URL을 다른 브라우저나 시크릿 모드에서 열어서 1대1 채팅을 테스트하세요.</li>
-                <li>• "복사" 버튼을 클릭하여 URL을 클립보드에 복사할 수 있습니다.</li>
-                <li>• "참가" 버튼을 클릭하여 해당 채팅에 바로 참가할 수 있습니다.</li>
-                <li>• 채널 ID: {chatUrls.channelUrl}</li>
-              </ul>
-            </div>
+            {/* 사용 방법 안내 제거됨 */}
           </div>
         )}
       </div>
