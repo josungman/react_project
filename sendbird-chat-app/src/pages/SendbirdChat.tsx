@@ -229,7 +229,7 @@ export default function SendbirdChat() {
                               const peerLink = origin && channelKey ? `${origin}/chat/${channelKey}?user=${peerId}` : "";
                               const PAYLOAD = {
                                 send_number: phoneDecrypted,
-                                conn_status: "채팅 접속 안함",
+                                conn_status: "채팅 접속 안함 상태",
                                 re_message: messageText,
                                 link: peerLink,
                               } as any;

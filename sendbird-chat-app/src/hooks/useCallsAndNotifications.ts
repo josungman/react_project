@@ -9,6 +9,8 @@ type UseCallsAndNotificationsParams = {
   channel: any;
 };
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 /**
  * useCallsAndNotifications
  * - Sendbird Calls 초기화/인증 및 수신/발신 통화 상태를 관리합니다.
@@ -34,38 +36,31 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
   const peerIdRef = useRef<string | null>(null);
 
   /**
-   * 통화 로그를 서버에 전송합니다.
+   * 링크 구성용 안전 폴백 헬퍼
    */
-  const sendCallLog = async (c: any, endReason?: string) => {
+  const getChannelKeyForLink = (): string => {
     try {
-      const endedAt = Date.now();
-      const establishedAt = callEstablishedAtRef.current;
-      const connectedAt = callConnectedAtRef.current;
-      const durationSec = connectedAt ? Math.max(0, Math.round((endedAt - connectedAt) / 1000)) : 0;
-      const payload = {
-        callId: c?.callId,
-        caller: c?.caller?.userId,
-        callee: c?.callee?.userId,
-        appId: appId,
-        isVideoCall: !!c?.isVideoCall,
-        endResult: endReason || c?.endResult || null,
-        establishedAt: establishedAt || null,
-        connectedAt: connectedAt || null,
-        endedAt,
-        durationSec,
-        channelUrl: channel?.url || null,
-      };
-      await fetch("/api/call-logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-    } catch (e) {
-      console.warn("통화 로그 전송 실패", e);
-    } finally {
-      callEstablishedAtRef.current = null;
-      callConnectedAtRef.current = null;
-    }
+      const key = (channel?.url as string) || "";
+      if (key) return key;
+      if (typeof window !== "undefined") {
+        const m = window.location.pathname.match(/\/chat\/([^/?#]+)/);
+        if (m && m[1]) return m[1];
+      }
+    } catch {}
+    return "";
+  };
+
+  const getSelfUserIdForLink = (): string => {
+    try {
+      const id = ((sb as any)?.currentUser?.userId as string) || (user?.userId as string) || "";
+      if (id) return id;
+      if (typeof window !== "undefined") {
+        const sp = new URLSearchParams(window.location.search);
+        const q = sp.get("user");
+        if (q) return q;
+      }
+    } catch {}
+    return "";
   };
 
   /**
@@ -172,15 +167,19 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
               try {
                 phoneDecrypted = (await getSelfPhone()) || null;
               } catch {}
-              const TEST_PAYLOAD = {
-                phnumber: phoneDecrypted || "",
-                userid: "naver_test_user_001",
-                servicedate: "백그라운드 전화 알림톡",
+              const origin = typeof window !== "undefined" ? window.location.origin : "";
+              const channelKey = getChannelKeyForLink();
+              const selfUserId = getSelfUserIdForLink();
+              const peerLink = origin && channelKey && selfUserId ? `${origin}/chat/${channelKey}?user=${selfUserId}` : "";
+              const PAYLOAD = {
+                send_number: phoneDecrypted || "",
+                conn_status: "전화 백그라운드 상태",
+                link: peerLink,
               } as any;
-              fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+              fetch(`${BACKEND_URL}/biztalkchating/missed_call`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(TEST_PAYLOAD),
+                body: JSON.stringify(PAYLOAD),
               }).catch(() => {});
             })();
           }
@@ -217,15 +216,18 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
             try {
               phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
             } catch {}
-            const TEST_PAYLOAD = {
-              phnumber: phoneDecrypted || "",
-              userid: "상담중 부재중 전화",
-              servicedate: "접속안함 전화 알림톡",
+            const origin = typeof window !== "undefined" ? window.location.origin : "";
+            const channelKey = getChannelKeyForLink();
+            const peerLink = origin && channelKey && peerId ? `${origin}/chat/${channelKey}?user=${peerId}` : "";
+            const PAYLOAD = {
+              send_number: phoneDecrypted || "",
+              conn_status: "전화 접속안함 상태",
+              link: peerLink,
             } as any;
-            fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
+            fetch(`${BACKEND_URL}/biztalkchating/missed_call`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(TEST_PAYLOAD),
+              body: JSON.stringify(PAYLOAD),
             }).catch(() => {});
           }
         } catch {}
@@ -291,7 +293,10 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         setIsIncoming(false);
         stopRingingBiztalkLoop();
         stopCallPresenceCheckLoop();
-        sendCallLog(c);
+        try {
+          callEstablishedAtRef.current = null;
+          callConnectedAtRef.current = null;
+        } catch {}
       };
     } catch {}
   };
@@ -328,20 +333,6 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
             const p = await queryPresence(sb, peerId);
             const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
             if (offlineNow) {
-              let phoneDecrypted: string | null = null;
-              try {
-                phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
-              } catch {}
-              const TEST_PAYLOAD = {
-                phnumber: phoneDecrypted || "",
-                userid: "상담중 부재중 전화",
-                servicedate: "접속안함 전화 알림톡",
-              } as any;
-              fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(TEST_PAYLOAD),
-              }).catch(() => {});
             }
           } catch {}
           startCallPresenceCheckLoop(peerId);
@@ -373,6 +364,7 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
       console.log("[CALL] dial result", { hasCall: !!newCall });
       if (newCall) {
         setDirectCall(newCall);
+        setIsCallUIOpen(true);
         attachCallListeners(newCall);
         try {
           newCall.setRemoteMediaView?.(remoteAudioRef.current);
@@ -408,37 +400,11 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
       setIsCallUIOpen(false);
       setDirectCall(null);
       setIsIncoming(false);
-      if (directCall) {
-        sendCallLog(directCall, "local_end");
-      }
+      try {
+        callEstablishedAtRef.current = null;
+        callConnectedAtRef.current = null;
+      } catch {}
     }
-  };
-
-  /** 상대가 오프라인 상태일 때 알림을 전송합니다. */
-  const notifyPeerOfflineIfNeeded = async () => {
-    try {
-      const peerId = peerIdRef.current || getPeerUserId.current?.() || null;
-      if (peerId && sb) {
-        const p = await queryPresence(sb, peerId);
-        const offlineNow = p.online === false || (p.lastSeenAt > 0 && Date.now() - p.lastSeenAt > 60000);
-        if (offlineNow) {
-          let phoneDecrypted: string | null = null;
-          try {
-            phoneDecrypted = (await getPeerPhone.current?.(undefined, peerId)) || null;
-          } catch {}
-          const TEST_PAYLOAD = {
-            phnumber: phoneDecrypted || "",
-            userid: "naver_test_user_001",
-            servicedate: "접속안함 채팅 알림톡",
-          } as any;
-          fetch("https://elbserver.store/biztalk/sand_elbserver_naver", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(TEST_PAYLOAD),
-          }).catch(() => {});
-        }
-      }
-    } catch {}
   };
 
   /** 채널 멤버에서 상대 유저 ID를 캐싱합니다. */
@@ -484,13 +450,8 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
               setCallStatus("ringing");
               attachCallListeners(incoming);
               try {
-                const foreground = document.visibilityState === "visible";
-                if (!foreground) {
-                  startRingingBiztalkLoop();
-                }
-              } catch {
                 startRingingBiztalkLoop();
-              }
+              } catch {}
             },
           });
           callsListenerIdRef.current = id;
@@ -521,7 +482,6 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
     startVoiceCall,
     acceptCall,
     endCall,
-    notifyPeerOfflineIfNeeded,
     getSelfPhone,
   };
 }
