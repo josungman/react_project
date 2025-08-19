@@ -36,6 +36,9 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
   const peerIdRef = useRef<string | null>(null);
   const peerNotReadyIntervalRef = useRef<number | null>(null);
   const peerNotReadyTimeoutRef = useRef<number | null>(null);
+  const retryDialIntervalRef = useRef<number | null>(null);
+  const retryDialTimeoutRef = useRef<number | null>(null);
+  const retryDialInFlightRef = useRef<boolean>(false);
 
   /**
    * 링크 구성용 안전 폴백 헬퍼
@@ -301,6 +304,77 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
     } catch {}
   };
 
+  /** 미인증 상태에서 상대 접속 감지 시 자동 재다이얼 */
+  const stopRetryDialUntilReady = () => {
+    try {
+      if (retryDialIntervalRef.current) {
+        clearInterval(retryDialIntervalRef.current);
+        retryDialIntervalRef.current = null;
+      }
+      if (retryDialTimeoutRef.current) {
+        clearTimeout(retryDialTimeoutRef.current);
+        retryDialTimeoutRef.current = null;
+      }
+      retryDialInFlightRef.current = false;
+    } catch {}
+  };
+
+  const startRetryDialUntilReady = (_peerId: string, calleeId: string, durationMs: number = 30000, intervalMs: number = 3000) => {
+    try {
+      stopRetryDialUntilReady();
+      retryDialIntervalRef.current = window.setInterval(async () => {
+        try {
+          if (retryDialInFlightRef.current) return;
+          retryDialInFlightRef.current = true;
+          // Calls 준비 보장
+          try {
+            if (!callsReadyRef.current) {
+              if (!callsInitializedRef.current && appId) {
+                try {
+                  (SendBirdCall as any).init?.(appId);
+                } catch {}
+                callsInitializedRef.current = true;
+              }
+              await (SendBirdCall as any).authenticate?.({ userId: user.userId, accessToken: (user as any)?.accessToken });
+              await (SendBirdCall as any).connectWebSocket?.();
+              callsReadyRef.current = true;
+            }
+          } catch {}
+
+          // 프레즌스 체크 없이 바로 재다이얼 시도
+          setCallStatus("dialing");
+          try {
+            const newCall = await (SendBirdCall as any).dial?.({
+              userId: calleeId,
+              isVideoCall: false,
+              callOption: {
+                audioEnabled: true,
+                videoEnabled: false,
+                remoteMediaView: remoteAudioRef.current,
+              },
+            });
+            if (newCall) {
+              setDirectCall(newCall);
+              setIsCallUIOpen(true);
+              attachCallListeners(newCall);
+              try {
+                newCall.setRemoteMediaView?.(remoteAudioRef.current);
+              } catch {}
+              stopPeerNotReadyNotifyBurst();
+              stopRetryDialUntilReady();
+            }
+          } catch {}
+        } catch {
+        } finally {
+          retryDialInFlightRef.current = false;
+        }
+      }, intervalMs);
+      retryDialTimeoutRef.current = window.setTimeout(() => {
+        stopRetryDialUntilReady();
+      }, durationMs);
+    } catch {}
+  };
+
   /** 자동 재생 제약 회피를 위해 오디오 컨텍스트/원격 오디오를 재생합니다. */
   const resumeAudioAutoplay = async () => {
     try {
@@ -333,6 +407,7 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         stopRingingBiztalkLoop();
         stopCallPresenceCheckLoop();
         stopPeerNotReadyNotifyBurst();
+        stopRetryDialUntilReady();
         try {
           c.setRemoteMediaView?.(remoteAudioRef.current);
           remoteAudioRef.current?.play?.();
@@ -352,7 +427,11 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
           setDirectCall(null);
           try {
             const peerId = peerIdRef.current || getPeerUserId.current?.() || null;
-            if (peerId) startPeerNotReadyNotifyBurst(peerId, 10000, 2000);
+            if (peerId) {
+              startPeerNotReadyNotifyBurst(peerId, 10000, 2000);
+              const calleeId = peerId;
+              startRetryDialUntilReady(peerId, calleeId, 10000, 2000);
+            }
           } catch {}
           return;
         }
@@ -450,7 +529,10 @@ export function useCallsAndNotifications({ appId, sb, user, channel }: UseCallsA
         setIsCallUIOpen(true);
         setCallStatus("peer_not_ready");
         const peerId = peerIdRef.current || calleeId;
-        if (peerId) startPeerNotReadyNotifyBurst(peerId, 10000, 2000);
+        if (peerId) {
+          startPeerNotReadyNotifyBurst(peerId, 10000, 2000);
+          startRetryDialUntilReady(peerId, calleeId, 10000, 2000);
+        }
         return; // 이후 오류 흐름으로 떨어지지 않도록 종료
       }
     } catch (e) {
