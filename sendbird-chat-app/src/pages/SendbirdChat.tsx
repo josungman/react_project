@@ -202,7 +202,7 @@ export default function SendbirdChat() {
       <div className="flex-1 min-h-0">
         {APP_ID && isConnected && isChannelReady && sb && user?.userId && (channel?.url || channelId) ? (
           <SendBirdProvider appId={APP_ID as string} sdkInstance={sb as any} userId={user.userId} accessToken={(user as any)?.accessToken || undefined} key={user.userId}>
-            <div className="relative flex h-full min-w-0">
+            <div className="relative flex h-[calc(100vh-100px)] min-w-0">
               <div className="flex-1 min-h-0 min-w-0">
                 <Channel
                   channelUrl={(channel?.url as string) || (channelId as string)}
