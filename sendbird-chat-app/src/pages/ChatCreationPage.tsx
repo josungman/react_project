@@ -7,6 +7,7 @@ import { encryptToBase64, toBase64Url } from "../utils/crypto";
 
 // 환경변수에서 APP_ID 가져오기
 const APP_ID = import.meta.env.VITE_SENDBIRD_APP_ID;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function ChatCreationPage() {
   const navigate = useNavigate();
@@ -192,6 +193,30 @@ export default function ChatCreationPage() {
       };
       setChatUrls(urls);
       setShowChatUrls(true);
+
+      // 각 사용자에게 알림톡 전송 (생성된 URL 포함)
+      try {
+        if (BACKEND_URL) {
+          const payload1: any = {
+            send_number: p1,
+            link: urls.url1,
+          };
+          const payload2: any = {
+            send_number: p2,
+            link: urls.url2,
+          };
+          fetch(`${BACKEND_URL}/biztalkchating/create_chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload1),
+          }).catch(() => {});
+          fetch(`${BACKEND_URL}/biztalkchating/create_chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload2),
+          }).catch(() => {});
+        }
+      } catch {}
     } catch (error) {
       console.error("새 채팅 생성 실패:", error);
     }

@@ -163,7 +163,7 @@ export default function SendbirdChat() {
       <div className="bg-white shadow-sm border-b px-3 py-2 md:px-6 md:py-4 flex-shrink-0">
         <div className="flex items-center justify-between flex-wrap gap-y-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg md:text-2xl font-bold text-gray-800">1대1 채팅 (GroupChannel)</h1>
+            <h1 className="text-lg md:text-2xl font-bold text-gray-800">1대1 채팅</h1>
 
             <button
               type="button"
@@ -202,7 +202,7 @@ export default function SendbirdChat() {
       <div className="flex-1 min-h-0">
         {APP_ID && isConnected && isChannelReady && sb && user?.userId && (channel?.url || channelId) ? (
           <SendBirdProvider appId={APP_ID as string} sdkInstance={sb as any} userId={user.userId} accessToken={(user as any)?.accessToken || undefined} key={user.userId}>
-            <div className="relative flex h-[calc(100vh-120px)] min-w-0">
+            <div className="relative flex h-full min-w-0">
               <div className="flex-1 min-h-0 min-w-0">
                 <Channel
                   channelUrl={(channel?.url as string) || (channelId as string)}

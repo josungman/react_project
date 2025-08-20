@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/layout/Header";
 import SendbirdChat from "./pages/SendbirdChat";
 import ChatCreationPage from "./pages/ChatCreationPage";
@@ -23,23 +23,35 @@ const pages = [
   },
 ];
 
+function RoutedApp() {
+  const location = useLocation();
+  const pathname = location.pathname || "";
+  const isChatCreation = pathname === "/chat/create";
+  const isChatRoom = pathname === "/chat" || (pathname.startsWith("/chat/") && !isChatCreation);
+  const hideHeader = isChatRoom;
+
+  return (
+    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
+      {!hideHeader && <Header pages={pages} />}
+
+      <div className="flex-1 overflow-hidden">
+        <Routes>
+          <Route path="/" element={<Navigate to="/main" replace />} />
+          <Route path="/main" element={<MainPage />} />
+          <Route path="/chat/:channelId?" element={<SendbirdChat />} />
+          <Route path="/chat/create" element={<ChatCreationPage />} />
+          <Route path="/support" element={<CustomerSupportPage />} />
+          <Route path="/support/list" element={<SupportListPage />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
-        <Header pages={pages} />
-
-        <div className="flex-1 overflow-hidden">
-          <Routes>
-            <Route path="/" element={<Navigate to="/main" replace />} />
-            <Route path="/main" element={<MainPage />} />
-            <Route path="/chat/:channelId?" element={<SendbirdChat />} />
-            <Route path="/chat/create" element={<ChatCreationPage />} />
-            <Route path="/support" element={<CustomerSupportPage />} />
-            <Route path="/support/list" element={<SupportListPage />} />
-          </Routes>
-        </div>
-      </div>
+      <RoutedApp />
     </BrowserRouter>
   );
 }
