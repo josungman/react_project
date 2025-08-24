@@ -50,7 +50,8 @@ export interface ExcludedTagsWithValuesResponse {
 }
 
 // 실제 API 엔드포인트 URL (환경변수로 관리)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store/channel_talk";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store";
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
 
 // 오늘 날짜의 태그 데이터를 가져오는 함수
 export const fetchTodayTagData = async (): Promise<ApiResponse> => {
@@ -60,7 +61,7 @@ export const fetchTodayTagData = async (): Promise<ApiResponse> => {
 
     console.log("📅 오늘 날짜 (한국 시간):", today);
 
-    const url = `${API_BASE_URL}/tags/today?date=${today}`;
+    const url = `${API_BASE_URL}/channel_talk/tags/today?date=${today}`;
     console.log("🌐 fetchTodayTagData URL:", url);
 
     const response = await fetch(url, {
@@ -135,7 +136,7 @@ export const fetchTagCounts = async (): Promise<TagCountResponse> => {
 // 제외 태그 목록을 가져오는 함수
 export const fetchExcludedTags = async (): Promise<ExcludedTagsResponse> => {
   try {
-    const url = `${API_BASE_URL}/tags/excluded`;
+    const url = `${API_BASE_URL}/channel_talk/tags/excluded`;
     console.log("🌐 fetchExcludedTags URL:", url);
 
     const response = await fetch(url, {
@@ -169,7 +170,7 @@ export const fetchExcludedTags = async (): Promise<ExcludedTagsResponse> => {
 // 제외 태그 추가 함수
 export const addExcludedTag = async (tag: string): Promise<ExcludedTagsResponse> => {
   try {
-    const url = `${API_BASE_URL}/tags/excluded`;
+    const url = `${API_BASE_URL}/channel_talk/tags/excluded`;
     const requestBody = { tag };
     console.log("🌐 addExcludedTag URL:", url);
     console.log("📤 addExcludedTag 요청 데이터:", requestBody);
@@ -206,7 +207,7 @@ export const addExcludedTag = async (tag: string): Promise<ExcludedTagsResponse>
 // 제외 태그 삭제 함수
 export const removeExcludedTag = async (tag: string): Promise<ExcludedTagsResponse> => {
   try {
-    const url = `${API_BASE_URL}/tags/excluded`;
+    const url = `${API_BASE_URL}/channel_talk/tags/excluded`;
     const requestBody = { tag };
     console.log("🌐 removeExcludedTag URL:", url);
     console.log("📤 removeExcludedTag 요청 데이터:", requestBody);
@@ -333,9 +334,8 @@ const formatDateForAPI = (date: Date): string => {
 // 첫 번째 API: 예약금 수집
 export const collectBankDeposits = async (startDate: Date, endDate: Date): Promise<CollectResponse> => {
   try {
-    const url = `https://elbserver.store/popbill/api/bank-deposits/collect`;
-    // const url = `https://dev-api.elbserver.store/popbill/api/bank-deposits/collect`; //test서버
-    //const url = `http://127.0.0.1:5763/popbill/api/bank-deposits/collect`;
+    const url = `${API_BASE_URL}/popbill/api/bank-deposits/collect`;
+
     console.log("🌐 collectBankDeposits URL:", url);
 
     // 날짜 순서 확인 및 수정 (시작일이 종료일보다 늦으면 안됨)
@@ -393,9 +393,8 @@ export const collectBankDeposits = async (startDate: Date, endDate: Date): Promi
 // 두 번째 API: 예약금 데이터 조회
 export const fetchBankDeposits = async (startDate: Date, endDate: Date): Promise<BankDepositsResponse> => {
   try {
-    const url = `https://elbserver.store/popbill/api/bank-deposits`;
-    // const url = `https://dev-api.elbserver.store/popbill/api/bank-deposits`; //test서버
-    //const url = `http://127.0.0.1:5763/popbill/api/bank-deposits`;
+    const url = `${API_BASE_URL}/popbill/api/bank-deposits`;
+
     console.log("🌐 fetchBankDeposits URL:", url);
 
     // 날짜 순서 확인 및 수정 (시작일이 종료일보다 늦으면 안됨)
