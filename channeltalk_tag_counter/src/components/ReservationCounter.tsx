@@ -150,7 +150,10 @@ export default function ReservationCounter() {
         console.log(isTimerTriggered ? "⏰ 타이머 기반 업데이트: 수집 + 조회 수행" : "🔄 수동 업데이트: 수집 + 조회 수행");
 
         // 첫 번째 API: 예약금 수집 (토스트 메시지 없음)
-        await collectBankDeposits(startDate, endDate);
+        // endDate에서 30일을 뺀 날짜로 수집 (예약금 수집은 금일에서 30전까지 고정 수집)
+        const collectApiStartDate = new Date(endDate);
+        collectApiStartDate.setDate(endDate.getDate() - 30);
+        await collectBankDeposits(collectApiStartDate, endDate);
 
         // 두 번째 API: 예약금 데이터 조회 (성공/실패 상관없이 실행)
         try {
