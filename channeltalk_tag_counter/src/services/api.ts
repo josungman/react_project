@@ -51,7 +51,7 @@ export interface ExcludedTagsWithValuesResponse {
 
 // 실제 API 엔드포인트 URL (환경변수로 관리)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store";
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
 
 // 오늘 날짜의 태그 데이터를 가져오는 함수
 export const fetchTodayTagData = async (): Promise<ApiResponse> => {

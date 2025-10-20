@@ -78,17 +78,22 @@ export default function DateRangeSliderModal({ isOpen, onClose, currentDays, onD
               <input
                 type="range"
                 min="1"
-                max="30"
+                max="90"
                 value={localDays}
                 onChange={handleSliderChange}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((localDays - 1) / 29) * 100}%, #e5e7eb ${((localDays - 1) / 29) * 100}%, #e5e7eb 100%)`,
+                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((localDays - 1) / 89) * 100}%, #e5e7eb ${((localDays - 1) / 89) * 100}%, #e5e7eb 100%)`,
                 }}
               />
 
               {/* 슬라이더 마커들 */}
-              <div className="flex justify-between text-xs text-gray-500 mt-1"></div>
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>1일</span>
+                <span>30일</span>
+                <span>60일</span>
+                <span>90일</span>
+              </div>
             </div>
           </div>
 
@@ -105,7 +110,7 @@ export default function DateRangeSliderModal({ isOpen, onClose, currentDays, onD
           {/* 빠른 선택 버튼들 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">빠른 선택</label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-5 gap-2">
               <button
                 onClick={() => {
                   setLocalDays(7);
@@ -130,17 +135,6 @@ export default function DateRangeSliderModal({ isOpen, onClose, currentDays, onD
               </button>
               <button
                 onClick={() => {
-                  setLocalDays(21);
-                  updatePreviewDates(21);
-                }}
-                className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                  localDays === 21 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                21일
-              </button>
-              <button
-                onClick={() => {
                   setLocalDays(30);
                   updatePreviewDates(30);
                 }}
@@ -149,6 +143,28 @@ export default function DateRangeSliderModal({ isOpen, onClose, currentDays, onD
                 }`}
               >
                 30일
+              </button>
+              <button
+                onClick={() => {
+                  setLocalDays(60);
+                  updatePreviewDates(60);
+                }}
+                className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                  localDays === 60 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                60일
+              </button>
+              <button
+                onClick={() => {
+                  setLocalDays(90);
+                  updatePreviewDates(90);
+                }}
+                className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                  localDays === 90 ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                90일
               </button>
             </div>
           </div>

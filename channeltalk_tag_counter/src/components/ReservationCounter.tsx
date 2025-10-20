@@ -52,7 +52,7 @@ export default function ReservationCounter() {
     // localStorage에서 저장된 조회 일수 불러오기
     const savedDays = localStorage.getItem("reservationQueryDays");
     const days = savedDays ? parseInt(savedDays) : 7;
-    return days >= 1 && days <= 30 ? days : 7;
+    return days >= 1 && days <= 90 ? days : 7;
   });
 
   // 날짜 계산 (일수 기반)
