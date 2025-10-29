@@ -50,8 +50,8 @@ export interface ExcludedTagsWithValuesResponse {
 }
 
 // 실제 API 엔드포인트 URL (환경변수로 관리)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store";
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
 
 // 오늘 날짜의 태그 데이터를 가져오는 함수
 export const fetchTodayTagData = async (): Promise<ApiResponse> => {
@@ -439,6 +439,127 @@ export const fetchBankDeposits = async (startDate: Date, endDate: Date): Promise
     return data;
   } catch (error) {
     console.error("❌ 예약금 데이터 조회 실패:", error);
+    throw error;
+  }
+};
+
+// 제외 송금자명 목록 조회
+export const fetchExcludedAccounts = async () => {
+  try {
+    const url = `${API_BASE_URL}/channel_talk/excluded-accounts`;
+    console.log("🌐 fetchExcludedAccounts URL:", url);
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+
+    console.log("📡 fetchExcludedAccounts 응답 상태:", response.status, response.statusText);
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.text();
+        console.log("📡 fetchExcludedAccounts 에러 응답 본문:", errorData);
+        errorMessage += ` - ${errorData}`;
+      } catch (e) {
+        console.log("📡 fetchExcludedAccounts 에러 응답 본문 읽기 실패:", e);
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log("📡 fetchExcludedAccounts 응답 데이터:", data);
+
+    return data;
+  } catch (error) {
+    console.error("❌ 제외 송금자명 목록 조회 실패:", error);
+    throw error;
+  }
+};
+
+// 제외 송금자명 추가
+export const addExcludedAccount = async (accountName: string, matchType: "exact" | "contains" = "exact") => {
+  try {
+    const url = `${API_BASE_URL}/channel_talk/excluded-accounts`;
+    console.log("🌐 addExcludedAccount URL:", url);
+
+    const requestBody = {
+      account_name: accountName,
+      match_type: matchType,
+    };
+    console.log("📤 addExcludedAccount 요청 데이터:", requestBody);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("📡 addExcludedAccount 응답 상태:", response.status, response.statusText);
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.text();
+        console.log("📡 addExcludedAccount 에러 응답 본문:", errorData);
+        errorMessage += ` - ${errorData}`;
+      } catch (e) {
+        console.log("📡 addExcludedAccount 에러 응답 본문 읽기 실패:", e);
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log("📡 addExcludedAccount 응답 데이터:", data);
+
+    return data;
+  } catch (error) {
+    console.error("❌ 제외 송금자명 추가 실패:", error);
+    throw error;
+  }
+};
+
+// 제외 송금자명 삭제
+export const deleteExcludedAccount = async (id: number) => {
+  try {
+    const url = `${API_BASE_URL}/channel_talk/excluded-accounts/${id}`;
+    console.log("🌐 deleteExcludedAccount URL:", url);
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+
+    console.log("📡 deleteExcludedAccount 응답 상태:", response.status, response.statusText);
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.text();
+        console.log("📡 deleteExcludedAccount 에러 응답 본문:", errorData);
+        errorMessage += ` - ${errorData}`;
+      } catch (e) {
+        console.log("📡 deleteExcludedAccount 에러 응답 본문 읽기 실패:", e);
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log("📡 deleteExcludedAccount 응답 데이터:", data);
+
+    return data;
+  } catch (error) {
+    console.error("❌ 제외 송금자명 삭제 실패:", error);
     throw error;
   }
 };

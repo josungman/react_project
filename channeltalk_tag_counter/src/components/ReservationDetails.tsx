@@ -15,9 +15,11 @@ interface ReservationDetailsProps {
   maxAmountFilter: number;
   startDate: Date;
   endDate: Date;
+  excludedAccounts: any[];
+  setIsExcludedAccountsModalOpen: (open: boolean) => void;
 }
 
-export default function ReservationDetails({ reservationDetails, maxAmountFilter, startDate, endDate }: ReservationDetailsProps) {
+export default function ReservationDetails({ reservationDetails, maxAmountFilter, startDate, endDate, excludedAccounts, setIsExcludedAccountsModalOpen }: ReservationDetailsProps) {
   // 페이징 상태
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(() => {
@@ -128,6 +130,15 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                   초기화
                 </button>
               )}
+            </div>
+            {/* 제외 송금자명 관리 */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsExcludedAccountsModalOpen(true)}
+                className="px-3 py-1.5 text-xs sm:text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors border border-blue-200"
+              >
+                제외 송금자명 <span className="text-red-600 font-semibold">{excludedAccounts.length}</span>건
+              </button>
             </div>
           </div>
         </div>

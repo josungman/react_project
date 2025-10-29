@@ -8,8 +8,9 @@ import SummaryCards from "./SummaryCards";
 import ReservationChart from "./ReservationChart";
 import ReservationDetails from "./ReservationDetails";
 import Toast from "./Toast";
-import { collectBankDeposits, fetchBankDeposits, type BankDeposit } from "../services/api";
+import { collectBankDeposits, fetchBankDeposits, type BankDeposit, fetchExcludedAccounts } from "../services/api";
 import { updateMetaTags } from "../utils/metaUtils";
+import ExcludedAccountsModal from "./ExcludedAccountsModal";
 
 interface ReservationDetail {
   date: string;
@@ -67,6 +68,24 @@ export default function ReservationCounter() {
   });
   const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState<boolean>(false);
   const [isAmountFilterModalOpen, setIsAmountFilterModalOpen] = useState<boolean>(false);
+  const [isExcludedAccountsModalOpen, setIsExcludedAccountsModalOpen] = useState<boolean>(false);
+
+  // 제외 송금자명 상태
+  const [excludedAccounts, setExcludedAccounts] = useState<any[]>([]);
+
+  // 제외 송금자명 업데이트 핸들러
+  const handleExcludedAccountsUpdate = useCallback((accounts: any[]) => {
+    setExcludedAccounts(accounts);
+  }, []);
+
+  // 토스트 핸들러
+  const handleToast = useCallback((message: string, type: "success" | "error" | "info") => {
+    setToast({
+      isVisible: true,
+      message,
+      type,
+    });
+  }, []);
 
   // 금액 필터 상태
   const [maxAmountFilter, setMaxAmountFilter] = useState<number>(() => {
@@ -186,10 +205,25 @@ export default function ReservationCounter() {
     setEndDate(today);
   }, [queryDays]);
 
+  // 제외 송금자명 목록 로드
+  const loadExcludedAccounts = useCallback(async () => {
+    try {
+      const response = await fetchExcludedAccounts();
+      if (response.success && response.data) {
+        setExcludedAccounts(response.data);
+      }
+    } catch (error) {
+      console.error("제외 송금자명 목록 로드 실패:", error);
+    }
+  }, []);
+
   // 카운트다운 타이머와 API 호출 동기화
   useEffect(() => {
     // 초기 데이터 로드
     fetchData(false);
+
+    // 제외 송금자명 목록 로드
+    loadExcludedAccounts();
 
     // 카운트다운 타이머 (1초마다)
     const countdownInterval = setInterval(() => {
@@ -204,7 +238,7 @@ export default function ReservationCounter() {
     }, TIME_CONFIG.PROGRESS_UPDATE_INTERVAL);
 
     return () => clearInterval(countdownInterval);
-  }, [fetchData, updateInterval]);
+  }, [fetchData, updateInterval, loadExcludedAccounts]);
 
   // 프로그레스바 계산
   const progressPercentage = ((updateInterval - countdown) / updateInterval) * 100;
@@ -396,7 +430,14 @@ export default function ReservationCounter() {
           <SummaryCards reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} dateDiff={dateDiff} />
 
           {/* 상세 내역 */}
-          <ReservationDetails reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} startDate={startDate} endDate={endDate} />
+          <ReservationDetails
+            reservationDetails={reservationDetails}
+            maxAmountFilter={maxAmountFilter}
+            startDate={startDate}
+            endDate={endDate}
+            excludedAccounts={excludedAccounts}
+            setIsExcludedAccountsModalOpen={setIsExcludedAccountsModalOpen}
+          />
 
           {/* 차트 */}
           <ReservationChart reservationDetails={reservationDetails} maxAmountFilter={maxAmountFilter} startDate={startDate} endDate={endDate} />
@@ -415,6 +456,14 @@ export default function ReservationCounter() {
         onClose={() => setIsAmountFilterModalOpen(false)}
         currentMaxAmount={maxAmountFilter}
         onMaxAmountChange={handleMaxAmountChange}
+      />
+
+      {/* 제외 송금자명 관리 모달 */}
+      <ExcludedAccountsModal
+        isOpen={isExcludedAccountsModalOpen}
+        onClose={() => setIsExcludedAccountsModalOpen(false)}
+        onAccountsUpdate={handleExcludedAccountsUpdate}
+        onToast={handleToast}
       />
 
       {/* 토스트 알림 */}
