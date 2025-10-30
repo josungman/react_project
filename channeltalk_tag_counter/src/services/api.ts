@@ -50,8 +50,9 @@ export interface ExcludedTagsWithValuesResponse {
 }
 
 // 실제 API 엔드포인트 URL (환경변수로 관리)
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://elbserver.store"; // 상용 서버
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dev-api.elbserver.store"; //test서버
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:5763"; // 로컬
 
 // 오늘 날짜의 태그 데이터를 가져오는 함수
 export const fetchTodayTagData = async (): Promise<ApiResponse> => {
@@ -443,7 +444,7 @@ export const fetchBankDeposits = async (startDate: Date, endDate: Date): Promise
   }
 };
 
-// 제외 송금자명 목록 조회
+// 제외 입금자명 목록 조회
 export const fetchExcludedAccounts = async () => {
   try {
     const url = `${API_BASE_URL}/channel_talk/excluded-accounts`;
@@ -476,12 +477,12 @@ export const fetchExcludedAccounts = async () => {
 
     return data;
   } catch (error) {
-    console.error("❌ 제외 송금자명 목록 조회 실패:", error);
+    console.error("❌ 제외 입금자명 목록 조회 실패:", error);
     throw error;
   }
 };
 
-// 제외 송금자명 추가
+// 제외 입금자명 추가
 export const addExcludedAccount = async (accountName: string, matchType: "exact" | "contains" = "exact") => {
   try {
     const url = `${API_BASE_URL}/channel_talk/excluded-accounts`;
@@ -521,12 +522,12 @@ export const addExcludedAccount = async (accountName: string, matchType: "exact"
 
     return data;
   } catch (error) {
-    console.error("❌ 제외 송금자명 추가 실패:", error);
+    console.error("❌ 제외 입금자명 추가 실패:", error);
     throw error;
   }
 };
 
-// 제외 송금자명 삭제
+// 제외 입금자명 삭제
 export const deleteExcludedAccount = async (id: number) => {
   try {
     const url = `${API_BASE_URL}/channel_talk/excluded-accounts/${id}`;
@@ -559,7 +560,7 @@ export const deleteExcludedAccount = async (id: number) => {
 
     return data;
   } catch (error) {
-    console.error("❌ 제외 송금자명 삭제 실패:", error);
+    console.error("❌ 제외 입금자명 삭제 실패:", error);
     throw error;
   }
 };

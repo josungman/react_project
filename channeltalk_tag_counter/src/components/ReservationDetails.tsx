@@ -105,7 +105,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
           {/* 검색 필터 */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <label htmlFor="customerSearch" className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
-              송금자명 검색:
+              입금자명 검색:
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -116,7 +116,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                   setSearchTerm(e.target.value);
                   setCurrentPage(1); // 검색 시 첫 페이지로 이동
                 }}
-                placeholder="송금자명을 입력하세요"
+                placeholder="입금자명을 입력하세요"
                 className="w-full sm:w-48 px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               {searchTerm && (
@@ -131,13 +131,13 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 </button>
               )}
             </div>
-            {/* 제외 송금자명 관리 */}
+            {/* 제외 입금자명 관리 */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsExcludedAccountsModalOpen(true)}
                 className="px-3 py-1.5 text-xs sm:text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors border border-blue-200"
               >
-                제외 송금자명 <span className="text-red-600 font-semibold">{excludedAccounts.length}</span>건
+                제외 입금자명 <span className="text-red-600 font-semibold">{excludedAccounts.length}</span>건
               </button>
             </div>
           </div>
@@ -202,8 +202,8 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
                 }}
               >
                 <div className="flex items-center gap-1">
-                  <span className="hidden sm:inline">송금자명</span>
-                  <span className="sm:hidden text-xs">송금자</span>
+                  <span className="hidden sm:inline">입금자명</span>
+                  <span className="sm:hidden text-xs">입금자</span>
                   {sortField === "customerName" && <span className="text-blue-600 text-xs sm:text-sm">{sortDirection === "asc" ? "↑" : "↓"}</span>}
                 </div>
               </th>

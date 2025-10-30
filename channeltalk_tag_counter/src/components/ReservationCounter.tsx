@@ -70,10 +70,10 @@ export default function ReservationCounter() {
   const [isAmountFilterModalOpen, setIsAmountFilterModalOpen] = useState<boolean>(false);
   const [isExcludedAccountsModalOpen, setIsExcludedAccountsModalOpen] = useState<boolean>(false);
 
-  // 제외 송금자명 상태
+  // 제외 입금자명 상태
   const [excludedAccounts, setExcludedAccounts] = useState<any[]>([]);
 
-  // 제외 송금자명 업데이트 핸들러
+  // 제외 입금자명 업데이트 핸들러
   const handleExcludedAccountsUpdate = useCallback((accounts: any[]) => {
     setExcludedAccounts(accounts);
   }, []);
@@ -205,7 +205,7 @@ export default function ReservationCounter() {
     setEndDate(today);
   }, [queryDays]);
 
-  // 제외 송금자명 목록 로드
+  // 제외 입금자명 목록 로드
   const loadExcludedAccounts = useCallback(async () => {
     try {
       const response = await fetchExcludedAccounts();
@@ -213,7 +213,7 @@ export default function ReservationCounter() {
         setExcludedAccounts(response.data);
       }
     } catch (error) {
-      console.error("제외 송금자명 목록 로드 실패:", error);
+      console.error("제외 입금자명 목록 로드 실패:", error);
     }
   }, []);
 
@@ -222,7 +222,7 @@ export default function ReservationCounter() {
     // 초기 데이터 로드
     fetchData(false);
 
-    // 제외 송금자명 목록 로드
+    // 제외 입금자명 목록 로드
     loadExcludedAccounts();
 
     // 카운트다운 타이머 (1초마다)
@@ -458,7 +458,7 @@ export default function ReservationCounter() {
         onMaxAmountChange={handleMaxAmountChange}
       />
 
-      {/* 제외 송금자명 관리 모달 */}
+      {/* 제외 입금자명 관리 모달 */}
       <ExcludedAccountsModal
         isOpen={isExcludedAccountsModalOpen}
         onClose={() => setIsExcludedAccountsModalOpen(false)}

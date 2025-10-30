@@ -25,7 +25,7 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
   const [excludedAccounts, setExcludedAccounts] = useState<ExcludedAccount[]>([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
 
-  // 검색어에 따라 송금자명 필터링
+  // 검색어에 따라 입금자명 필터링
   const filteredAccounts = useMemo(() => {
     if (!searchQuery.trim()) {
       return excludedAccounts;
@@ -33,26 +33,26 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
     return excludedAccounts.filter((account) => account.account_name.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [excludedAccounts, searchQuery]);
 
-  // 제외된 송금자명 목록 가져오기
+  // 제외된 입금자자명 목록 가져오기
   const fetchExcludedAccountsData = useCallback(async () => {
-    console.log("🔄 제외 송금자명 데이터 가져오기 시작 - ExcludedAccountsModal.tsx의 fetchExcludedAccountsData 함수");
+    console.log("🔄 제외 입금자명 데이터 가져오기 시작 - ExcludedAccountsModal.tsx의 fetchExcludedAccountsData 함수");
     setIsLoadingAccounts(true);
     try {
       console.log("📡 API 호출 시작 - fetchExcludedAccounts()");
       const response = await fetchExcludedAccounts();
-      console.log("📡 제외 송금자명 API 응답 받음:", response);
+      console.log("📡 제외 입금자명 API 응답 받음:", response);
 
       if (response.success && response.data) {
-        console.log("✅ 제외 송금자명 데이터 설정 완료:", response.data);
+        console.log("✅ 제외 입금자명 데이터 설정 완료:", response.data);
         setExcludedAccounts(response.data);
         onAccountsUpdate(response.data);
       } else {
-        console.error("❌ 제외 송금자명 목록 가져오기 실패:", response.error);
-        onToast("제외 송금자명 목록을 불러오는데 실패했습니다.", "error");
+        console.error("❌ 제외 입금자명 목록 가져오기 실패:", response.error);
+        onToast("제외 입금자명 목록을 불러오는데 실패했습니다.", "error");
       }
     } catch (err) {
-      console.error("❌ 제외 송금자명 목록 가져오기 실패:", err);
-      onToast("제외 송금자명 목록을 불러오는데 실패했습니다.", "error");
+      console.error("❌ 제외 입금자명 목록 가져오기 실패:", err);
+      onToast("제외 입금자명 목록을 불러오는데 실패했습니다.", "error");
     } finally {
       setIsLoadingAccounts(false);
     }
@@ -88,7 +88,7 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
     }
   }, [isOpen, fetchExcludedAccountsData]);
 
-  // 제외 송금자명 추가
+  // 제외 입금자명 추가
   const handleAddAccount = async () => {
     if (!newAccountName.trim()) return;
 
@@ -100,20 +100,20 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
         onAccountsUpdate(response.data);
         setNewAccountName("");
         setMatchType("exact");
-        onToast("송금자명이 성공적으로 추가되었습니다.", "success");
-        // 송금자명 추가 후 목록 다시 로드
+        onToast("입금자명이 성공적으로 추가되었습니다.", "success");
+        // 입금자자명 추가 후 목록 다시 로드
         fetchExcludedAccountsData();
       } else {
-        onToast(`송금자명 추가에 실패했습니다.${response.error ? `\n${response.error}` : ""}`, "error");
+        onToast(`입금자명 추가에 실패했습니다.${response.error ? `\n${response.error}` : ""}`, "error");
       }
     } catch (err) {
-      onToast(`송금자명 추가 중 오류가 발생했습니다.\n${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
+      onToast(`입금자명 추가 중 오류가 발생했습니다.\n${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 제외 송금자명 삭제
+  // 제외 입금자자명 삭제
   const handleRemoveAccount = async (id: number) => {
     setIsLoading(true);
 
@@ -121,14 +121,14 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
       const response = await deleteExcludedAccount(id);
       if (response.success && response.data) {
         onAccountsUpdate(response.data);
-        onToast("송금자명이 성공적으로 삭제되었습니다.", "success");
-        // 송금자명 삭제 후 목록 다시 로드
+        onToast("입금자명이 성공적으로 삭제되었습니다.", "success");
+        // 입금자명 삭제 후 목록 다시 로드
         fetchExcludedAccountsData();
       } else {
-        onToast(`송금자명 삭제에 실패했습니다.${response.error ? `\n${response.error}` : ""}`, "error");
+        onToast(`입금자명 삭제에 실패했습니다.${response.error ? `\n${response.error}` : ""}`, "error");
       }
     } catch (err) {
-      onToast(`송금자명 삭제 중 오류가 발생했습니다.\n${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
+      onToast(`입금자명 삭제 중 오류가 발생했습니다.\n${err instanceof Error ? err.message : "알 수 없는 오류"}`, "error");
     } finally {
       setIsLoading(false);
     }
@@ -148,7 +148,7 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
       <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b bg-gray-50 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-gray-900">제외 송금자명 관리</h2>
+          <h2 className="text-xl font-semibold text-gray-900">제외 입금자명 관리</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -161,10 +161,10 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
           {/* 추가 폼 */}
           <div className="space-y-3">
             <div className="flex items-center gap-4">
-              {/* 송금자명 입력 */}
+              {/* 입금자자명 입력 */}
               <div className="w-1/2">
                 <label htmlFor="newAccountName" className="block text-sm font-medium text-gray-700 mb-2">
-                  새 송금자명 추가
+                  제외 입금자명 추가
                 </label>
                 <input
                   key={inputKey}
@@ -173,7 +173,7 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
                   value={newAccountName}
                   onChange={(e) => setNewAccountName(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="제외할 송금자명을 입력하세요"
+                  placeholder="제외할 입금자명을 입력하세요"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isLoading}
                 />
@@ -228,22 +228,22 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
           {/* 검색 */}
           <div className="space-y-3">
             <label htmlFor="searchQuery" className="block text-sm font-medium text-gray-700">
-              송금자명 검색
+              입금자명 검색
             </label>
             <input
               id="searchQuery"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="송금자명을 검색하세요"
+              placeholder="제외된 입금자명을 검색하세요"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
-          {/* 제외 송금자명 목록 */}
+          {/* 제외 입금자명 목록 */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">제외 송금자명 목록</h3>
+              <h3 className="text-lg font-medium text-gray-900">제외 입금자명 목록</h3>
               <span className="text-sm text-gray-500">{filteredAccounts.length}개</span>
             </div>
 
@@ -262,8 +262,8 @@ const ExcludedAccountsModal: React.FC<ExcludedAccountsModalProps> = ({ isOpen, o
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <p className="text-lg font-medium mb-2">제외 송금자명이 없습니다</p>
-                <p className="text-sm">새 송금자명을 추가하거나 다른 검색어를 입력해보세요.</p>
+                <p className="text-lg font-medium mb-2">제외 입금자명이 없습니다</p>
+                <p className="text-sm">새 입금자명을 추가하거나 다른 검색어를 입력해보세요.</p>
               </div>
             ) : (
               <div className="max-h-[28rem] overflow-y-auto space-y-2 pr-2">
