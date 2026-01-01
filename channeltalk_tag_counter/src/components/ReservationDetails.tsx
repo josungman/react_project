@@ -42,6 +42,17 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
   // 금액 필터와 검색어 적용된 데이터
   const filteredData = reservationDetails.filter((item) => item.amount <= maxAmountFilter && item.customerName.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  // 날짜 표시용 포맷 함수 (2자리 년도 포함)
+  const formatDateForDisplay = (dateStr: string): string => {
+    // YYYY/M/D 형식에서 YY/M/D 형식으로 변환 (2자리 년도)
+    const parts = dateStr.split("/");
+    if (parts.length >= 3) {
+      const year = parts[0].slice(-2); // 마지막 2자리만 가져오기 (예: 2025 -> 25, 2026 -> 26)
+      return `${year}/${parts[1]}/${parts[2]}`;
+    }
+    return dateStr;
+  };
+
   // 정렬 함수
   const sortData = (data: ReservationDetail[]) => {
     return [...data].sort((a, b) => {
@@ -50,8 +61,8 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
 
       switch (sortField) {
         case "date":
-          aValue = new Date(`2024/${a.date}`).getTime();
-          bValue = new Date(`2024/${b.date}`).getTime();
+          aValue = new Date(a.date).getTime();
+          bValue = new Date(b.date).getTime();
           break;
         case "time":
           aValue = a.time;
@@ -267,7 +278,7 @@ export default function ReservationDetails({ reservationDetails, maxAmountFilter
             {currentItems.map((item, index) => (
               <tr key={startIndex + index} className="hover:bg-gray-50">
                 <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b text-xs sm:text-sm">
-                  {item.date} {item.time}
+                  {formatDateForDisplay(item.date)} {item.time}
                 </td>
                 <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b break-words text-xs sm:text-sm">{item.customerName}</td>
                 <td className="px-1 sm:px-2 md:px-4 py-1 sm:py-1.5 text-gray-900 border-b break-words text-xs sm:text-sm">{item.depositBank}</td>

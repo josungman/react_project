@@ -16,9 +16,9 @@ interface SummaryCardsProps {
 export default function SummaryCards({ reservationDetails, maxAmountFilter, dateDiff }: SummaryCardsProps) {
   const [isVisible, setIsVisible] = useState(false);
 
-  // 오늘 날짜 계산
+  // 오늘 날짜 계산 (년도 포함)
   const today = new Date();
-  const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
+  const todayStr = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`;
 
   // 금액 필터 적용된 데이터
   const filteredData = reservationDetails.filter((item) => item.amount <= maxAmountFilter);

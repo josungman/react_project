@@ -119,7 +119,7 @@ export default function ReservationCounter() {
   const convertApiDataToReservationDetails = (apiData: BankDeposit[]): ReservationDetail[] => {
     return apiData.map((deposit) => {
       const regDate = new Date(deposit.reg_dt);
-      const dateStr = `${regDate.getMonth() + 1}/${regDate.getDate()}`;
+      const dateStr = `${regDate.getFullYear()}/${regDate.getMonth() + 1}/${regDate.getDate()}`;
       const timeStr = `${regDate.getHours().toString().padStart(2, "0")}:${regDate.getMinutes().toString().padStart(2, "0")}`;
 
       return {

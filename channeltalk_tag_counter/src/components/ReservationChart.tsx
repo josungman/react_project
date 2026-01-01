@@ -36,7 +36,7 @@ export default function ReservationChart({ reservationDetails, maxAmountFilter, 
     const endDateForChart = new Date(endDate);
 
     while (currentDate <= endDateForChart) {
-      const dateStr = `${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
+      const dateStr = `${currentDate.getFullYear()}/${currentDate.getMonth() + 1}/${currentDate.getDate()}`;
       allDates.push({
         date: dateStr,
         amount: dailyMap.get(dateStr) || 0,
